@@ -105,13 +105,15 @@ def main() -> None:
         mark = "  <- 本来の対応" if k == 0 else ""
         print(f"  k={k:+d}: 傾き {f.params[1]:8.4f}  t {f.tvalues[1]:6.2f}  R2 {f.rsquared:.3f}{mark}")
 
-    # 立会日と休場日で出来高の水準が大きく違うので、群の分離が傾きを作っていないか確かめる
+    # 立会日と休場日で出来高の水準も性質も違うので、群ごとに別々に当てはめる。
+    # ここでの AR(1) は「その群の中で連続する観測」の間の相関を指す。立会日なら
+    # 連続する立会日どうし、休場日なら土・日・土… という並びになる点に注意。
     print()
-    print("=== 群ごとの回帰(群の分離が傾きを作っていないかの確認)===")
-    for lab, m in (("立会日のみ", open_t), ("休場日のみ", ~open_t)):
-        f = sm.OLS(y[m], sm.add_constant(x[m])).fit()
-        print(f"  {lab}(n={int(m.sum()):2d}): 傾き {f.params[1]:8.4f}  t {f.tvalues[1]:6.2f}  "
-              f"p {f.pvalues[1]:.3g}  R2 {f.rsquared:.3f}")
+    print("=== 群ごとの回帰(図に描く 4 本の線)===")
+    grp = {}
+    for lab, m in (("立会日", open_t), ("休場日", ~open_t)):
+        grp[lab] = fit_all(y[m], x[m])
+        show(f"{lab}のみ(n={int(m.sum())})", grp[lab])
 
     # --- 散布図 -------------------------------------------------------------
     mpl.rcParams.update({"font.family": ["Yu Gothic", "Meiryo", "sans-serif"],
@@ -127,25 +129,35 @@ def main() -> None:
     ax.scatter(x[~open_t] / 1e3, y[~open_t] / 1e3, s=42, color=CLOSED_C, alpha=0.85,
                edgecolors=SURFACE, linewidths=1.0, zorder=3)
 
-    xs = np.linspace(x.min(), x.max(), 100)
-    for f, ls, lab in ((main_fit["ols"], "-", "OLS"), (main_fit["gls"], (0, (5, 3)), "GLS")):
-        ax.plot(xs / 1e3, (f.params[0] + f.params[1] * xs) / 1e3, ls=ls, color=INK, lw=2.0, zorder=4)
-
-    o, gg = main_fit["ols"], main_fit["gls"]
-    ax.legend(handles=[
+    # 線は、その群が実際に取った出来高の範囲だけに引く。範囲外へ伸ばすと
+    # 観測の無いところを当てはめているように見えてしまうため。
+    DASH = (0, (5, 3))
+    handles = [
         Line2D([], [], marker="o", ls="", color=OPEN_C, markersize=8, label="t 日が立会日"),
         Line2D([], [], marker="o", ls="", color=CLOSED_C, markersize=8, label="t 日が休場日"),
-        Line2D([], [], color=INK, lw=2, label=f"OLS  傾き {o.params[1]:.3f}"),
-        Line2D([], [], color=INK, lw=2, ls=(0, (5, 3)), label=f"GLS  傾き {gg.params[1]:.3f}"),
-    ], loc="lower right", frameon=False, fontsize=10, labelcolor=INK2)
+    ]
+    for lab, m, col in (("立会日", open_t, OPEN_C), ("休場日", ~open_t, CLOSED_C)):
+        xs = np.linspace(x[m].min(), x[m].max(), 100)
+        for key, ls in (("ols", "-"), ("gls", DASH)):
+            f = grp[lab][key]
+            ax.plot(xs / 1e3, (f.params[0] + f.params[1] * xs) / 1e3, ls=ls, color=col,
+                    lw=2.2, zorder=4, solid_capstyle="round")
+            handles.append(Line2D([], [], color=col, lw=2.2, ls=ls,
+                                  label=f"{lab} {key.upper()}  傾き {f.params[1]:.3f}"))
+
+    ax.legend(handles=handles, loc="lower right", frameon=False, fontsize=10, labelcolor=INK2)
 
     ax.set_xlabel("当日の出来高 Volume_t(千枚)", color=INK2, fontsize=10.5)
     ax.set_ylabel("翌日の平均建玉 OI_(t+1)(千枚)", color=INK2, fontsize=10.5)
     ax.set_title(f"{a.coin} 当日の出来高と翌日の建玉", loc="left", color=INK, fontsize=13,
-                 pad=30, weight="bold")
-    ax.text(0, 1.045,
-            f"n = {len(x)}。説明変数は t 日の終了時点で確定し、目的変数は t+1 日の平均なので先読みは無い。"
-            f"GLS は AR(1) 誤差(rho = {main_fit['rho']:+.2f})を仮定。",
+                 pad=44, weight="bold")
+    ax.text(0, 1.085,
+            f"n = {len(x)}(立会日 {int(open_t.sum())} / 休場日 {int((~open_t).sum())})。"
+            "説明変数は t 日の終了時点で確定し、目的変数は t+1 日の平均なので先読みは無い。",
+            transform=ax.transAxes, color=INK2, fontsize=9.5)
+    ax.text(0, 1.040,
+            f"GLS は群ごとの AR(1) 誤差(rho = 立会日 {grp['立会日']['rho']:+.2f} / "
+            f"休場日 {grp['休場日']['rho']:+.2f})を仮定。線はその群が実際に取った出来高の範囲だけに引いている。",
             transform=ax.transAxes, color=INK2, fontsize=9.5)
     for s in ("top", "right"):
         ax.spines[s].set_visible(False)
@@ -155,7 +167,7 @@ def main() -> None:
     ax.tick_params(colors=MUTED, labelsize=9, length=3, width=0.8)
     fig.text(0.005, 0.008, "出所: Hyperliquid L4 (Artemis) node_fills を再構成 / 窓 2026-05-04〜08-10",
              color=MUTED, fontsize=8)
-    fig.subplots_adjust(left=0.085, right=0.98, top=0.885, bottom=0.085)
+    fig.subplots_adjust(left=0.085, right=0.98, top=0.865, bottom=0.085)
     out = ROOT / "charts" / f"{tag}_scatter_oi_volume.png"
     fig.savefig(out)
     print(f"\n[chart] {out}")

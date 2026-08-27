@@ -154,13 +154,15 @@ uv run python scripts/plot_intraday.py --coin xyz:MU
 
 **建玉(OI, open interest)**
 ある時点で決済されずに残っている契約の総量です。買い持ちの合計と売り持ちの合計は
-必ず一致するため、片側だけを数えます。参加者 $u$ の保有量を $q_u(t)$ と書くと、
+必ず一致するため、片側だけを数えます。参加者 $`u`$ の保有量を $`q_u(t)`$ と書くと、
 
-$$\mathrm{OI}(t) \;=\; \sum_{u} \max\bigl(q_u(t),\, 0\bigr)$$
+```math
+\mathrm{OI}(t) \;=\; \sum_{u} \max\bigl(q_u(t),\, 0\bigr)
+```
 
 と定義されます。本リポジトリでは建玉の記録が入手できないため、約定履歴から
-$q_u(t)$ を復元してこの式で求めています。手順と検証結果は
-[MU の日次平均建玉と出来高](reports/MU/mu_oi_volume_report.md) の第 5 節にあります。
+$`q_u(t)`$ を復元してこの式で求めています。手順と検証結果は
+[MU の日次平均建玉と出来高](reports/MU/mu_oi_volume_report.md) の第 4 節にあります。
 
 **出来高**
 一定期間に成立した取引数量です。約定記録には 1 つの取引につき 2 行(買い手と売り手)が
@@ -170,7 +172,9 @@ $q_u(t)$ を復元してこの式で求めています。手順と検証結果�
 1 日の出来高がその日の平均建玉の何倍にあたるかを表す指標です。分子と分母がどちらも
 枚数なので単位を持ちません。
 
-$$\mathrm{Turnover}_t = \frac{\mathrm{Volume}_t}{\mathrm{OI}_t}$$
+```math
+\mathrm{Turnover}_t = \frac{\mathrm{Volume}_t}{\mathrm{OI}_t}
+```
 
 **日足**
 1 日を 1 本にまとめた値動きの表示です。始値、高値、安値、終値の 4 つの値からなります。
