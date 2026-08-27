@@ -37,7 +37,7 @@ $$
 
 ## 2. 当日の出来高と翌日の建玉
 
-![当日の出来高を横軸、翌日の平均建玉を縦軸に取った散布図。OLS と GLS の当てはめ線つき](../charts/xyz_MU_scatter_oi_volume.png)
+![当日の出来高を横軸、翌日の平均建玉を縦軸に取った散布図。OLS と GLS の当てはめ線つき](../../charts/xyz_MU_scatter_oi_volume.png)
 
 推定する式は次のとおり。$t$ 日は 99 日のうち翌日が存在する 98 日。
 
@@ -130,17 +130,17 @@ $k = -1$ でも $k = +1$ でも関係が残る。ここで先読みは構造上�
 
 ### 4 枚の図
 
-![立会日 68 日の日内出来高](../charts/xyz_MU_intraday_volume_open.png)
+![立会日 68 日の日内出来高](../../charts/xyz_MU_intraday_volume_open.png)
 
-![立会日 68 日の日内 建玉の変化](../charts/xyz_MU_intraday_oichange_open.png)
+![立会日 68 日の日内 建玉の変化](../../charts/xyz_MU_intraday_oichange_open.png)
 
-![休場日 31 日の日内出来高](../charts/xyz_MU_intraday_volume_closed.png)
+![休場日 31 日の日内出来高](../../charts/xyz_MU_intraday_volume_closed.png)
 
-![休場日 31 日の日内 建玉の変化](../charts/xyz_MU_intraday_oichange_closed.png)
+![休場日 31 日の日内 建玉の変化](../../charts/xyz_MU_intraday_oichange_closed.png)
 
 縦軸を左右で揃えた比較図:
 
-![立会日と休場日の日内プロファイルを縦軸共通で並べた 2 行 2 列の図](../charts/xyz_MU_intraday_2x2.png)
+![立会日と休場日の日内プロファイルを縦軸共通で並べた 2 行 2 列の図](../../charts/xyz_MU_intraday_2x2.png)
 
 ### 読み取れること
 

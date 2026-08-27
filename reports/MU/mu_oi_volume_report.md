@@ -3,7 +3,7 @@
 ## 1. 分析する銘柄
 
 <p>
-  <a href="https://www.micron.com/"><img src="../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
+  <a href="https://www.micron.com/"><img src="../../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
 </p>
 
 | 項目 | 内容 |
@@ -18,11 +18,11 @@
 
 ## 2. 図
 
-![xyz:MU 日次平均建玉(名目 USD)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_oi_volume_usd.png)
+![xyz:MU 日次平均建玉(名目 USD)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../../charts/xyz_MU_oi_volume_usd.png)
 
-![xyz:MU 日次平均建玉(枚)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_oi_volume_contracts.png)
+![xyz:MU 日次平均建玉(枚)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../../charts/xyz_MU_oi_volume_contracts.png)
 
-![xyz:MU 標本期間の日足(OHLC)。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_price_daily.png)
+![xyz:MU 標本期間の日足(OHLC)。白背景=米国市場立会日、薄いオレンジ=休場日](../../charts/xyz_MU_price_daily.png)
 
 背景白色は立会日、背景薄橙色は閉場日を表す。
 
