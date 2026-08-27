@@ -1,50 +1,157 @@
 # Memory-Microstructure-Analysis
 
-メモリ半導体関連 perp(Hyperliquid HIP-3 / builder `xyz`)の市場マイクロストラクチャー分析。
+<p>
+  <a href="https://about.artemis.ai/"><img src="photo/artemis-logo.png" alt="Artemis" height="80"></a>
+  &nbsp;&nbsp;&nbsp;
+  <a href="https://www.python.org/"><img src="photo/python-logo.png" alt="Python" height="80"></a>
+</p>
 
--入手方法: ArtemisのL4板データをAWSのEC2経由で取得。
+メモリ半導体に連動する無期限先物(perpetual futures、以下 perp)を対象に、
+注文一本ごとの記録まで遡って市場のミクロ構造を調べるリポジトリです。
 
-<img src="photo/artemis-logo.png" alt="Artemis" width="96">
+データは Artemis が公開する Hyperliquid の板情報を、AWS の EC2 を経由して取得しています。
+分析はすべて Python で書かれており、各スクリプトは再実行すれば同じ結果を再現します。
 
-Artemis URL  https://about.artemis.ai/
+- Artemis 公式サイト: https://about.artemis.ai/
+- Python 公式サイト: https://www.python.org/
 
-## 1. スコープ(初期設定 — 確定したらこの節を書き換える)
+---
 
-このレポジトリ内で取り扱う銘柄は以下の六銘柄である。(現時点)
+## 目次
 
-| coin | 対象 | 備考 |
+### レポート
+
+| レポート | 内容 |
+|---|---|
+| [MU のデータ保有状況](reports/mu_inventory_report.md) | 作業用バケットに Micron 銘柄のどのデータが何日分あるかの棚卸し。欠けている 1 日とその復旧方法。 |
+| [MU の日次平均建玉と出来高](reports/mu_oi_volume_report.md) | 建玉(OI)と出来高の日次推移。米国市場の休場日には建玉がほとんど動かないことを示す。 |
+
+### 図
+
+| 図 | 内容 |
+|---|---|
+| [日足チャート](charts/xyz_MU_price_daily.png) | MU の標本期間 99 日分の日足(始値・高値・安値・終値) |
+| [建玉と出来高(ドル建て)](charts/xyz_MU_oi_volume_usd.png) | 日次平均建玉と日次出来高を名目ドルで表示 |
+| [建玉と出来高(枚数)](charts/xyz_MU_oi_volume_contracts.png) | 同じ内容を契約枚数で表示 |
+
+### 数値データ
+
+| ファイル | 内容 |
+|---|---|
+| [daily_oi_volume_xyz_MU.csv](data/daily_oi_volume_xyz_MU.csv) | MU の日次建玉・出来高・取引数・参加者数(99 行) |
+| [daily_ohlc_xyz_MU.csv](data/daily_ohlc_xyz_MU.csv) | MU の日次 4 本値(99 行) |
+
+---
+
+## 1. このリポジトリの目的
+
+同じメモリ半導体という産業に連動する複数の銘柄を **横断して** 比べることに主眼を置いています。
+具体的には、銘柄間の共通要因、値動きの先行と遅行の関係、流動性の相対的な厚み、
+そして一つの銘柄で起きた注文の流れが他の銘柄へどう伝わるかを調べます。
+
+単一銘柄を深く掘り下げた分析は、別リポジトリ
+[DRAM-microprice](https://github.com/gojuggl26-dotcom/DRAM-microprice) にあります。
+そちらと主題が重ならないように、本リポジトリは横断分析に集中します。
+
+## 2. 対象銘柄
+
+現時点では次の 6 銘柄を扱います。いずれも Hyperliquid 上で `xyz` という発行者が
+配備した銘柄で、正式な表記は `xyz:` で始まります。
+
+| 銘柄コード | 対象 | 備考 |
 |---|---|---|
-| `xyz:DRAM` | DRAM 価格指数 | 2026-05-04 15:33 UTC 初イベント。板が空からの観測で孤児ゼロ |
+| `xyz:DRAM` | DRAM 価格指数 | 2026 年 5 月 4 日 15 時 33 分(UTC)が最初の記録 |
 | `xyz:KIOXIA` | キオクシア | |
-| `xyz:MU` | Micron | |
-| `xyz:SKHX` | SK hynix | |
-| `xyz:SMSN` | Samsung | |
-| `xyz:SNDK` | SanDisk | |
+| `xyz:MU` | マイクロン・テクノロジー | |
+| `xyz:SKHX` | SK ハイニックス | |
+| `xyz:SMSN` | サムスン電子 | |
+| `xyz:SNDK` | サンディスク | |
 
-窓: **2026-05-04 〜 2026-08-10(99 日)**。
+標本期間は **2026 年 5 月 4 日から 8 月 10 日までの 99 日間** です。
 
-単独銘柄(`xyz:DRAM`)の全期間マイクロプライス分析は別リポジトリ
-[`DRAM-microprice`](https://github.com/gojuggl26-dotcom/DRAM-microprice) に既にある。
-本リポジトリの分析テーマは 銘柄横断(共通因子・リード/ラグ・流動性の相対、メモリ・セクター内でのフロー伝播)に置く。
+## 3. データの入手方法と階層
 
-## 2. データ源
+Artemis が公開する保管庫から生データを読み出し、段階的に加工しています。
+生データそのものは保存せず、加工後のものだけを作業用バケットに置いています。
 
-| 層 | 場所 | 内容 |
+| 階層 | 内容 | 保有状況 |
 |---|---|---|
-| L1 | `s3://$WORK_BUCKET/l1/` | 正規化イベントログ(14 銘柄 × 99 日、240.3 GiB) |
-| L2 | `s3://$WORK_BUCKET/l2/` | 注文ライフサイクル・板スナップショット(1s)・トリガー密度・book_px ほか 5 表(12 銘柄 × 99 日。MU のみ 08-10 が未完成) |
-| fills | `s3://$WORK_BUCKET/fills/` | node_fills(14 銘柄 × 99 日) |
-| L3 | `s3://$WORK_BUCKET/l3/` | バー粒度特徴量 4 バー種(12 銘柄。L2 からローカル再生成可) |
+| L1 | 正規化した注文イベントの記録。板に出た注文、取り消し、約定が時系列に並ぶ | 14 銘柄 × 99 日 |
+| fills | 約定の記録。1 つの取引につき買い手と売り手の 2 行が入る | 14 銘柄 × 99 日 |
+| L2 | 注文の一生(発注から消滅まで)と板の状態の復元。5 種類の表からなる | 12 銘柄 × 99 日 |
+| L3 | 一定時間ごと、あるいは一定約定数ごとに集計した特徴量 | 12 銘柄 × 4 種類のバー |
 
-生成の詳細と再現手順は `hl-l4-pipeline`(`C:\Users\ii562\hl-l4-pipeline`)を参照。銘柄別の在庫は `reports/mu_inventory_report.md` と `scripts/inventory_s3.py` で確認できる。
+生成の手順と詳細は、パイプライン側のリポジトリ `hl-l4-pipeline` にあります。
+銘柄ごとの在庫は [MU のデータ保有状況](reports/mu_inventory_report.md) と
+`scripts/inventory_s3.py` で確認できます。
 
-## 3. ディレクトリ構成
+## 4. ディレクトリ構成
 
+| 場所 | 用途 |
+|---|---|
+| `scripts/` | 分析スクリプト。1 つのスクリプトにつき 1 つの目的 |
+| `reports/` | 分析レポート。ファイル名は `*_report.md` |
+| `charts/` | スクリプトが生成した図 |
+| `data/` | 作業用データ。容量の大きい parquet ファイルは版管理から除外し、スクリプトで再生成する |
+| `photo/` | ロゴなど、生成物ではない画像 |
+
+## 5. スクリプトと再現手順
+
+上から順に実行すると、レポートの図と数値がすべて再現できます。
+
+| 手順 | スクリプト | 役割 |
+|---|---|---|
+| 1 | `inventory_s3.py` | 作業用バケットの中身を一度だけ列挙して手元に保存する |
+| 2 | `inventory_rows.py` | ファイルの末尾情報だけを読み、日ごとの行数を数える |
+| 3 | `fetch_fills.py` | 約定記録から必要な列だけを取り出して手元に落とす |
+| 4 | `build_oi_volume.py` | 約定記録から建玉と出来高の日次系列を組み立てる |
+| 5 | `plot_oi_volume.py` | 建玉と出来高の図を描く |
+| 6 | `plot_price.py` | 日足の図を描く |
+
+実行例:
+
+```bash
+uv run python scripts/inventory_s3.py --refresh --coin xyz:MU
+uv run python scripts/fetch_fills.py --coin xyz:MU
+uv run python scripts/build_oi_volume.py --coin xyz:MU
+uv run python scripts/plot_oi_volume.py --coin xyz:MU --unit usd
+uv run python scripts/plot_price.py --coin xyz:MU
 ```
-scripts/   分析スクリプト(1 スクリプト = 1 目的、再実行で同じ結果になること)
-data/      ローカル作業データ。大きな parquet は .gitignore 済み(スクリプトで再生成する)
-charts/    図
-reports/   分析レポート(*_report.md)
-```
 
+## 6. 用語
 
+**perp(無期限先物)**
+満期のない先物です。現物価格との乖離は、保有者どうしが定期的に支払う調達コストによって
+調整されます。
+
+**建玉(OI, open interest)**
+ある時点で決済されずに残っている契約の総量です。買い持ちの合計と売り持ちの合計は
+必ず一致するため、片側だけを数えます。参加者 $u$ の保有量を $q_u(t)$ と書くと、
+
+$$\mathrm{OI}(t) \;=\; \sum_{u} \max\bigl(q_u(t),\, 0\bigr)$$
+
+と定義されます。本リポジトリでは建玉の記録が入手できないため、約定履歴から
+$q_u(t)$ を復元してこの式で求めています。手順と検証結果は
+[MU の日次平均建玉と出来高](reports/mu_oi_volume_report.md) の第 3 節にあります。
+
+**出来高**
+一定期間に成立した取引数量です。約定記録には 1 つの取引につき 2 行(買い手と売り手)が
+入るため、価格を提示した側ではなく取りに行った側だけを数えて二重計上を避けています。
+
+**日足**
+1 日を 1 本にまとめた値動きの表示です。始値、高値、安値、終値の 4 つの値からなります。
+
+**立会日と休場日**
+本リポジトリでは、原資産である米国株が取引される日を立会日、週末と祝日を休場日と
+呼びます。判定にはニューヨーク証券取引所の取引カレンダーを用います。
+perp 自体は 24 時間 365 日動きますが、原資産の価格が動くのは立会日だけです。
+
+**金額の表記**
+図と表では `M` を 100 万、`B` を 10 億の意味で用います。通貨はすべて米ドルです。
+
+## 7. 記述の方針
+
+- 図と表は、初めて読む人が説明なしで意味を取れることを優先します。
+- 数式は LaTeX 形式で書きます。
+- 推定値には必ず不確かさの幅と、その根拠となる検証を添えます。
+- 将来の情報を説明変数に混ぜないこと(先読みの禁止)を最優先の制約とします。
