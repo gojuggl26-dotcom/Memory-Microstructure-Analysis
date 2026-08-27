@@ -146,11 +146,16 @@ def main() -> None:
         daily_oi.join(daily_v, on="d", how="full", coalesce=True).sort("d")
         .with_columns(oi_mean_usd=pl.col("oi_mean") * pl.col("vwap"),
                       oi_halfgap_usd=pl.col("oi_halfgap") * pl.col("vwap"))
+        # 回転率。分子と分母をどちらも枚数で取るので無次元(価格水準の影響を受けない)
+        .with_columns(turnover=pl.col("volume") / pl.col("oi_mean"))
     )
     assert daily["covered_s"].min() > 86399.9, "1 日 86,400 秒を覆えていない日がある"
     out = ROOT / "data" / f"daily_oi_volume_{tag}.parquet"
     daily.write_parquet(out)
+    # 日内の分析に使うため、建玉の階段関数そのものも残す
+    ev.select("ts", "oi", "oi_l", "oi_s").write_parquet(ROOT / "data" / f"oi_series_{tag}.parquet")
     print(f"[out] {daily.height} 日 -> {out}")
+    print(f"[out] 建玉の時系列 {ev.height:,} 点 -> data/oi_series_{tag}.parquet")
     with pl.Config(tbl_rows=8, tbl_width_chars=200):
         print(daily.select("d", "oi_mean", "oi_halfgap", "oi_mean_usd", "volume", "volume_usd", "n_trades", "vwap"))
 

@@ -34,6 +34,7 @@
 |---|---|
 | [MU のデータ保有状況](reports/mu_inventory_report.md) | 作業用バケットに Micron 銘柄のどのデータが何日分あるかの棚卸し。欠けている 1 日とその復旧方法。 |
 | [MU の日次平均建玉と出来高](reports/mu_oi_volume_report.md) | 建玉(OI)と出来高の日次推移。米国市場の休場日には建玉がほとんど動かないことを示す。 |
+| [MU の回転率・出来高と翌日建玉・日内プロファイル](reports/mu_turnover_intraday_report.md) | 回転率の算出、当日の出来高と翌日の建玉の回帰(OLS と GLS)、立会日と休場日に分けた日内の出来高と建玉変化。 |
 
 ### 図
 
@@ -42,6 +43,12 @@
 | [日足チャート](charts/xyz_MU_price_daily.png) | MU の標本期間 99 日分の日足(始値・高値・安値・終値) |
 | [建玉と出来高(ドル建て)](charts/xyz_MU_oi_volume_usd.png) | 日次平均建玉と日次出来高を名目ドルで表示 |
 | [建玉と出来高(枚数)](charts/xyz_MU_oi_volume_contracts.png) | 同じ内容を契約枚数で表示 |
+| [出来高と翌日建玉の散布図](charts/xyz_MU_scatter_oi_volume.png) | OLS と GLS の当てはめ線つき |
+| [日内プロファイル(2 行 2 列)](charts/xyz_MU_intraday_2x2.png) | 立会日と休場日の日内出来高・建玉変化を縦軸共通で比較 |
+| [立会日の日内出来高](charts/xyz_MU_intraday_volume_open.png) | 30 分ごと、68 日の平均 |
+| [立会日の日内 建玉変化](charts/xyz_MU_intraday_oichange_open.png) | 30 分ごと、68 日の平均 |
+| [休場日の日内出来高](charts/xyz_MU_intraday_volume_closed.png) | 30 分ごと、31 日の平均 |
+| [休場日の日内 建玉変化](charts/xyz_MU_intraday_oichange_closed.png) | 30 分ごと、31 日の平均 |
 
 ### 数値データ
 
@@ -49,6 +56,8 @@
 |---|---|
 | [daily_oi_volume_xyz_MU.csv](data/daily_oi_volume_xyz_MU.csv) | MU の日次建玉・出来高・取引数・参加者数(99 行) |
 | [daily_ohlc_xyz_MU.csv](data/daily_ohlc_xyz_MU.csv) | MU の日次 4 本値(99 行) |
+| [daily_turnover_xyz_MU.csv](data/daily_turnover_xyz_MU.csv) | MU の日次回転率(99 行) |
+| [intraday_profile_xyz_MU.csv](data/intraday_profile_xyz_MU.csv) | 30 分ごとの日内プロファイル(96 行) |
 
 ---
 
@@ -116,6 +125,8 @@ Artemis が公開する保管庫から生データを読み出し、段階的に
 | 4 | `build_oi_volume.py` | 約定記録から建玉と出来高の日次系列を組み立てる |
 | 5 | `plot_oi_volume.py` | 建玉と出来高の図を描く |
 | 6 | `plot_price.py` | 日足の図を描く |
+| 7 | `regress_oi_volume.py` | 回転率を出し、翌日の建玉を当日の出来高に回帰して散布図を描く |
+| 8 | `plot_intraday.py` | 立会日と休場日に分けた日内プロファイルを描く |
 
 実行例:
 
@@ -125,6 +136,8 @@ uv run python scripts/fetch_fills.py --coin xyz:MU
 uv run python scripts/build_oi_volume.py --coin xyz:MU
 uv run python scripts/plot_oi_volume.py --coin xyz:MU --unit usd
 uv run python scripts/plot_price.py --coin xyz:MU
+uv run python scripts/regress_oi_volume.py --coin xyz:MU
+uv run python scripts/plot_intraday.py --coin xyz:MU
 ```
 
 ## 6. 用語
@@ -146,6 +159,12 @@ $q_u(t)$ を復元してこの式で求めています。手順と検証結果�
 **出来高**
 一定期間に成立した取引数量です。約定記録には 1 つの取引につき 2 行(買い手と売り手)が
 入るため、価格を提示した側ではなく取りに行った側だけを数えて二重計上を避けています。
+
+**回転率(turnover)**
+1 日の出来高がその日の平均建玉の何倍にあたるかを表す指標です。分子と分母がどちらも
+枚数なので単位を持ちません。
+
+$$\mathrm{Turnover}_t = \frac{\mathrm{Volume}_t}{\mathrm{OI}_t}$$
 
 **日足**
 1 日を 1 本にまとめた値動きの表示です。始値、高値、安値、終値の 4 つの値からなります。
