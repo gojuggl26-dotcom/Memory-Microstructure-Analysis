@@ -28,42 +28,16 @@
 
 ## 目次
 
-### レポート
+分析の成果物は銘柄ごとに `reports/<銘柄コード>/` へまとめています。各フォルダの
+**分析索引ページ**に、その銘柄のレポート・図・数値データがすべて並んでいます。
+まずは下の索引から入ってください。
 
-レポートは銘柄ごとに `reports/<銘柄コード>/` へまとめています。各フォルダには、
-その銘柄の紹介とレポート一覧をまとめた分析索引ページ(`README.md`)があります。
-新しい銘柄を分析したら、フォルダと索引ページを追加してこの節に見出しを足してください。
+| 銘柄 | 分析索引 | 現在のレポート数 |
+|---|---|---:|
+| `xyz:MU`(マイクロン) | **[分析索引を開く](reports/MU/README.md)** | 3 |
+| `xyz:DRAM` / `xyz:KIOXIA` / `xyz:SKHX` / `xyz:SMSN` / `xyz:SNDK` | 未着手 | 0 |
 
-#### [xyz:MU(マイクロン)](reports/MU/README.md)
-
-| レポート | 内容 |
-|---|---|
-| [データ保有状況](reports/MU/mu_inventory_report.md) | 作業用バケットに Micron 銘柄のどのデータが何日分あるかの棚卸し。欠けている 1 日とその復旧方法。 |
-| [日次平均建玉と出来高](reports/MU/mu_oi_volume_report.md) | 建玉(OI)と出来高の日次推移。米国市場の休場日には建玉がほとんど動かないことを示す。 |
-| [回転率・出来高と翌日建玉・日内プロファイル](reports/MU/mu_turnover_intraday_report.md) | 回転率の算出、当日の出来高と翌日の建玉の回帰(OLS と GLS)、立会日と休場日に分けた日内の出来高と建玉変化。 |
-
-### 図
-
-| 図 | 内容 |
-|---|---|
-| [日足チャート](charts/xyz_MU_price_daily.png) | MU の標本期間 99 日分の日足(始値・高値・安値・終値) |
-| [建玉と出来高(ドル建て)](charts/xyz_MU_oi_volume_usd.png) | 日次平均建玉と日次出来高を名目ドルで表示 |
-| [建玉と出来高(枚数)](charts/xyz_MU_oi_volume_contracts.png) | 同じ内容を契約枚数で表示 |
-| [出来高と翌日建玉の散布図](charts/xyz_MU_scatter_oi_volume.png) | OLS と GLS の当てはめ線つき |
-| [日内プロファイル(2 行 2 列)](charts/xyz_MU_intraday_2x2.png) | 立会日と休場日の日内出来高・建玉変化を縦軸共通で比較 |
-| [立会日の日内出来高](charts/xyz_MU_intraday_volume_open.png) | 30 分ごと、68 日の平均 |
-| [立会日の日内 建玉変化](charts/xyz_MU_intraday_oichange_open.png) | 30 分ごと、68 日の平均 |
-| [休場日の日内出来高](charts/xyz_MU_intraday_volume_closed.png) | 30 分ごと、31 日の平均 |
-| [休場日の日内 建玉変化](charts/xyz_MU_intraday_oichange_closed.png) | 30 分ごと、31 日の平均 |
-
-### 数値データ
-
-| ファイル | 内容 |
-|---|---|
-| [daily_oi_volume_xyz_MU.csv](data/daily_oi_volume_xyz_MU.csv) | MU の日次建玉・出来高・取引数・参加者数(99 行) |
-| [daily_ohlc_xyz_MU.csv](data/daily_ohlc_xyz_MU.csv) | MU の日次 4 本値(99 行) |
-| [daily_turnover_xyz_MU.csv](data/daily_turnover_xyz_MU.csv) | MU の日次回転率(99 行) |
-| [intraday_profile_xyz_MU.csv](data/intraday_profile_xyz_MU.csv) | 30 分ごとの日内プロファイル(96 行) |
+新しい銘柄を分析したら、`reports/<銘柄コード>/README.md` を作ってこの表に 1 行足してください。
 
 ---
 
@@ -106,8 +80,8 @@ Artemis が公開する保管庫から生データを読み出し、段階的に
 | L3 | 一定時間ごと、あるいは一定約定数ごとに集計した特徴量 | 12 銘柄 × 4 種類のバー |
 
 生成の手順と詳細は、パイプライン側のリポジトリ `hl-l4-pipeline` にあります。
-銘柄ごとの在庫は [MU のデータ保有状況](reports/MU/mu_inventory_report.md) と
-`scripts/inventory_s3.py` で確認できます。
+銘柄ごとの在庫は `scripts/inventory_s3.py` で確認できます。棚卸しの結果は
+各銘柄の分析索引([xyz:MU の索引](reports/MU/README.md) など)に置いています。
 
 ## 4. ディレクトリ構成
 
@@ -161,8 +135,8 @@ uv run python scripts/plot_intraday.py --coin xyz:MU
 ```
 
 と定義されます。本リポジトリでは建玉の記録が入手できないため、約定履歴から
-$`q_u(t)`$ を復元してこの式で求めています。手順と検証結果は
-[MU の日次平均建玉と出来高](reports/MU/mu_oi_volume_report.md) の第 4 節にあります。
+$`q_u(t)`$ を復元してこの式で求めています。復元の手順と検証結果は、
+各銘柄の分析索引([xyz:MU の索引](reports/MU/README.md) など)から辿れるレポートにあります。
 
 **出来高**
 一定期間に成立した取引数量です。約定記録には 1 つの取引につき 2 行(買い手と売り手)が
