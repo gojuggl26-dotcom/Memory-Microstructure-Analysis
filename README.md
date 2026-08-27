@@ -4,7 +4,7 @@
 
 -入手方法: ArtemisのL4板データをAWSのEC2経由で取得。
 
-<img src="assets/artemis-logo.png" alt="Artemis" width="96">
+<img src="photo/artemis-logo.png" alt="Artemis" width="96">
 
 Artemis URL  https://about.artemis.ai/
 
