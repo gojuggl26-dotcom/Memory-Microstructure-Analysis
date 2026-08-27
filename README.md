@@ -112,6 +112,9 @@ Artemis が公開する保管庫から生データを読み出し、段階的に
 | 9 | `build_volume_side.py` | 出来高をテイカーの向きで買いと売りに分け、帰無対照の標準偏差も求める |
 | 10 | `plot_volume_side.py` | 買い・売りの積み上げと売買差の図を描く |
 | 11 | `plot_intraday_day.py` | 指定した 1 日の 1 時間ごとの値動きと出来高内訳を描く |
+| 12 | `fetch_bbo.py` | 最良気配の価格と**数量**(l2/bbo)を落とす。MicroPrice に必要 |
+| 13 | `build_microprice.py` | イベントごとに MicroPrice と mid を出し、差の帯 × ホライズンで上昇確率の行列を作る |
+| 14 | `plot_microprice.py` | その確率推移行列を立会日・閉場日で並べて描く |
 
 補助: `palette_check.py` は図の配色を計算で検査します(目視しない)。
 dataviz の検証器の Python 移植で、明度帯・彩度下限・色覚特性下での分離・
