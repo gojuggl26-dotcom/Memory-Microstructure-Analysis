@@ -2,6 +2,12 @@
 
 メモリ半導体関連 perp(Hyperliquid HIP-3 / builder `xyz`)の市場マイクロストラクチャー分析。
 
+-入手方法: ArtemisのL4板データをAWSのEC2経由で取得。
+
+<img src="assets/artemis-logo.png" alt="Artemis" width="96">
+
+Artemis URL  https://about.artemis.ai/
+
 ## 1. スコープ(初期設定 — 確定したらこの節を書き換える)
 
 このレポジトリ内で取り扱う銘柄は以下の六銘柄である。(現時点)
