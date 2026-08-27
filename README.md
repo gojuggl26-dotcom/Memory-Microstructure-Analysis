@@ -1,19 +1,28 @@
 # Memory-Microstructure-Analysis
 
 <p>
-  <a href="https://about.artemis.ai/"><img src="photo/artemis-logo.png" alt="Artemis" height="80"></a>
-  &nbsp;&nbsp;&nbsp;
-  <a href="https://www.python.org/"><img src="photo/python-logo.png" alt="Python" height="80"></a>
+  <a href="https://hyperliquid.xyz/"><img src="photo/hyperliquid-logo.png" alt="Hyperliquid" height="76"></a>
+  &nbsp;&nbsp;
+  <a href="https://trade.xyz/"><img src="photo/tradexyz-logo.png" alt="Trade.xyz" height="76"></a>
+  &nbsp;&nbsp;
+  <a href="https://about.artemis.ai/"><img src="photo/artemis-logo.png" alt="Artemis" height="76"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.python.org/"><img src="photo/python-logo.png" alt="Python" height="76"></a>
 </p>
 
 メモリ半導体に連動する無期限先物(perpetual futures、以下 perp)を対象に、
 注文一本ごとの記録まで遡って市場のミクロ構造を調べるリポジトリです。
 
-データは Artemis が公開する Hyperliquid の板情報を、AWS の EC2 を経由して取得しています。
+対象の銘柄は、分散型取引所 Hyperliquid 上で Trade.xyz が配備したものです。
+その板情報を Artemis が公開しており、AWS の EC2 を経由して取得しています。
 分析はすべて Python で書かれており、各スクリプトは再実行すれば同じ結果を再現します。
 
-- Artemis 公式サイト: https://about.artemis.ai/
-- Python 公式サイト: https://www.python.org/
+| | 役割 | 公式サイト |
+|---|---|---|
+| Hyperliquid | 銘柄が上場している分散型取引所 | https://hyperliquid.xyz/ |
+| Trade.xyz | 本リポジトリが扱う銘柄を配備した発行者 | https://trade.xyz/ |
+| Artemis | 板情報の公開元 | https://about.artemis.ai/ |
+| Python | 分析に使用している言語 | https://www.python.org/ |
 
 ---
 
@@ -55,8 +64,8 @@
 
 ## 2. 対象銘柄
 
-現時点では次の 6 銘柄を扱います。いずれも Hyperliquid 上で `xyz` という発行者が
-配備した銘柄で、正式な表記は `xyz:` で始まります。
+現時点では次の 6 銘柄を扱います。いずれも Hyperliquid 上で
+[Trade.xyz](https://trade.xyz/) が配備した銘柄で、正式な表記は `xyz:` で始まります。
 
 | 銘柄コード | 対象 | 備考 |
 |---|---|---|
