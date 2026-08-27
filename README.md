@@ -26,11 +26,11 @@
 | 層 | 場所 | 内容 |
 |---|---|---|
 | L1 | `s3://$WORK_BUCKET/l1/` | 正規化イベントログ(14 銘柄 × 99 日、240.3 GiB) |
-| L2 | `s3://$WORK_BUCKET/l2/` | 注文ライフサイクル・板スナップショット(1s)・トリガー密度・book_px ほか 5 表(6 銘柄 132.6 GiB) |
-| fills | `s3://$WORK_BUCKET/fills/` | node_fills(6 銘柄 4.7 GiB) |
-| L3 | `s3://$WORK_BUCKET/l3/` | バー粒度特徴量。現状 DRAM のみ(L2 からローカル再生成可) |
+| L2 | `s3://$WORK_BUCKET/l2/` | 注文ライフサイクル・板スナップショット(1s)・トリガー密度・book_px ほか 5 表(12 銘柄 × 99 日。MU のみ 08-10 が未完成) |
+| fills | `s3://$WORK_BUCKET/fills/` | node_fills(14 銘柄 × 99 日) |
+| L3 | `s3://$WORK_BUCKET/l3/` | バー粒度特徴量 4 バー種(12 銘柄。L2 からローカル再生成可) |
 
-生成の詳細と再現手順は `hl-l4-pipeline`(`C:\Users\ii562\hl-l4-pipeline`)を参照。
+生成の詳細と再現手順は `hl-l4-pipeline`(`C:\Users\ii562\hl-l4-pipeline`)を参照。銘柄別の在庫は `reports/mu_inventory_report.md` と `scripts/inventory_s3.py` で確認できる。
 
 ## 3. ディレクトリ構成
 
