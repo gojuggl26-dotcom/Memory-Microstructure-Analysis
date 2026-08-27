@@ -286,7 +286,7 @@ perp は 24 時間動いているのでその場で反映できる。
 
 - [Micron Technology, Inc. Reports Record Results for the Third Quarter of Fiscal 2026 — GlobeNewswire (2026-06-24)](https://www.globenewswire.com/news-release/2026/06/24/3317151/14450/en/micron-technology-inc-reports-record-results-for-the-third-quarter-of-fiscal-2026.html)
 - [Micron (MU) earnings report Q3 2026 — CNBC (2026-06-24)](https://www.cnbc.com/2026/06/24/micron-mu-earnings-report-q3-2026.html)
-- [Micron zooms past $700 billion market cap as rally in memory stocks accelerates — CNBC (2026-05-05)](https://www.cnbc.com/2026/05/05/micron-zooms-past-700-billion-market-cap-rally-in-memory-stocks-.html)
+- [Micron zooms past \$700 billion market cap as rally in memory stocks accelerates — CNBC (2026-05-05)](https://www.cnbc.com/2026/05/05/micron-zooms-past-700-billion-market-cap-rally-in-memory-stocks-.html)
 - [Micron shares are rising again despite weak overall market — CNBC (2026-05-11)](https://www.cnbc.com/2026/05/11/micron-shares-are-rising-again-despite-weak-overall-market-why-memory-chip-rally-seems-unstoppable.html)
 - [Micron Tumbles 13% As South Korean ETF Warning Fuels Chip Sell-Off — Forbes (2026-06-23)](https://www.forbes.com/sites/antoniopequenoiv/2026/06/23/micron-tumbles-13-as-south-korean-etf-warning-fuels-chip-sell-off/)
 - [Micron erases weeks of 2026 rally in shocking move — Yahoo Finance](https://finance.yahoo.com/markets/stocks/articles/micron-erases-weeks-2026-rally-163717129.html)
@@ -298,7 +298,7 @@ perp は 24 時間動いているのでその場で反映できる。
 - [SK Hynix and Micron Sink 6%, SanDisk Drops 9% as Korea Chip Selloff Hits U.S. Memory Stocks — 24/7 Wall St. (2026-07-24)](https://247wallst.com/investing/2026/07/24/sk-hynix-and-micron-sink-6-sandisk-drops-9-as-korea-chip-selloff-hits-u-s-memory-stocks/)
 - [AMD, Intel and Micron extend losses as chip stocks get clobbered — CNBC (2026-07-28)](https://www.cnbc.com/2026/07/28/sk-hynix-plunges-semiconductor-selloff-deepens-samsung-softbank.html)
 - [Why Micron Stock Dropped Again Today — The Motley Fool (2026-07-29)](https://www.fool.com/investing/2026/07/29/why-micron-stock-dropped-again-today/)
-- [Chip stocks shed more than $1 trillion as selloff hits companies powering AI boom — CNBC (2026-07-29)](https://www.cnbc.com/2026/07/29/chip-selloff-sk-hynix-samsung-softbank.html)
+- [Chip stocks shed more than \$1 trillion as selloff hits companies powering AI boom — CNBC (2026-07-29)](https://www.cnbc.com/2026/07/29/chip-selloff-sk-hynix-samsung-softbank.html)
 - [AMD and Micron surge, Lam Research climbs 17% as chip stocks rip higher — CNBC (2026-07-30)](https://www.cnbc.com/2026/07/30/chip-stock-rally-lam-research-micron-amd.html)
 - [Why Is Micron Stock (MU) Suddenly Jumping Today — July 30, 2026? — TipRanks](https://www.tipranks.com/news/why-is-micron-stock-mu-suddenly-jumping-today-july-30-2026)
 - [Why Micron Stock Plummeted 28.7% in July But Is Rebounding in August — The Motley Fool (2026-08-10)](https://www.fool.com/investing/2026/08/10/why-micron-stock-plummeted-287-in-july-but-is-rebo/)
