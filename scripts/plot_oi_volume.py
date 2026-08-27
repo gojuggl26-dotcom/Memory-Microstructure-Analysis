@@ -66,6 +66,7 @@ def main() -> None:
     mpl.rcParams.update({
         "font.family": ["Yu Gothic", "Meiryo", "sans-serif"],
         "axes.unicode_minus": False,
+        "text.parse_math": False,   # "$545 → $861" が数式扱いされるのを防ぐ
         "figure.facecolor": SURFACE,
         "savefig.facecolor": SURFACE,
     })

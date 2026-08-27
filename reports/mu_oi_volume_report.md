@@ -4,6 +4,8 @@
 
 ![xyz:MU 日次平均建玉(枚)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_oi_volume_contracts.png)
 
+![xyz:MU 標本期間の日足(OHLC)。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_price_daily.png)
+
 背景白色は立会日、背景薄橙色は閉場日を表す。
 
 ## 1. 結果
