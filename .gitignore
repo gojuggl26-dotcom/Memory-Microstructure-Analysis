@@ -1,0 +1,24 @@
+# 大きな中間生成物はコミットしない(スクリプトで再生成できるようにしておくこと)
+# GitHub は 1 ファイル 100MB 制限。パーティション化した parquet はここに足していく
+data/**/*.parquet
+data/**/*.arrow
+data/raw/
+*.npy
+*.npz
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+.ipynb_checkpoints/
+
+# 秘密情報 — 絶対にコミットしない
+*.env
+.env*
+*.pem
+*.key
+secrets/
+
+# OS
+Thumbs.db
+.DS_Store
