@@ -34,7 +34,7 @@
 
 | 銘柄 | 分析索引 | 現在のレポート数 |
 |---|---|---:|
-| `xyz:MU`(マイクロン) | **[分析索引を開く](reports/MU/README.md)** | 3 |
+| `xyz:MU`(マイクロン) | **[分析索引を開く](reports/MU/README.md)** | 5 |
 | `xyz:DRAM` / `xyz:KIOXIA` / `xyz:SKHX` / `xyz:SMSN` / `xyz:SNDK` | 未着手 | 0 |
 
 新しい銘柄を分析したら、`reports/<銘柄コード>/README.md` を作ってこの表に 1 行足してください。
@@ -52,14 +52,14 @@
 現時点では次の 6 銘柄を扱います。いずれも Hyperliquid 上で
 [Trade.xyz](https://trade.xyz/) が配備した銘柄で、正式な表記は `xyz:` で始まります。
 
-| 銘柄コード | 対象 | 備考 |
-|---|---|---|
-| `xyz:DRAM` | DRAM 価格指数 | 2026 年 5 月 4 日 15 時 33 分(UTC)が最初の記録 |
-| `xyz:KIOXIA` | キオクシア | |
-| `xyz:MU` | マイクロン・テクノロジー | |
-| `xyz:SKHX` | SK ハイニックス | |
-| `xyz:SMSN` | サムスン電子 | |
-| `xyz:SNDK` | サンディスク | |
+| 銘柄コード | 対象 | 分析索引 | 備考 |
+|---|---|---|---|
+| `xyz:DRAM` | DRAM 価格指数 | 未着手 | 2026 年 5 月 4 日 15 時 33 分(UTC)が最初の記録 |
+| `xyz:KIOXIA` | キオクシア | 未着手 | |
+| `xyz:MU` | マイクロン・テクノロジー | [reports/MU/README.md](reports/MU/README.md) | |
+| `xyz:SKHX` | SK ハイニックス | 未着手 | |
+| `xyz:SMSN` | サムスン電子 | 未着手 | |
+| `xyz:SNDK` | サンディスク | 未着手 | |
 
 標本期間は **2026 年 5 月 4 日から 8 月 10 日までの 99 日間** です。
 
@@ -103,6 +103,13 @@ Artemis が公開する保管庫から生データを読み出し、段階的に
 | 6 | `plot_price.py` | 日足の図を描く |
 | 7 | `regress_oi_volume.py` | 回転率を出し、翌日の建玉を当日の出来高に回帰して散布図を描く |
 | 8 | `plot_intraday.py` | 立会日と休場日に分けた日内プロファイルを描く |
+| 9 | `build_volume_side.py` | 出来高をテイカーの向きで買いと売りに分け、帰無対照の標準偏差も求める |
+| 10 | `plot_volume_side.py` | 買い・売りの積み上げと売買差の図を描く |
+| 11 | `plot_intraday_day.py` | 指定した 1 日の 1 時間ごとの値動きと出来高内訳を描く |
+
+補助: `palette_check.py` は図の配色を計算で検査します(目視しない)。
+dataviz の検証器の Python 移植で、明度帯・彩度下限・色覚特性下での分離・
+背景との対比を測ります。
 
 実行例:
 
@@ -114,7 +121,13 @@ uv run python scripts/plot_oi_volume.py --coin xyz:MU --unit usd
 uv run python scripts/plot_price.py --coin xyz:MU
 uv run python scripts/regress_oi_volume.py --coin xyz:MU
 uv run python scripts/plot_intraday.py --coin xyz:MU
+uv run python scripts/build_volume_side.py --coin xyz:MU
+uv run python scripts/plot_volume_side.py --coin xyz:MU
+uv run python scripts/plot_intraday_day.py --coin xyz:MU --date 2026-06-24 \
+    --event 20:00 --event-label "FQ3 決算発表(米国引け後)"
 ```
+
+依存は `pyproject.toml` に宣言してあります。初回だけ `uv sync` を実行してください。
 
 ## 6. 用語
 
@@ -137,6 +150,15 @@ $`q_u(t)`$ を復元してこの式で求めています。復元の手順と検
 **出来高**
 一定期間に成立した取引数量です。約定記録には 1 つの取引につき 2 行(買い手と売り手)が
 入るため、価格を提示した側ではなく取りに行った側だけを数えて二重計上を避けています。
+
+**テイカーとメイカー(アグレッサー)**
+先に板へ注文を出して待っていた側が **メイカー**、その板に当てに行った側が
+**テイカー(アグレッサー)** です。取引には必ず買い手と売り手が 1 人ずついるので、
+「出来高のうち買いが何割か」という問いはそのままでは常に 50% になります。
+意味を持つのは **どちらが取りに行ったか** で、本リポジトリで出来高を買いと売りに
+分けるときは常にテイカーの向きを指します。詳しくは
+[出来高の買い・売り内訳と標本期間のニュース](reports/MU/mu_volume_side_news_report.md)
+の第 1 節にあります。
 
 **回転率(turnover)**
 1 日の出来高がその日の平均建玉の何倍にあたるかを表す指標です。分子と分母がどちらも
