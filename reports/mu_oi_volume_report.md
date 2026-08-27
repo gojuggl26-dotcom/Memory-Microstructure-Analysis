@@ -1,6 +1,10 @@
 # xyz:MU 日次平均 OI と出来高(2026-05-04 〜 08-10, 99 日)
 
-図: `charts/xyz_MU_oi_volume_usd.png`(名目 USD)/ `charts/xyz_MU_oi_volume_contracts.png`(枚)
+![xyz:MU 日次平均建玉(名目 USD)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_oi_volume_usd.png)
+
+![xyz:MU 日次平均建玉(枚)と日次出来高。白背景=米国市場立会日、薄いオレンジ=休場日](../charts/xyz_MU_oi_volume_contracts.png)
+
+図(名目 USD 版): `charts/xyz_MU_oi_volume_usd.png` / 図(枚数版): `charts/xyz_MU_oi_volume_contracts.png`
 数値: `data/daily_oi_volume_xyz_MU.csv`(99 行)
 再現: `scripts/fetch_fills.py` → `scripts/build_oi_volume.py` → `scripts/plot_oi_volume.py`
 
