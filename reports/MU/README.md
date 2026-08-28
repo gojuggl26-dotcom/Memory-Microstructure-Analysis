@@ -28,6 +28,7 @@
 | [MicroPrice と midprice の差 → 将来 mid の上昇確率](mu_microprice_report.md) | イベントごとに MicroPrice と mid を算出し、その差の帯 × 予測ホライズン(1〜100 イベント)で上昇確率の行列を立会日・閉場日別に作る。生の確率を 0.5 と比べてはいけない理由(同値が 4〜5 割)を示し、同値を除くと中央帯がちょうど 50% になることを確認。 |
 | [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) | 板の残高の偏り(OBI)と流量の偏り(OFI)をイベントごとに算出し、1〜100 イベント先の上昇確率を行列にする。2 つが別の情報を持つことを同時分布で示し、確率の大きさをスプレッドと比べる。MicroPrice の中央帯が実は情報を捨てていたことも指摘。 |
 | [Book Slope と将来の log リターン(OLS / GLS)](mu_book_slope_report.md) | 板の傾きをイベントごとに算出し、1〜500 イベント先の log リターンへ回帰。関係が S 字で線形でないこと、重なる窓が t 値を最大 6.3 倍水増しすること、AR(1) の GLS がこの誤差構造には誤設定で「重ならない部分標本」が OLS を支持することを示す。 |
+| [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
 
 ## 図
 
@@ -57,6 +58,7 @@
 | [MicroPrice の確率推移行列](../../charts/xyz_MU_microprice_matrix.png) | 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差 | [MicroPrice と midprice の差](mu_microprice_report.md) |
 | [OBI / OFI の確率推移行列](../../charts/xyz_MU_obi_ofi_matrix.png) | OBI と OFI それぞれの帯 × ホライズンの上昇確率、両者の同時分布、期待値動きとスプレッドの比較 | [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) |
 | [Book Slope と log リターン](../../charts/xyz_MU_book_slope.png) | 帯ごとの平均 log リターン(S 字)、β のホライズン依存(OLS / GLS / 重ならない部分標本)、t 値の水増し、決定係数の比較 | [Book Slope と将来の log リターン](mu_book_slope_report.md) |
+| [キャンセル率の傾き](../../charts/xyz_MU_cancel_rate.png) | CI の数列と当てた直線の実例、傾きの十分位ごとの用量反応、効果のホライズン依存と帰無対照、片道費用との比較 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) |
 
 ## 数値データ
 
@@ -80,6 +82,8 @@
 | obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100、版管理外) | `build_obi_ofi.py` |
 | [book_slope_fits_xyz_MU.csv](../../data/book_slope_fits_xyz_MU.csv) | 説明変数 × 日区分 × ホライズンの OLS / HAC / GLS / 重ならない部分標本の推定(44 行) | `build_book_slope.py` |
 | book_slope_bins_xyz_MU.parquet | 帯ごとの平均 log リターン(図示用、版管理外) | `build_book_slope.py` |
+| cancel_rate_cells_xyz_MU.parquet | 日区分 × ホライズンの平均 log リターン・区間・帰無対照(版管理外) | `build_cancel_rate.py` |
+| cancel_rate_bins_xyz_MU.parquet | 傾きの十分位 × ホライズンの平均 log リターン(版管理外) | `build_cancel_rate.py` |
 
 ## 再現手順
 
@@ -109,6 +113,8 @@ uv run python scripts/build_obi_ofi.py --coin xyz:MU
 uv run python scripts/plot_obi_ofi.py --coin xyz:MU
 uv run python scripts/build_book_slope.py --coin xyz:MU
 uv run python scripts/plot_book_slope.py --coin xyz:MU
+uv run python scripts/build_cancel_rate.py --coin xyz:MU
+uv run python scripts/plot_cancel_rate.py --coin xyz:MU
 ```
 
 リポジトリ全体の目次は [../../README.md](../../README.md) にあります。
