@@ -38,6 +38,7 @@
 | [出来高の買い・売り内訳とニュース](mu_volume_side_news_report.md) | テイカー側で出来高を買い・売りに分解し、HAC 帰無対照で偏りを検定。標本期間の主なニュースとの対応づけ、および 6 月 24 日決算発表という「発表時刻が事前に判っている」1 件だけの厳密な検証。 |
 | [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
 | [板の深さごとの注文到着率](mu_arrival_depth_report.md) | 1 秒あたり何本の注文が mid からどれだけ離れた価格に届くかを、6 つの時間帯 × 買い売り別 × 9 つの距離帯で測る。開場後は閉場日の昼の 21 倍。最頻帯は 2–5 bp だが開場後だけ 10–25 bp へ外側にずれる。買いと売りの非対称は 6 窓を補正すると残らない。 |
+| [置いた指値が約定する確率](mu_fill_rate_report.md) | 指値が最終的に約定する確率を、発注の瞬間に確定する 2 条件(同じ側の最良気配から何ティック離れているか / 同じ価格に既に何本並んでいたか)で層別する。効くのは水準よりキュー位置で、先客 1 本で 2.5 分の 1、5〜9 本で 20 分の 1 になる。トリガー注文を板に入れて 99.95% の時間クロスさせた失敗も記録。**10 日分の暫定値**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -50,6 +51,7 @@
 | [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) | 板の残高の偏り(OBI)と流量の偏り(OFI)をイベントごとに算出し、1〜100 イベント先の上昇確率を行列にする。2 つが別の情報を持つことを同時分布で示し、最も有利な帯・ホライズンでも往復のスプレッド(中央値 1.245 bp)に届かないことを示す。MicroPrice の中央帯が実は情報を捨てていたことも指摘。 |
 | [Book Slope と将来の log リターン(OLS / GLS)](mu_book_slope_report.md) | 板の傾きをイベントごとに算出し、1〜500 イベント先の log リターンへ回帰。関係が S 字で線形でないこと、重なる窓が t 値を最大 6.3 倍水増しすること、AR(1) の GLS がこの誤差構造には誤設定で「重ならない部分標本」が OLS を支持することを示す。 |
 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
+| [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md) | 最良気配の買い数量・売り数量・OBI・OFI を 10ms 格子に載せ、100ms ごとの標本分散を 12 のホライズン(10ms〜100s)の将来 log リターンへ回帰。絶対リターンには OFI の分散が最も効く(500ms で r=+0.132)。**生の分散では何も見えず log(1+x) で初めて見える**こと、片側に紐づいた分散は符号つきリターンとも鏡像の関係を持つこと(事前の予測を外した経緯)を含む。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -60,6 +62,7 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 |---|---|
 | [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md) | テイカーの向きが続いた後に次がどちらに来るかの推移確率。約定単位と成行注文単位を分け、入れ替え検定でどの次数まで情報が増えるかを判定。 |
 | [特徴量の符号は何イベント先まで持続するか](mu_sign_persistence_report.md) | これまでに算出した符号つき特徴量すべてについて、正のとき k イベント後も正である確率を 3 状態(負 / ちょうど 0 / 正)の推移行列にする(k=1〜5)。OBI・Book Slope・MicroPrice 乖離が符号として厳密に同一であることの証明、素朴な引き算で「ちょうど 0」が壊れる数値の罠、帰無対照が 0 に潰れ切らない理由も含む。 |
+| [OBI と OFI の自己相関(200ms 格子)](mu_acf_200ms_report.md) | イベント時刻の量を 200ms の時計に載せ直し、200ms〜5 分のラグで自己相関を測る。**OBI の高い自己相関(0.2s で +0.68)はほぼ標本化の副作用**で、空の格子点の割合との相関が +0.970 であることを示す。OFI は実質的に無記憶。巡回シフトが自己相関の帰無対照にならない理由も。 |
 
 ### D. 板の中の量どうしはどう結びついているか
 
@@ -148,6 +151,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 板の深さごとの注文到着率。時間帯ごとの合計到着率(買い売り別・比つき)と、深さ帯ごとの形 6 枚(共通の対数目盛)](../../charts/xyz_MU_arrival_depth.png)
 
+**置いた指値が約定する確率** — ティック水準 × キュー位置の周辺分布と同時分布、出来高三分位での形、出来高との比例性。解説: [置いた指値が約定する確率](mu_fill_rate_report.md)
+
+![xyz:MU 置いた指値が約定する確率。ティック水準 × キュー位置の周辺分布と同時分布、出来高三分位での形、出来高との比例性](../../charts/xyz_MU_fill_rate.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -166,6 +173,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU キャンセル率の傾き。CI の数列と当てた直線の実例、傾きの十分位ごとの用量反応、効果のホライズン依存と帰無対照、片道費用との比較](../../charts/xyz_MU_cancel_rate.png)
 
+**100ms 窓の分散と将来リターン** — 絶対リターンへの相関、符号つきリターンへの相関(買い売りが鏡像)、t 値の水増し、生の分散と log(1+x) の違い。解説: [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md)
+
+![xyz:MU 100ms 窓の分散と将来リターン。絶対リターンへの相関、符号つきリターンへの相関、t 値の水増し、生の分散と log(1+x) の違い](../../charts/xyz_MU_var100.png)
+
 ### C. 注文フローの持続性
 
 **向きの continuation 確率** — 同じ向きが n 回続いた後にまた同じ向きが来る割合。解説: [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md)
@@ -179,6 +190,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **符号の持続性** — 6 つの特徴量 × k=1〜5 の持続性ヒートマップ、減衰曲線、帰無対照との比較、OBI の 3×3 推移行列。解説: [特徴量の符号は何イベント先まで持続するか](mu_sign_persistence_report.md)
 
 ![xyz:MU 符号の持続性。6 つの特徴量 × k=1〜5 の持続性ヒートマップ、減衰曲線、帰無対照との比較、OBI の 3×3 推移行列](../../charts/xyz_MU_sign_persistence.png)
+
+**OBI と OFI の自己相関(200ms 格子)** — ラグ 200ms〜5 分の自己相関、空の格子点の割合との関係、OFI の符号が日によって変わること。解説: [OBI と OFI の自己相関(200ms 格子)](mu_acf_200ms_report.md)
+
+![xyz:MU OBI と OFI の自己相関。ラグ 200ms〜5 分の自己相関、空の格子点の割合との関係、OFI の符号が日によって変わること](../../charts/xyz_MU_acf_200ms.png)
 
 ### D. 板の中の量どうしの関係
 
@@ -215,6 +230,9 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [arrival_depth_xyz_MU.csv](../../data/arrival_depth_xyz_MU.csv) | 窓 × 側 × 深さ帯の到着率の平均・中央・p10・p90(144 行) | `build_arrival_depth.py` |
 | arrival_depth_xyz_MU.parquet | 日 × 窓 × 側 × 深さ帯の生計数と数量(9,000 行) | `build_arrival_depth.py` |
 | [book_slope_fits_xyz_MU.csv](../../data/book_slope_fits_xyz_MU.csv) | 説明変数 × 日区分 × ホライズンの OLS / HAC / GLS / 重ならない部分標本の推定(44 行) | `build_book_slope.py` |
+| [acf_200ms_xyz_MU.csv](../../data/acf_200ms_xyz_MU.csv) | 変数 × 日区分 × 156 ラグの自己相関・区間・帰無対照(624 行) | `build_acf_200ms.py` |
+| [acf_200ms_daily_lag1_xyz_MU.csv](../../data/acf_200ms_daily_lag1_xyz_MU.csv) | 日ごとの 1 ラグ自己相関と空の格子点の割合(98 行) | `build_acf_200ms.py` |
+| [var100_ols_xyz_MU.csv](../../data/var100_ols_xyz_MU.csv) | 特徴量 × 層 × 変換 × 目的変数 × 日区分 × ホライズン × 標本の OLS 推定(2,304 行) | `build_var100.py` |
 | microprice_cells_xyz_MU.parquet | 日区分 × 差の帯 × ホライズンの上昇確率・区間・帰無対照 | `build_microprice.py` |
 | obi_ofi_cells_xyz_MU.parquet | 説明変数 × 日区分 × 帯 × ホライズンの上昇確率・期待値動き・区間・帰無対照 | `build_obi_ofi.py` |
 | obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100) | `build_obi_ofi.py` |
@@ -262,6 +280,13 @@ uv run python scripts/build_sign_persistence.py --coin xyz:MU
 uv run python scripts/plot_sign_persistence.py --coin xyz:MU
 uv run python scripts/build_arrival_depth.py --coin xyz:MU
 uv run python scripts/plot_arrival_depth.py --coin xyz:MU
+uv run python scripts/build_acf_200ms.py --coin xyz:MU
+uv run python scripts/plot_acf_200ms.py --coin xyz:MU
+uv run python scripts/build_var100.py --coin xyz:MU
+uv run python scripts/plot_var100.py --coin xyz:MU
+uv run python scripts/fetch_l1.py --coin xyz:MU
+uv run python scripts/build_fill_rate.py --coin xyz:MU
+uv run python scripts/plot_fill_rate.py --coin xyz:MU
 ```
 
 ---

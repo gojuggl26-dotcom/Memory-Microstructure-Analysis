@@ -175,10 +175,75 @@ def to_grid(day: str, t: np.ndarray, v: np.ndarray) -> dict[str, np.ndarray]:
     return g
 
 
+def mid_grid(coin: str, day: str, t0: int) -> np.ndarray:
+    """その日の 10ms 格子の mid(l2/bbo から。空区間は持ち越し)。"""
+    E, _ = read_chunk(coin, [day])
+    mg = np.full(PER_DAY, np.nan)
+    b = ((E["ts"].to_numpy() - t0) // STEP_NS).astype(np.int64)
+    ok = (b >= 0) & (b < PER_DAY)
+    mg[b[ok]] = E["mid"].to_numpy()[ok]
+    idx = np.where(np.isfinite(mg), np.arange(PER_DAY), 0)
+    np.maximum.accumulate(idx, out=idx)
+    return mg[idx]
+
+
+def accumulate(Wd: pl.DataFrame, logmid: np.ndarray, dty: str) -> Acc:
+    """1 日分の特徴量と mid から OLS の十分統計量を作る。"""
+    acc = Acc()
+    base = logmid[K - 1::K]
+    act = Wd["n_ev"].to_numpy() >= 1
+    for hname, h in HOR.items():
+        fut = np.full(NW, np.nan)
+        avail = logmid[K - 1 + h::K]
+        nf = min(NW, len(avail))
+        fut[:nf] = avail[:nf]
+        y = fut - base
+        stride = max(1, int(np.ceil(h / K)))
+        for feat in FEATS:
+            xv = Wd[feat].to_numpy().astype(np.float64)
+            for lay, mask in (("全窓", np.ones(NW, bool)), ("動いた窓", act)):
+                m = mask & np.isfinite(xv) & np.isfinite(y)
+                if m.sum() < 30:
+                    continue
+                sub = np.zeros(NW, bool)
+                sub[::stride] = True
+                sub = sub[m]
+                x0, y0 = xv[m], y[m]
+                for xf, xx in (("生", x0), ("log1p", np.log1p(np.maximum(x0, 0)))):
+                    for yk, yy in (("符号つき", y0), ("絶対値", np.abs(y0)),
+                                   ("二乗", y0 * y0)):
+                        acc.add((f"{feat}|{lay}", xf, yk, dty, hname), xx, yy, sub)
+    return acc
+
+
+def reduce_days(coin, days, dtype, outdir, accdir) -> pl.DataFrame:
+    """保存済みの特徴量から十分統計量を作り直して足す。
+
+    ★板の再構成(1 日 1 分以上)をやり直さずに済ませるための経路。
+    集計だけ失敗したときはここだけ回せばよい。
+    """
+    for day in days:
+        if (accdir / f"dt={day}.parquet").exists():
+            continue
+        fp = outdir / f"dt={day}.parquet"
+        if not fp.exists():
+            continue
+        t0 = int(pl.Series([day]).str.to_datetime("%Y-%m-%d", time_unit="ns")
+                 .cast(pl.Int64)[0])
+        Wd = pl.read_parquet(fp)
+        mg = mid_grid(coin, day, t0)
+        acc = accumulate(Wd, np.log(np.where(mg > 0, mg, np.nan)), dtype[day])
+        acc.raw().write_parquet(accdir / f"dt={day}.parquet")
+        print(f"  [reduce] {day}", file=sys.stderr)
+    return finalize(pl.read_parquet(accdir / "dt=*.parquet"))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", required=True)
     ap.add_argument("--days", type=int, default=0)
+    ap.add_argument("--reduce", action="store_true",
+                    help="板の再構成をせず、保存済みの特徴量から集計だけやり直す")
     a = ap.parse_args()
     tag = a.coin.replace(":", "_")
     l1dir = ROOT / "data" / f"l1_{tag}"
@@ -198,8 +263,10 @@ def main() -> None:
     outdir.mkdir(parents=True, exist_ok=True)
     accdir.mkdir(parents=True, exist_ok=True)
     # ★1 日 60 秒かかるので再開できるようにする。済んだ日は飛ばす
-    todo = [d for d in days if not (accdir / f"dt={d}.parquet").exists()]
-    print(f"[再開] 未処理 {len(todo)} 日 / 済み {len(days) - len(todo)} 日", file=sys.stderr)
+    todo = [] if a.reduce else \
+        [d for d in days if not (accdir / f"dt={d}.parquet").exists()
+         and not (outdir / f"dt={d}.parquet").exists()]
+    print(f"[再開] 板の再構成が要る日 {len(todo)} / 全 {len(days)} 日", file=sys.stderr)
 
     for n, day in enumerate(todo, 1):
         acc = Acc()
@@ -252,9 +319,10 @@ def main() -> None:
                                     xx, yy, sub)
         Wd.with_columns(pl.col(pl.Float64).cast(pl.Float32), dt=pl.lit(day)) \
           .write_parquet(outdir / f"dt={day}.parquet", compression="zstd")
-        print(f"  {day}  変化点 {len(t):,}  ({n}/{len(days)} 日)", file=sys.stderr)
+        acc.raw().write_parquet(accdir / f"dt={day}.parquet")
+        print(f"  {day}  変化点 {len(t):,}  ({n}/{len(todo)} 日)", file=sys.stderr)
 
-    R = acc.rows().with_columns(
+    R = reduce_days(a.coin, days, dtype, outdir, accdir).with_columns(
         lay=pl.col("feat").str.split("|").list.get(1),
         feat=pl.col("feat").str.split("|").list.get(0),
         hor_ms=pl.col("hor").replace_strict({k: v * 10 for k, v in HOR.items()},
