@@ -224,7 +224,24 @@ def main() -> None:
 
     # --- 1 秒あたりに直して要約 ------------------------------------------------
     # 日ごとに率を出してから日をまたいで平均する(1 日 1 票。活発な日に引きずられない)
-    per_day = D.with_columns(rate=pl.col("n") / 3600.0, rate_sz=pl.col("sz") / 3600.0)
+    #
+    # ★到着が 1 件も無かった (窓, 側, 帯) の日は D に行が立たない。そのまま
+    #   group_by すると分母が「到着があった日数」になり、まばらな帯の率を
+    #   過大に出す(平均も中央値も分位も 0 の日を数えなくなる)。窓ごとの
+    #   観測日を軸に 0 を埋めてから平均する。実測では 98 日で欠けるセルは
+    #   無かったが、静かな銘柄や短い窓では必ず効くので構造として直しておく。
+    obs = D.select("window", "dt").unique()
+    full = (
+        obs.join(pl.DataFrame({"side": ["買い(bid)", "売り(ask)"]}), how="cross")
+        .join(pl.DataFrame({"band_i": list(range(NB)), "band": BP_LABELS}), how="cross")
+        .join(D.select("window", "dt", "side", "band_i", "n", "sz"),
+              on=["window", "dt", "side", "band_i"], how="left")
+        .with_columns(pl.col("n").fill_null(0), pl.col("sz").fill_null(0.0))
+    )
+    n_empty = int((full["n"] == 0).sum())
+    if n_empty:
+        print(f"[0 埋め] 到着ゼロのセル {n_empty:,} / {full.height:,}", file=sys.stderr)
+    per_day = full.with_columns(rate=pl.col("n") / 3600.0, rate_sz=pl.col("sz") / 3600.0)
     n_days = (per_day.group_by("window").agg(d=pl.col("dt").n_unique())
               .rename({"d": "n_days"}))
     S = (

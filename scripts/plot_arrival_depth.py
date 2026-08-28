@@ -61,9 +61,9 @@ def main() -> None:
         "axes.unicode_minus": False, "text.parse_math": False,
         "figure.facecolor": SURFACE, "savefig.facecolor": SURFACE,
     })
-    fig = plt.figure(figsize=(15.0, 11.2), dpi=160)
+    fig = plt.figure(figsize=(15.0, 11.6), dpi=160)
     gs = fig.add_gridspec(3, 3, height_ratios=[0.95, 1, 1], hspace=0.52, wspace=0.20,
-                          left=0.065, right=0.975, top=0.845, bottom=0.065)
+                          left=0.065, right=0.975, top=0.845, bottom=0.105)
 
     # ---- 上段: 時間帯ごとの合計到着率 -----------------------------------------
     ax = fig.add_subplot(gs[0, :]); style(ax)
@@ -75,7 +75,8 @@ def main() -> None:
         tot[side] = v
         ax.bar(xs + (off - 0.5) * w, v, width=w, color=col, zorder=3, linewidth=0)
         for i, y in enumerate(v):
-            ax.annotate(f"{y:.0f}", (xs[i] + (off - 0.5) * w, y), textcoords="offset points",
+            # ★整数に丸めると 123 と 123 になり、買い売りの差が図から消える
+            ax.annotate(f"{y:.1f}", (xs[i] + (off - 0.5) * w, y), textcoords="offset points",
                         xytext=(0, 3), ha="center", fontsize=8.5, color=INK2)
     ax.set_xticks(xs)
     ax.set_xticklabels([f"{m}\n{SUB[m]}" for m in MAIN], fontsize=9)
@@ -83,15 +84,30 @@ def main() -> None:
     ax.set_title("時間帯ごとの注文到着率(全ての深さ帯の合計)", loc="left",
                  color=INK, fontsize=12, pad=26, weight="bold")
     hi = max(max(tot["買い(bid)"]), max(tot["売り(ask)"]))
-    lo = min(min(tot["買い(bid)"]), min(tot["売り(ask)"]))
-    ax.text(0, 1.06, f"最も濃い帯と最も薄い帯で {hi/lo:.0f} 倍の開きがある。"
-            "どの時間帯でも買いのほうが多い。",
+    # ★倍率は「時間帯どうし」の比なので、片側の棒ではなく両側の合計で測る。
+    #   片側どうしで割ると 22 倍、時間帯の合計どうしなら 21 倍で、後者が題意。
+    wsum = [b + a for b, a in zip(tot["買い(bid)"], tot["売り(ask)"])]
+    # ★買い優位は「どの時間帯でも」ではない。数えて書く(閉場日は売りが多い)
+    rat = [b / a for b, a in zip(tot["買い(bid)"], tot["売り(ask)"])]
+    nb = sum(r > 1 for r in rat)
+    j = min(range(len(rat)), key=lambda k: rat[k])
+    ax.text(0, 1.06,
+            f"最も忙しい{MAIN[wsum.index(max(wsum))]}と最も静かな{MAIN[wsum.index(min(wsum))]}で"
+            f" {max(wsum)/min(wsum):.0f} 倍の開きがある。"
+            f"買いが多いのは {len(MAIN)} 帯中 {nb} 帯だけで、"
+            f"最も売りに寄るのは{MAIN[j]}(買い/売り {rat[j]:.2f})。",
             transform=ax.transAxes, color=INK2, fontsize=9.5)
-    ax.legend(handles=[Patch(facecolor=BID, edgecolor="none", label="買い(bid)"),
-                       Patch(facecolor=ASK, edgecolor="none", label="売り(ask)")],
+    # 買い/売りの比を組ごとに書く。棒の高さの差は目では読めない
+    for i, r in enumerate(rat):
+        ax.annotate(f"買/売 {r:.3f}", (xs[i], max(tot["買い(bid)"][i], tot["売り(ask)"][i])),
+                    textcoords="offset points", xytext=(0, 17), ha="center",
+                    fontsize=8.5, color=INK if abs(r - 1) > 0.02 else MUTED,
+                    weight="bold" if abs(r - 1) > 0.02 else "normal")
+    ax.legend(handles=[Patch(facecolor=BID, edgecolor="none", label="買い(bid)  実線・丸"),
+                       Patch(facecolor=ASK, edgecolor="none", label="売り(ask)  破線・四角")],
               loc="upper right", frameon=False, fontsize=9, labelcolor=INK2, ncol=2,
               handlelength=1.6, handleheight=1.0, borderpad=0.2)
-    ax.set_ylim(0, hi * 1.22)
+    ax.set_ylim(0, hi * 1.32)
 
     # ---- 下段 6 枚: 深さ帯ごとの形(共通の対数目盛)----------------------------
     vals = S.filter(pl.col("window").is_in(MAIN))["rate_mean"]
@@ -99,11 +115,16 @@ def main() -> None:
     ymax = float(vals.max()) * 1.6
     for i, m in enumerate(MAIN):
         ax = fig.add_subplot(gs[1 + i // 3, i % 3]); style(ax)
-        for side, col in (("買い(bid)", BID), ("売り(ask)", ASK)):
+        # ★買いと売りはほぼ重なる。同じ実線で描くと後に描いた売りが買いを完全に
+        #   隠してしまい、「1 本しかない」ように見える。線種と印を変えて両方見せる。
+        peak = {}
+        for side, col, ls, mk, lw in (("買い(bid)", BID, "-", "o", 2.6),
+                                      ("売り(ask)", ASK, "--", "s", 1.6)):
             t = S.filter((pl.col("window") == m) & (pl.col("side") == side)).sort("band_i")
             xs2 = t["band_i"].to_numpy(); ys = t["rate_mean"].to_numpy()
-            ax.plot(xs2, ys, "-o", color=col, lw=2.0, ms=4.5, zorder=4,
-                    markeredgecolor=SURFACE, markeredgewidth=1.1)
+            ax.plot(xs2, ys, ls, marker=mk, color=col, lw=lw, ms=4.6, zorder=4,
+                    markeredgecolor=SURFACE, markeredgewidth=1.0)
+            peak[side] = int(xs2[int(np.argmax(ys))])
         nd = int(S.filter(pl.col("window") == m)["n_days"].max())
         s_tot = sum(tot[s][MAIN.index(m)] for s in ("買い(bid)", "売り(ask)"))
         ax.set_yscale("log"); ax.set_ylim(ymin, ymax)
@@ -115,6 +136,11 @@ def main() -> None:
             ax.set_ylabel("到着率[件/秒](対数)", color=INK2, fontsize=9.5)
         if i >= 3:
             ax.set_xlabel("mid からの距離[bp]", color=INK2, fontsize=9.5)
+        pk = BANDS[peak["買い(bid)"]]
+        if peak["売り(ask)"] != peak["買い(bid)"]:
+            pk += f" / {BANDS[peak['売り(ask)']]}"
+        ax.text(0.97, 0.06, f"最頻帯 {pk} bp", transform=ax.transAxes, ha="right",
+                fontsize=8.5, color=INK2)
         ax.get_yaxis().set_major_formatter(
             mpl.ticker.FuncFormatter(lambda v, _: f"{v:g}"))
         ax.get_yaxis().set_minor_formatter(mpl.ticker.NullFormatter())
@@ -125,11 +151,12 @@ def main() -> None:
              "到着 = L1 の status が open になった行(その注文が実際に板に載った瞬間)。"
              "深さは到着より厳密に前の BBO の mid からの距離。\n"
              "日ごとに 1 秒あたりの率を出してから日をまたいで平均している"
-             "(活発な 1 日に引きずられないため)。下段 6 枚は共通の対数目盛。",
+             "(1 日 1 票。イベント数では重み付けしない)。下段 6 枚は共通の対数目盛。",
              fontsize=9.5, color=INK2, va="top", linespacing=1.6)
-    fig.text(0.005, 0.005,
-             "出所: Hyperliquid L4 (Artemis) L1 注文イベント + l2/bbo / 窓 2026-05-04〜08-09",
-             color=MUTED, fontsize=8)
+    fig.text(0.5, 0.004,
+             "出所: Hyperliquid L4 (Artemis) L1 注文イベント + l2/bbo / "
+             "窓 2026-05-04〜08-09(立会日 67・閉場日 31)",
+             color=MUTED, fontsize=8, ha="center")
     out = ROOT / "charts" / f"{tag}_arrival_depth.png"
     fig.savefig(out, bbox_inches="tight")
     print(f"[chart] {out}")
