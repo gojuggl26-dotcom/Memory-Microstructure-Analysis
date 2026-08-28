@@ -53,6 +53,7 @@
 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
 | [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md) | 板に入った量と出ていった量を 100ms 窓で 7 通り(全体 / 買い / 売り / 最良気配以上 / それより外側 / 偏り / 本数)測り、11 の予測ホライズンへ回帰。前向きの相関が後ろ向きを下回るのは 77 セル中 77 セル。向きの予測力は $`\|r\| \le 0.0154`$ で実質ゼロ。立会日と閉場日を混ぜると相関が両方より大きくなる罠も示す。 |
 | [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md) | 最良気配の買い数量・売り数量・OBI・OFI を 10ms 格子に載せ、100ms ごとの標本分散を 12 のホライズン(10ms〜100s)の将来 log リターンへ回帰。絶対リターンには OFI の分散が最も効く(500ms で r=+0.132)。**生の分散では何も見えず log(1+x) で初めて見える**こと、片側に紐づいた分散は符号つきリターンとも鏡像の関係を持つこと(事前の予測を外した経緯)を含む。 |
+| [ティック水準別 OBI と将来 log リターンの回帰](mu_obi_levels_report.md) | 最良気配から 1〜10 ティックの各水準について OBI を作り、100ms〜50 秒の 9 ホライズンで log リターンへ回帰。板は l1 の注文イベントから組み直した。279 格子すべてが Bonferroni 後も有意だが、**生の傾きは水準 1 が最大でも 1σ で測ると水準 2 が最大**で、累積の傾きの伸びは情報の増加ではなく ばらつきの縮小である(4 ティックで頭打ち)。bbo の 53 行の壊れた記録が標準偏差を支配していた事故と、その掃除も記録。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -178,6 +179,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 100ms 窓の分散と将来リターン。絶対リターンへの相関、符号つきリターンへの相関、t 値の水増し、生の分散と log(1+x) の違い](../../charts/xyz_MU_var100.png)
 
+**ティック水準別 OBI の回帰係数** — 水準ごとの傾き、90 格子のヒートマップ(水準ごと / 累積)、1σ あたりの効果と水準の占有率、用量反応、板の再構成の検算。解説: [ティック水準別 OBI と将来 log リターンの回帰](mu_obi_levels_report.md)
+
+![xyz:MU ティック水準別 OBI の回帰係数。水準ごとの傾き、90 格子のヒートマップ、1σ あたりの効果と占有率、用量反応、再構成の検算](../../charts/xyz_MU_obi_levels.png)
+
 **板の入れ替わり(churn)と将来 log リターン** — 特徴量ごとの相関のホライズン依存 7 枚(前向き / 後ろ向き / 向きの予測)と、符号つきリターンとの相関の一覧 2 枚。解説: [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md)
 
 ![xyz:MU churn 7 種と将来 log リターンの OLS。特徴量ごとの相関のホライズン依存と、符号つきリターンとの相関の一覧](../../charts/xyz_MU_churn_ols.png)
@@ -246,6 +251,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | book_slope_bins_xyz_MU.parquet | 帯ごとの平均 log リターン(図示用) | `build_book_slope.py` |
 | cancel_rate_cells_xyz_MU.parquet | 日区分 × ホライズンの平均 log リターン・区間・帰無対照 | `build_cancel_rate.py` |
 | cancel_rate_bins_xyz_MU.parquet | 傾きの十分位 × ホライズンの平均 log リターン | `build_cancel_rate.py` |
+| obi_levels_fit_xyz_MU.csv / .parquet | 日区分 × 定義 × 水準 × ホライズンの傾き・区間・σx・相関(1,674 行) | `fit_obi_levels.py` |
+| obi_levels_dose_xyz_MU.parquet | 水準 × ホライズン × OBI の帯ごとの平均 log リターン(8,370 行) | `fit_obi_levels.py` |
+| obi_levels_days/xyz_MU/ | 日ごとの回帰の累積和(ブロックブートストラップの素) | `build_obi_levels.py` |
+| obi_levels_meta/xyz_MU/ | 日ごとの検算(bbo との一致率・水準の占有率・孤児) | `build_obi_levels.py` |
 | sign_persist_counts_xyz_MU.parquet | 日 × 特徴量 × k × (符号, 次の符号)の生計数 | `build_sign_persistence.py` |
 | sign_persist_cells_xyz_MU.parquet | 日区分 × 特徴量 × k の集計・区間・帰無対照 | `build_sign_persistence.py` |
 | sign_persist_ident_xyz_MU.parquet | 恒等式の検算結果(日ごとの不一致件数) | `build_sign_persistence.py` |
@@ -296,6 +305,9 @@ uv run python scripts/plot_var100.py --coin xyz:MU
 uv run python scripts/fetch_l1.py --coin xyz:MU
 uv run python scripts/build_fill_rate.py --coin xyz:MU
 uv run python scripts/plot_fill_rate.py --coin xyz:MU
+uv run python scripts/build_obi_levels.py --coin xyz:MU
+uv run python scripts/fit_obi_levels.py --coin xyz:MU
+uv run python scripts/plot_obi_levels.py --coin xyz:MU
 ```
 
 ---
