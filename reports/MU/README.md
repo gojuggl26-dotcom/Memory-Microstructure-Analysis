@@ -43,7 +43,7 @@
 ### B. 板の状態は将来の値動きを教えてくれるか
 
 このリポジトリの中心的な問いです。板から作った説明変数で、将来の価格の向きを
-どこまで当てられるか。**4 本とも「有意だが費用に届かない」という結論**に着地します。
+どこまで当てられるか。**5 本とも「有意だが費用に届かない」という結論**に着地します。
 
 | レポート | 内容 |
 |---|---|
@@ -51,6 +51,7 @@
 | [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) | 板の残高の偏り(OBI)と流量の偏り(OFI)をイベントごとに算出し、1〜100 イベント先の上昇確率を行列にする。2 つが別の情報を持つことを同時分布で示し、最も有利な帯・ホライズンでも往復のスプレッド(中央値 1.245 bp)に届かないことを示す。MicroPrice の中央帯が実は情報を捨てていたことも指摘。 |
 | [Book Slope と将来の log リターン(OLS / GLS)](mu_book_slope_report.md) | 板の傾きをイベントごとに算出し、1〜500 イベント先の log リターンへ回帰。関係が S 字で線形でないこと、重なる窓が t 値を最大 6.3 倍水増しすること、AR(1) の GLS がこの誤差構造には誤設定で「重ならない部分標本」が OLS を支持することを示す。 |
 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
+| [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md) | 板に入った量と出ていった量を 100ms 窓で 7 通り(全体 / 買い / 売り / 最良気配以上 / それより外側 / 偏り / 本数)測り、11 の予測ホライズンへ回帰。前向きの相関が後ろ向きを下回るのは 77 セル中 77 セル。向きの予測力は $`\|r\| \le 0.0154`$ で実質ゼロ。立会日と閉場日を混ぜると相関が両方より大きくなる罠も示す。 |
 | [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md) | 最良気配の買い数量・売り数量・OBI・OFI を 10ms 格子に載せ、100ms ごとの標本分散を 12 のホライズン(10ms〜100s)の将来 log リターンへ回帰。絶対リターンには OFI の分散が最も効く(500ms で r=+0.132)。**生の分散では何も見えず log(1+x) で初めて見える**こと、片側に紐づいた分散は符号つきリターンとも鏡像の関係を持つこと(事前の予測を外した経緯)を含む。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
@@ -177,6 +178,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 100ms 窓の分散と将来リターン。絶対リターンへの相関、符号つきリターンへの相関、t 値の水増し、生の分散と log(1+x) の違い](../../charts/xyz_MU_var100.png)
 
+**板の入れ替わり(churn)と将来 log リターン** — 特徴量ごとの相関のホライズン依存 7 枚(前向き / 後ろ向き / 向きの予測)と、符号つきリターンとの相関の一覧 2 枚。解説: [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md)
+
+![xyz:MU churn 7 種と将来 log リターンの OLS。特徴量ごとの相関のホライズン依存と、符号つきリターンとの相関の一覧](../../charts/xyz_MU_churn_ols.png)
+
 ### C. 注文フローの持続性
 
 **向きの continuation 確率** — 同じ向きが n 回続いた後にまた同じ向きが来る割合。解説: [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md)
@@ -229,6 +234,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [order_size_hist_xyz_MU.csv](../../data/order_size_hist_xyz_MU.csv) | 対数階級のヒストグラム(140 行) | `build_order_size.py` |
 | [arrival_depth_xyz_MU.csv](../../data/arrival_depth_xyz_MU.csv) | 窓 × 側 × 深さ帯の到着率の平均・中央・p10・p90(144 行) | `build_arrival_depth.py` |
 | arrival_depth_xyz_MU.parquet | 日 × 窓 × 側 × 深さ帯の生計数と数量(9,000 行) | `build_arrival_depth.py` |
+| [churn_ols_xyz_MU.csv](../../data/churn_ols_xyz_MU.csv) | 特徴量 × 日区分 × ホライズン × 標本の OLS 推定(6,864 行) | `build_churn.py` |
+| churn_xyz_MU/dt=*.parquet | 100ms 窓 × 7 特徴量(98 日 × 864,000 窓) | `build_churn.py` |
 | [book_slope_fits_xyz_MU.csv](../../data/book_slope_fits_xyz_MU.csv) | 説明変数 × 日区分 × ホライズンの OLS / HAC / GLS / 重ならない部分標本の推定(44 行) | `build_book_slope.py` |
 | [acf_200ms_xyz_MU.csv](../../data/acf_200ms_xyz_MU.csv) | 変数 × 日区分 × 156 ラグの自己相関・区間・帰無対照(624 行) | `build_acf_200ms.py` |
 | [acf_200ms_daily_lag1_xyz_MU.csv](../../data/acf_200ms_daily_lag1_xyz_MU.csv) | 日ごとの 1 ラグ自己相関と空の格子点の割合(98 行) | `build_acf_200ms.py` |
@@ -280,6 +287,8 @@ uv run python scripts/build_sign_persistence.py --coin xyz:MU
 uv run python scripts/plot_sign_persistence.py --coin xyz:MU
 uv run python scripts/build_arrival_depth.py --coin xyz:MU
 uv run python scripts/plot_arrival_depth.py --coin xyz:MU
+uv run python scripts/build_churn.py --coin xyz:MU
+uv run python scripts/plot_churn.py --coin xyz:MU --day 立会日
 uv run python scripts/build_acf_200ms.py --coin xyz:MU
 uv run python scripts/plot_acf_200ms.py --coin xyz:MU
 uv run python scripts/build_var100.py --coin xyz:MU
