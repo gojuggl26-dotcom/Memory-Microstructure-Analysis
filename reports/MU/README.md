@@ -1,4 +1,4 @@
-# xyz:MU 分析索引
+# `xyz:MU` 分析索引
 
 <p>
   <a href="https://www.micron.com/"><img src="../../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
@@ -14,53 +14,97 @@
 | 標本期間 | 2026 年 5 月 4 日 〜 8 月 10 日(99 日間) |
 | 公式サイト | https://www.micron.com/ |
 
-## レポート一覧
+レポートは下で**大きい話から細かい話へ** A→D の順に並べています。
+初めて読む場合は A から順に追うと前提が揃います。
+
+各レポートは冒頭に「何を測ったか」と「時間契約」(説明変数が確定する時刻と
+目的変数の期間)を置いています。用語は [用語辞書](../../GLOSSARY.md)、
+「予測できた」の定義は [予測の定義](../predicting_definition.md) にあります。
+
+---
+
+## レポート
+
+### A. この銘柄はどういう市場か
+
+まず商品としての素性を掴みます。どれだけ取引され、誰がどの時間に動き、
+1 本の注文はどのくらいの大きさかを見ます。
 
 | レポート | 内容 |
 |---|---|
 | [データ保有状況](mu_inventory_report.md) | 作業用バケットに Micron 銘柄のどのデータが何日分あるかの棚卸し。欠けている 1 日とその復旧方法。 |
-| [日次平均建玉と出来高](mu_oi_volume_report.md) | 建玉(OI)と出来高の日次推移。米国市場の休場日には建玉がほとんど動かないことを示す。 |
+| [日次平均建玉と出来高](mu_oi_volume_report.md) | 建玉(OI)と出来高の日次推移。24 時間取引できる商品にもかかわらず、米国市場の休場日には建玉がほとんど動かないことを示す。 |
 | [回転率・出来高と翌日建玉・日内プロファイル](mu_turnover_intraday_report.md) | 回転率の算出、当日の出来高と翌日の建玉の回帰(OLS と GLS)、立会日と休場日に分けた日内の出来高と建玉変化。5 日・1 日・1 時間の 3 尺度で実現分散と回転率を並べ、同じ向きに動くことを示す(第 5〜10 節。同時点の関係であって予測力ではない)。 |
-| [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md) | テイカーの向きが続いた後に次がどちらに来るかの推移確率。約定単位と成行注文単位を分け、入れ替え検定でどの次数まで情報が増えるかを判定。 |
-| [スプレッド幅・注文量・約定量と OBI / OFI の関係](mu_spread_flow_report.md) | 最良気配が変わるたびに 5 つの量を測り、相関行列と帯別の姿で関係を示す。約定はスプレッドが狭いときに起きる(−0.24)一方、注文量とはほぼ無関係(−0.01)。 |
-| [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
 | [出来高の買い・売り内訳とニュース](mu_volume_side_news_report.md) | テイカー側で出来高を買い・売りに分解し、HAC 帰無対照で偏りを検定。標本期間の主なニュースとの対応づけ、および 6 月 24 日決算発表という「発表時刻が事前に判っている」1 件だけの厳密な検証。 |
+| [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
+| [板の深さごとの注文到着率](mu_arrival_depth_report.md) | 1 秒あたり何本の注文が mid からどれだけ離れた価格に届くかを、6 つの時間帯 × 買い売り別 × 9 つの距離帯で測る。開場後は閉場日の昼の 21 倍。最頻帯は 2–5 bp だが開場後だけ 10–25 bp へ外側にずれる。買いと売りの非対称は 6 窓を補正すると残らない。 |
+
+### B. 板の状態は将来の値動きを教えてくれるか
+
+このリポジトリの中心的な問いです。板から作った説明変数で、将来の価格の向きを
+どこまで当てられるか。**4 本とも「有意だが費用に届かない」という結論**に着地します。
+
+| レポート | 内容 |
+|---|---|
 | [MicroPrice と midprice の差 → 将来 mid の上昇確率](mu_microprice_report.md) | イベントごとに MicroPrice と mid を算出し、その差の帯 × 予測ホライズン(1〜100 イベント)で上昇確率の行列を立会日・閉場日別に作る。生の確率を 0.5 と比べてはいけない理由(同値が 4〜5 割)を示し、同値を除くと中央帯がちょうど 50% になることを確認。 |
-| [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) | 板の残高の偏り(OBI)と流量の偏り(OFI)をイベントごとに算出し、1〜100 イベント先の上昇確率を行列にする。2 つが別の情報を持つことを同時分布で示し、確率の大きさをスプレッドと比べる。MicroPrice の中央帯が実は情報を捨てていたことも指摘。 |
+| [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) | 板の残高の偏り(OBI)と流量の偏り(OFI)をイベントごとに算出し、1〜100 イベント先の上昇確率を行列にする。2 つが別の情報を持つことを同時分布で示し、最も有利な帯・ホライズンでも往復のスプレッド(中央値 1.245 bp)に届かないことを示す。MicroPrice の中央帯が実は情報を捨てていたことも指摘。 |
 | [Book Slope と将来の log リターン(OLS / GLS)](mu_book_slope_report.md) | 板の傾きをイベントごとに算出し、1〜500 イベント先の log リターンへ回帰。関係が S 字で線形でないこと、重なる窓が t 値を最大 6.3 倍水増しすること、AR(1) の GLS がこの誤差構造には誤設定で「重ならない部分標本」が OLS を支持することを示す。 |
 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
+
+### C. 注文フローはどれだけ自分自身を引きずるか
+
+B が「x から y を当てる」話なのに対し、ここは「x が x 自身をどれだけ引きずるか」、
+つまり自己相関の話です。**予測力の話ではない**ことに注意してください。
+
+| レポート | 内容 |
+|---|---|
+| [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md) | テイカーの向きが続いた後に次がどちらに来るかの推移確率。約定単位と成行注文単位を分け、入れ替え検定でどの次数まで情報が増えるかを判定。 |
+| [特徴量の符号は何イベント先まで持続するか](mu_sign_persistence_report.md) | これまでに算出した符号つき特徴量すべてについて、正のとき k イベント後も正である確率を 3 状態(負 / ちょうど 0 / 正)の推移行列にする(k=1〜5)。OBI・Book Slope・MicroPrice 乖離が符号として厳密に同一であることの証明、素朴な引き算で「ちょうど 0」が壊れる数値の罠、帰無対照が 0 に潰れ切らない理由も含む。 |
+
+### D. 板の中の量どうしはどう結びついているか
+
+| レポート | 内容 |
+|---|---|
+| [スプレッド幅・注文量・約定量と OBI / OFI の関係](mu_spread_flow_report.md) | 最良気配が変わるたびに 5 つの量を測り、相関行列と帯別の姿で関係を示す。約定はスプレッドが狭いときに起きる(−0.24)一方、注文量とはほぼ無関係(−0.01)。 |
+
+---
 
 ## 図
 
 | 図 | 内容 | 掲載レポート |
 |---|---|---|
 | [日足チャート](../../charts/xyz_MU_price_daily.png) | 標本期間 99 日分の日足(始値・高値・安値・終値) | [日次平均建玉と出来高](mu_oi_volume_report.md) |
-| [建玉と出来高(ドル建て)](../../charts/xyz_MU_oi_volume_usd.png) | 日次平均建玉と日次出来高を名目ドルで表示 | [日次平均建玉と出来高](mu_oi_volume_report.md) |
-| [建玉と出来高(枚数)](../../charts/xyz_MU_oi_volume_contracts.png) | 同じ内容を契約枚数で表示 | [日次平均建玉と出来高](mu_oi_volume_report.md) |
+| [建玉と出来高(ドル建て)](../../charts/xyz_MU_oi_volume_usd.png) | 日次平均建玉と日次出来高を名目ドルで表示 | [同上](mu_oi_volume_report.md) |
+| [建玉と出来高(枚数)](../../charts/xyz_MU_oi_volume_contracts.png) | 同じ内容を契約枚数で表示 | [同上](mu_oi_volume_report.md) |
 | [出来高と翌日建玉の散布図](../../charts/xyz_MU_scatter_oi_volume.png) | 立会日と休場日それぞれの OLS と GLS の当てはめ線つき | [回転率・出来高と翌日建玉・日内プロファイル](mu_turnover_intraday_report.md) |
 | [日内プロファイル(2 行 2 列)](../../charts/xyz_MU_intraday_2x2.png) | 立会日と休場日の日内出来高・建玉変化を縦軸共通で比較 | [同上](mu_turnover_intraday_report.md) |
 | [立会日の日内出来高](../../charts/xyz_MU_intraday_volume_open.png) | 30 分ごと、68 日の平均 | [同上](mu_turnover_intraday_report.md) |
 | [立会日の日内 建玉変化](../../charts/xyz_MU_intraday_oichange_open.png) | 30 分ごと、68 日の平均 | [同上](mu_turnover_intraday_report.md) |
 | [休場日の日内出来高](../../charts/xyz_MU_intraday_volume_closed.png) | 30 分ごと、31 日の平均 | [同上](mu_turnover_intraday_report.md) |
 | [休場日の日内 建玉変化](../../charts/xyz_MU_intraday_oichange_closed.png) | 30 分ごと、31 日の平均 | [同上](mu_turnover_intraday_report.md) |
-| [出来高の買い・売り分解](../../charts/xyz_MU_volume_side.png) | 日次出来高の積み上げ棒(買い・売り)と、その差に対する HAC 帰無対照の帯 | [出来高の買い・売り内訳とニュース](mu_volume_side_news_report.md) |
-| [決算発表日(2026-06-24)の日中](../../charts/xyz_MU_intraday_2026-06-24.png) | 1 時間ごとの価格と買い・売り出来高。20:00 UTC(米国引け後)の決算発表を縦線で表示 | [同上](mu_volume_side_news_report.md) |
-| [5 日窓の日次分散(99 日間)](../../charts/xyz_MU_variance_5d_over_99d.png) | 直前 5 日で測った日次分散と同じ窓の回転率 | [回転率・出来高と翌日建玉・日内プロファイル](mu_turnover_intraday_report.md) |
+| [5 日窓の日次分散(99 日間)](../../charts/xyz_MU_variance_5d_over_99d.png) | 直前 5 日で測った日次分散と同じ窓の回転率 | [同上](mu_turnover_intraday_report.md) |
 | [1 日窓の日次分散(1 週間)](../../charts/xyz_MU_variance_1d_over_1w.png) | その日だけで測った日次分散と回転率。土日の落差が出る | [同上](mu_turnover_intraday_report.md) |
 | [1 時間窓の分散(1 日)](../../charts/xyz_MU_variance_1h_over_1d.png) | その 1 時間だけで測った分散と回転率。寄付きに集中する | [同上](mu_turnover_intraday_report.md) |
-| [寄付き前後 6 時間の出来高と相対スプレッド](../../charts/xyz_MU_open_window_volume_spread.png) | 1 分刻み。買い・売りの積み上げと、時間加重の相対スプレッド | [回転率・出来高と翌日建玉・日内プロファイル](mu_turnover_intraday_report.md) 第 11 節 |
+| [寄付き前後 6 時間の出来高と相対スプレッド](../../charts/xyz_MU_open_window_volume_spread.png) | 1 分刻み。買い・売りの積み上げと、時間加重の相対スプレッド | [同上](mu_turnover_intraday_report.md) 第 11 節 |
 | [寄付き前後 6 時間の分散](../../charts/xyz_MU_open_window_variance.png) | 算出窓 5 分、1 分あたり。中値リターンから算出 | [同上](mu_turnover_intraday_report.md) 第 11 節 |
-| [向きの continuation 確率](../../charts/xyz_MU_sign_chain_continuation.png) | 同じ向きが n 回続いた後にまた同じ向きが来る割合 | [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md) |
-| [3 次の推移確率行列](../../charts/xyz_MU_sign_chain_matrix.png) | 直前 3 本の向きごとに次が買いになる確率 | [同上](mu_sign_chain_report.md) |
-| [5 つの量の相関行列](../../charts/xyz_MU_spread_flow_corr.png) | スプレッド幅・注文量・約定量・OBI・OFI のスピアマン順位相関 | [スプレッド幅・注文量・約定量と OBI / OFI の関係](mu_spread_flow_report.md) |
-| [OBI / OFI の帯ごとの姿](../../charts/xyz_MU_spread_flow_bins.png) | 帯ごとのスプレッド幅・注文量・約定量・約定の発生率(2 行 4 列) | [同上](mu_spread_flow_report.md) |
+| [出来高の買い・売り分解](../../charts/xyz_MU_volume_side.png) | 日次出来高の積み上げ棒(買い・売り)と、その差に対する HAC 帰無対照の帯 | [出来高の買い・売り内訳とニュース](mu_volume_side_news_report.md) |
+| [決算発表日(2026-06-24)の日中](../../charts/xyz_MU_intraday_2026-06-24.png) | 1 時間ごとの価格と買い・売り出来高。20:00 UTC(米国引け後)の決算発表を縦線で表示 | [同上](mu_volume_side_news_report.md) |
 | [時間帯ごとのオーダーサイズ分布](../../charts/xyz_MU_order_size_dist.png) | 4 つの時間帯の密度と裾の重さ(両対数) | [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) |
+| [板の深さごとの注文到着率](../../charts/xyz_MU_arrival_depth.png) | 時間帯ごとの合計到着率(買い売り別・比つき)と、深さ帯ごとの形 6 枚(共通の対数目盛) | [板の深さごとの注文到着率](mu_arrival_depth_report.md) |
 | [MicroPrice の確率推移行列](../../charts/xyz_MU_microprice_matrix.png) | 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差 | [MicroPrice と midprice の差](mu_microprice_report.md) |
 | [OBI / OFI の確率推移行列](../../charts/xyz_MU_obi_ofi_matrix.png) | OBI と OFI それぞれの帯 × ホライズンの上昇確率、両者の同時分布、期待値動きとスプレッドの比較 | [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) |
 | [Book Slope と log リターン](../../charts/xyz_MU_book_slope.png) | 帯ごとの平均 log リターン(S 字)、β のホライズン依存(OLS / GLS / 重ならない部分標本)、t 値の水増し、決定係数の比較 | [Book Slope と将来の log リターン](mu_book_slope_report.md) |
 | [キャンセル率の傾き](../../charts/xyz_MU_cancel_rate.png) | CI の数列と当てた直線の実例、傾きの十分位ごとの用量反応、効果のホライズン依存と帰無対照、片道費用との比較 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) |
+| [向きの continuation 確率](../../charts/xyz_MU_sign_chain_continuation.png) | 同じ向きが n 回続いた後にまた同じ向きが来る割合 | [攻撃的な売買の向きの推移確率行列](mu_sign_chain_report.md) |
+| [3 次の推移確率行列](../../charts/xyz_MU_sign_chain_matrix.png) | 直前 3 本の向きごとに次が買いになる確率 | [同上](mu_sign_chain_report.md) |
+| [符号の持続性](../../charts/xyz_MU_sign_persistence.png) | 6 つの特徴量 × k=1〜5 の持続性ヒートマップ、減衰曲線、帰無対照との比較、OBI の 3×3 推移行列 | [特徴量の符号は何イベント先まで持続するか](mu_sign_persistence_report.md) |
+| [5 つの量の相関行列](../../charts/xyz_MU_spread_flow_corr.png) | スプレッド幅・注文量・約定量・OBI・OFI のスピアマン順位相関 | [スプレッド幅・注文量・約定量と OBI / OFI の関係](mu_spread_flow_report.md) |
+| [OBI / OFI の帯ごとの姿](../../charts/xyz_MU_spread_flow_bins.png) | 帯ごとのスプレッド幅・注文量・約定量・約定の発生率(2 行 4 列) | [同上](mu_spread_flow_report.md) |
 
 ## 数値データ
+
+リンクのあるものは版管理下にあります。parquet は容量のため版管理外で、
+下表の生成スクリプトを実行すれば作り直せます。
 
 | ファイル | 内容 | 生成スクリプト |
 |---|---|---|
@@ -77,15 +121,23 @@
 | [spread_flow_corr_xyz_MU.csv](../../data/spread_flow_corr_xyz_MU.csv) | 7 変数のスピアマン順位相関行列(7 行) | `build_spread_flow.py` |
 | [order_size_stats_xyz_MU.csv](../../data/order_size_stats_xyz_MU.csv) | 時間帯 × 区分ごとのオーダーサイズの要約統計(16 行) | `build_order_size.py` |
 | [order_size_hist_xyz_MU.csv](../../data/order_size_hist_xyz_MU.csv) | 対数階級のヒストグラム(140 行) | `build_order_size.py` |
-| microprice_cells_xyz_MU.parquet | 日区分 × 差の帯 × ホライズンの上昇確率・区間・帰無対照(容量のため版管理外) | `build_microprice.py` |
-| obi_ofi_cells_xyz_MU.parquet | 説明変数 × 日区分 × 帯 × ホライズンの上昇確率・期待値動き・区間・帰無対照(版管理外) | `build_obi_ofi.py` |
-| obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100、版管理外) | `build_obi_ofi.py` |
+| [arrival_depth_xyz_MU.csv](../../data/arrival_depth_xyz_MU.csv) | 窓 × 側 × 深さ帯の到着率の平均・中央・p10・p90(144 行) | `build_arrival_depth.py` |
+| arrival_depth_xyz_MU.parquet | 日 × 窓 × 側 × 深さ帯の生計数と数量(9,000 行) | `build_arrival_depth.py` |
 | [book_slope_fits_xyz_MU.csv](../../data/book_slope_fits_xyz_MU.csv) | 説明変数 × 日区分 × ホライズンの OLS / HAC / GLS / 重ならない部分標本の推定(44 行) | `build_book_slope.py` |
-| book_slope_bins_xyz_MU.parquet | 帯ごとの平均 log リターン(図示用、版管理外) | `build_book_slope.py` |
-| cancel_rate_cells_xyz_MU.parquet | 日区分 × ホライズンの平均 log リターン・区間・帰無対照(版管理外) | `build_cancel_rate.py` |
-| cancel_rate_bins_xyz_MU.parquet | 傾きの十分位 × ホライズンの平均 log リターン(版管理外) | `build_cancel_rate.py` |
+| microprice_cells_xyz_MU.parquet | 日区分 × 差の帯 × ホライズンの上昇確率・区間・帰無対照 | `build_microprice.py` |
+| obi_ofi_cells_xyz_MU.parquet | 説明変数 × 日区分 × 帯 × ホライズンの上昇確率・期待値動き・区間・帰無対照 | `build_obi_ofi.py` |
+| obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100) | `build_obi_ofi.py` |
+| book_slope_bins_xyz_MU.parquet | 帯ごとの平均 log リターン(図示用) | `build_book_slope.py` |
+| cancel_rate_cells_xyz_MU.parquet | 日区分 × ホライズンの平均 log リターン・区間・帰無対照 | `build_cancel_rate.py` |
+| cancel_rate_bins_xyz_MU.parquet | 傾きの十分位 × ホライズンの平均 log リターン | `build_cancel_rate.py` |
+| sign_persist_counts_xyz_MU.parquet | 日 × 特徴量 × k × (符号, 次の符号)の生計数 | `build_sign_persistence.py` |
+| sign_persist_cells_xyz_MU.parquet | 日区分 × 特徴量 × k の集計・区間・帰無対照 | `build_sign_persistence.py` |
+| sign_persist_ident_xyz_MU.parquet | 恒等式の検算結果(日ごとの不一致件数) | `build_sign_persistence.py` |
 
 ## 再現手順
+
+上から順に実行すると、このページの図と数値がすべて再現できます。
+初回のみ、リポジトリの直下で `uv sync` を実行してください。
 
 ```bash
 uv run python scripts/inventory_s3.py --refresh --coin xyz:MU
@@ -115,6 +167,12 @@ uv run python scripts/build_book_slope.py --coin xyz:MU
 uv run python scripts/plot_book_slope.py --coin xyz:MU
 uv run python scripts/build_cancel_rate.py --coin xyz:MU
 uv run python scripts/plot_cancel_rate.py --coin xyz:MU
+uv run python scripts/build_sign_persistence.py --coin xyz:MU
+uv run python scripts/plot_sign_persistence.py --coin xyz:MU
+uv run python scripts/build_arrival_depth.py --coin xyz:MU
+uv run python scripts/plot_arrival_depth.py --coin xyz:MU
 ```
+
+---
 
 リポジトリ全体の目次は [../../README.md](../../README.md) にあります。
