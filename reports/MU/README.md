@@ -41,6 +41,9 @@
 | [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
 | [板の深さごとの注文到着率](mu_arrival_depth_report.md) | 1 秒あたり何本の注文が mid からどれだけ離れた価格に届くかを、6 つの時間帯 × 買い売り別 × 9 つの距離帯で測る。開場後は閉場日の昼の 21 倍。最頻帯は 2–5 bp だが開場後だけ 10–25 bp へ外側にずれる。買いと売りの非対称は 6 窓を補正すると残らない。 |
 | [置いた指値が約定する確率](mu_fill_rate_report.md) | 指値が最終的に約定する確率を、発注の瞬間に確定する 2 条件(同じ側の最良気配から何ティック離れているか / 同じ価格に既に何本並んでいたか)で層別する。効くのは水準よりキュー位置で、先客 1 本で 2.5 分の 1、5〜9 本で 20 分の 1 になる。トリガー注文を板に入れて 99.95% の時間クロスさせた失敗も記録。**10 日分の暫定値**。 |
+| [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
+| [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
+| [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -55,6 +58,7 @@
 | [キャンセル率の傾きと将来の log リターン](mu_cancel_rate_report.md) | キャンセル率 CR と不均衡 CI を 100ms 刻みで作り、直近 1 秒に当てた直線の傾きが正のとき log リターンが正になるかを 100ms〜60 秒の 8 ホライズンで検証。16 セルすべてで有意だが、効果は片道費用の 1/8 以下で取引としては成立しない。先読みのバグを踏んで効果が半減した経緯も記録。 |
 | [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md) | 板に入った量と出ていった量を 100ms 窓で 7 通り(全体 / 買い / 売り / 最良気配以上 / それより外側 / 偏り / 本数)測り、11 の予測ホライズンへ回帰。前向きの相関が後ろ向きを下回るのは 77 セル中 77 セル。向きの予測力は $`\|r\| \le 0.0154`$ で実質ゼロ。立会日と閉場日を混ぜると相関が両方より大きくなる罠も示す。 |
 | [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md) | 最良気配の買い数量・売り数量・OBI・OFI を 10ms 格子に載せ、100ms ごとの標本分散を 12 のホライズン(10ms〜100s)の将来 log リターンへ回帰。絶対リターンには OFI の分散が最も効く(500ms で r=+0.132)。**生の分散では何も見えず log(1+x) で初めて見える**こと、片側に紐づいた分散は符号つきリターンとも鏡像の関係を持つこと(事前の予測を外した経緯)を含む。 |
+| [板の弾力性 — 流動性ショックからの回復](mu_resilience_report.md) | 最良気配の数量が直前 1 秒の平均に対して 50% 以上失われた瞬間を「ショック」とし(818 万件)、D(t) = D0 + (D_shock − D0)e^{−κt} で回復を測る 12 指標。**指数模型が平均経路には当てはまらない**(戻る件と戻らない件の混合)こと、1 秒後の回復度 R が上昇確率に 20.6pp の単調な用量反応を持つこと、買い側と売り側で弾力性に差が無いことを示す。 |
 | [ティック水準別 OBI と将来 log リターンの回帰](mu_obi_levels_report.md) | 最良気配から 1〜10 ティックの各水準について OBI を作り、100ms〜50 秒の 9 ホライズンで log リターンへ回帰。板は l1 の注文イベントから組み直した。279 格子すべてが Bonferroni 後も有意だが、**生の傾きは水準 1 が最大でも 1σ で測ると水準 2 が最大**で、累積の傾きの伸びは情報の増加ではなく ばらつきの縮小である(4 ティックで頭打ち)。bbo の 53 行の壊れた記録が標準偏差を支配していた事故と、その掃除も記録。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
@@ -159,6 +163,38 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 置いた指値が約定する確率。ティック水準 × キュー位置の周辺分布と同時分布、出来高三分位での形、出来高との比例性](../../charts/xyz_MU_fill_rate.png)
 
+**束の間の注文(fleeting order)** — 日次の本数と数量、閾値ごとの FLR、側別・距離帯別・数量帯別、口座ごとの分布と二項の帰無対照、口座の集中。解説: [束の間の注文は板の何割を占めるか](mu_fleeting_report.md)
+
+![xyz:MU 束の間の注文。日次の本数と数量、閾値ごとの fleeting-liquidity ratio、bid/ask 別、最良気配からの距離帯別、注文数量帯別、口座ごとの分布と帰無対照、口座の集中](../../charts/xyz_MU_fleeting.png)
+
+**指値注文の生存率** — 6 条件それぞれの層別生存率 S(τ)。横軸は経過時間(対数)。解説: [指値注文の生存率・取消率・約定率](mu_hazard_report.md)
+
+![xyz:MU 指値注文の生存率 S(τ)。置かれてからの経過時間 τ に対して、まだ板に残っている割合を 6 条件で層別](../../charts/xyz_MU_hazard_survival.png)
+
+**取消ハザード** — τ まで生きた注文が次の瞬間に取り消される率(毎秒)。解説: [同上](mu_hazard_report.md)
+
+![xyz:MU 指値注文の取消ハザード。τ まで生きた注文が次の瞬間に取り消される率(毎秒)](../../charts/xyz_MU_hazard_cancel.png)
+
+**約定ハザード** — τ まで生きた注文が次の瞬間に約定する率(毎秒)。解説: [同上](mu_hazard_report.md)
+
+![xyz:MU 指値注文の約定ハザード。τ まで生きた注文が次の瞬間に約定する率(毎秒)](../../charts/xyz_MU_hazard_fill.png)
+
+**ハザードの検算** — 競合リスクの内訳、無作為 8 層の帰無対照、距離を揃えた対照。解説: [同上](mu_hazard_report.md)
+
+![xyz:MU 指値注文のハザードの検算。競合リスクの内訳、無作為に 8 層へ振った帰無対照、最良から 10 ティック以内に絞った対照](../../charts/xyz_MU_hazard_controls.png)
+
+**仮想成行 Q に対する板の応答** — Impact(Q)・Slippage(Q)・削る価格水準の数・marginal 2 種・買い売りの非対称。解説: [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md)
+
+![xyz:MU 仮想成行 Q に対する板の応答。Impact(Q)、Slippage(Q)、削る価格水準の数、marginal impact、marginal depth、買いと売りの非対称](../../charts/xyz_MU_impact_curve.png)
+
+**板の脆さ** — 1 秒あたりの入れ替わり率・その偏り・depth-at-risk・gap 調整後の上乗せ。解説: [同上](mu_impact_fragility_report.md)
+
+![xyz:MU 板の脆さ。1 秒あたりの入れ替わり率、その偏り、depth-at-risk、gap 調整後の上乗せ、深さの分布、脆さとスプレッドの関係](../../charts/xyz_MU_impact_fragility.png)
+
+**板の応答指標はシグナルになるか** — 向き・大きさ・実現ボラティリティへの前向き相関と、後ろ向き・帰無対照・偏相関の比較。解説: [同上](mu_impact_fragility_report.md)
+
+![xyz:MU 板の応答指標のシグナルとしての強さ。向き・大きさ・実現ボラティリティに対する前向き相関の行列と、後ろ向き・帰無対照・偏相関の比較](../../charts/xyz_MU_impact_signal.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -188,6 +224,18 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **板の入れ替わり(churn)と将来 log リターン** — 特徴量ごとの相関のホライズン依存 7 枚(前向き / 後ろ向き / 向きの予測)と、符号つきリターンとの相関の一覧 2 枚。解説: [板の入れ替わり(churn)7 種と将来 log リターン](mu_churn_report.md)
 
 ![xyz:MU churn 7 種と将来 log リターンの OLS。特徴量ごとの相関のホライズン依存と、符号つきリターンとの相関の一覧](../../charts/xyz_MU_churn_ols.png)
+
+**板の弾力性 — 回復曲線と指標の分布** — 買い売り別の平均回復経路と指数当てはめ、12 指標の分位、日ごとの κ。解説: [板の弾力性](mu_resilience_report.md)
+
+![xyz:MU 板の弾力性の回復曲線。買い売り別の平均回復経路と指数当てはめ、12 指標の分位、日ごとの κ](../../charts/xyz_MU_resilience_curve.png)
+
+**弾力性の指標 × ホライズンの回帰** — 絶対リターンと符号つきリターンへの相関、生と log(1+x) の違い。解説: [板の弾力性](mu_resilience_report.md)
+
+![xyz:MU 弾力性の指標と将来リターンの回帰。絶対リターンと符号つきリターンへの相関、生と log(1+x) の違い](../../charts/xyz_MU_resilience_ols.png)
+
+**弾力性の帯ごとの上昇確率** — 4 指標の帯 × ホライズンの P(上昇|動いた) の無条件値からの差。解説: [板の弾力性](mu_resilience_report.md)
+
+![xyz:MU 弾力性の帯ごとの上昇確率。4 指標の帯 × ホライズンの無条件値からの差](../../charts/xyz_MU_resilience_matrix.png)
 
 ### C. 注文フローの持続性
 
@@ -247,6 +295,9 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [acf_200ms_xyz_MU.csv](../../data/acf_200ms_xyz_MU.csv) | 変数 × 日区分 × 156 ラグの自己相関・区間・帰無対照(624 行) | `build_acf_200ms.py` |
 | [acf_200ms_daily_lag1_xyz_MU.csv](../../data/acf_200ms_daily_lag1_xyz_MU.csv) | 日ごとの 1 ラグ自己相関と空の格子点の割合(98 行) | `build_acf_200ms.py` |
 | [var100_ols_xyz_MU.csv](../../data/var100_ols_xyz_MU.csv) | 特徴量 × 層 × 変換 × 目的変数 × 日区分 × ホライズン × 標本の OLS 推定(2,304 行) | `build_var100.py` |
+| [resil_ols_xyz_MU.csv](../../data/resil_ols_xyz_MU.csv) | 弾力性の指標 × 側 × 日区分 × 変換 × 目的変数 × ホライズンの OLS(2,880 行) | `analyze_resilience.py` |
+| [resil_trans_xyz_MU.csv](../../data/resil_trans_xyz_MU.csv) | 弾力性の帯 × ホライズンの上昇確率と日単位ブートストラップの区間 | `analyze_resilience.py` |
+| [resil_daily_xyz_MU.csv](../../data/resil_daily_xyz_MU.csv) | 日ごとの κ_bid / κ_ask / 非対称(98 行) | `analyze_resilience.py` |
 | microprice_cells_xyz_MU.parquet | 日区分 × 差の帯 × ホライズンの上昇確率・区間・帰無対照 | `build_microprice.py` |
 | obi_ofi_cells_xyz_MU.parquet | 説明変数 × 日区分 × 帯 × ホライズンの上昇確率・期待値動き・区間・帰無対照 | `build_obi_ofi.py` |
 | obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100) | `build_obi_ofi.py` |
@@ -257,6 +308,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | obi_levels_dose_xyz_MU.parquet | 水準 × ホライズン × OBI の帯ごとの平均 log リターン(8,370 行) | `fit_obi_levels.py` |
 | obi_levels_days/xyz_MU/ | 日ごとの回帰の累積和(ブロックブートストラップの素) | `build_obi_levels.py` |
 | obi_levels_meta/xyz_MU/ | 日ごとの検算(bbo との一致率・水準の占有率・孤児) | `build_obi_levels.py` |
+| fleeting_cells_xyz_MU.parquet | 日 × 閾値 × 側 × 距離 × 数量帯の計数 | `build_fleeting.py` |
+| fleeting_daily_xyz_MU.parquet | 日 × 閾値の合計と大口の内訳 | `build_fleeting.py` |
+| fleeting_wallet_xyz_MU.parquet | 口座別の本数・数量と束の間の内訳(14,125 者) | `build_fleeting.py` |
+| [fleeting_meta_xyz_MU.csv](../../data/fleeting_meta_xyz_MU.csv) | 日ごとの検算と大口の閾値(98 行) | `build_fleeting.py` |
 | sign_persist_counts_xyz_MU.parquet | 日 × 特徴量 × k × (符号, 次の符号)の生計数 | `build_sign_persistence.py` |
 | sign_persist_cells_xyz_MU.parquet | 日区分 × 特徴量 × k の集計・区間・帰無対照 | `build_sign_persistence.py` |
 | sign_persist_ident_xyz_MU.parquet | 恒等式の検算結果(日ごとの不一致件数) | `build_sign_persistence.py` |
@@ -310,6 +365,14 @@ uv run python scripts/plot_fill_rate.py --coin xyz:MU
 uv run python scripts/build_obi_levels.py --coin xyz:MU
 uv run python scripts/fit_obi_levels.py --coin xyz:MU
 uv run python scripts/plot_obi_levels.py --coin xyz:MU
+uv run python scripts/fetch_l1_extra.py --coin xyz:MU
+uv run python scripts/build_hazard.py --coin xyz:MU
+uv run python scripts/plot_hazard.py --coin xyz:MU
+uv run python scripts/build_fleeting.py --coin xyz:MU
+uv run python scripts/plot_fleeting.py --coin xyz:MU
+uv run python scripts/build_impact.py --coin xyz:MU
+uv run python scripts/build_impact_signal.py --coin xyz:MU
+uv run python scripts/plot_impact.py --coin xyz:MU
 ```
 
 ---
