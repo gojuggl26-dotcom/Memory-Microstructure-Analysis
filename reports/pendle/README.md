@@ -8,6 +8,27 @@
 
 Pendle(利回りトークン化プロトコル)の市場マイクロストラクチャー分析。
 
+Boros は単一の取引所ではなく、複数の取引所の perp ファンディングレートを
+implied APR 建てで束ねた中央指値注文板です。原資産の perp がどこで建っているかに応じて、
+以下 **7 つの取引所**それぞれのファンディング市場が Boros 上に存在します
+(2026-08-23 時点の在庫は 194 市場。内訳は [boros_data_source.md](boros_data_source.md) §2)。
+
+<p>
+  <a href="https://www.binance.com/"><img src="../../photo/binance-logo.jpg" alt="Binance" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.bybit.com/"><img src="../../photo/bybit-logo.jpg" alt="Bybit" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.gate.io/"><img src="../../photo/gate-logo.png" alt="Gate" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://hyperliquid.xyz/"><img src="../../photo/hyperliquid-logo.png" alt="Hyperliquid" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.kucoin.com/"><img src="../../photo/kucoin-logo.png" alt="KuCoin" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://lighter.xyz/"><img src="../../photo/lighter-logo.jpg" alt="Lighter" height="48"></a>
+  &nbsp;&nbsp;
+  <a href="https://www.okx.com/"><img src="../../photo/okx-logo.png" alt="OKX" height="48"></a>
+</p>
+
 **対象**: **Boros(V3)** — 各取引所の perp ファンディングレートを implied APR 建ての
 中央指値注文板で取引する市場。**全 188 市場 / イベント 10,424,762 件**(Arbitrum のオンチェーンログ)。
 分析の作法は [METHODOLOGY.md](METHODOLOGY.md) に従う(`DRAM-microprice` で確立したものを引き継ぐ)。
