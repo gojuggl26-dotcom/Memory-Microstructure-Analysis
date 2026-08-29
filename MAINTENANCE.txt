@@ -94,8 +94,13 @@ README.md は「初めて読む人」だけに向けて書く。作業手順・�
 
     reports/<COIN>/<coin を小文字にしたもの>_<主題>_report.md
     charts/<銘柄コードの : を _ に置換>_<主題>.png     例 xyz_MU_book_slope.png
+
     data/<主題>_<銘柄>.csv       版管理する
     data/<主題>_<銘柄>.parquet   版管理しない(.gitignore 済み)
+    例外: Pendle Boros(reports/pendle/)は統合元リポジトリの命名を保つ。
+    scripts/boros_*.py(作図は boros_*_plot.py)、charts/boros_<主題>.png、
+    reports/pendle/<主題>_report.md。市場単位の分析なので銘柄フォルダは無い。
+    (2026-08-29 に gojuggl26-dotcom/Pendle-microstructure-Analysis@c100fb7 を統合)
 
 
 6. 版管理

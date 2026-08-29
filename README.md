@@ -4,8 +4,10 @@
   <a href="https://www.python.org/"><img src="photo/python-logo.png" alt="Python" height="76"></a>
 </p>
 
-メモリ半導体に連動する無期限先物(perpetual futures、以下 perp)を、
-**注文一本ごとの記録まで遡って**調べるリポジトリです。
+無期限先物(perpetual futures、以下 perp)まわりの市場を、
+**注文一本ごとの記録まで遡って**調べるリポジトリです。対象はメモリ半導体に
+連動する perp(Hyperliquid)と、perp のファンディングレートそのものを取引する板
+(Pendle Boros)です。
 
 板に出た注文、その取り消し、約定のすべてが時刻つきで残っているため、
 日足や出来高だけでは見えない「板がどう作られ、どう崩れるか」を直接観察できます。
@@ -22,6 +24,7 @@
 | 取引所 | 対象 | 記録の粒度 | 状態 | 入口 |
 |---|---|---|---|---|
 | **[Hyperliquid](https://hyperliquid.xyz/)** | [Trade.xyz](https://trade.xyz/) が配備したメモリ半導体 perp 6 銘柄 | L4(注文 1 本ごと) | 進行中 | **[Hyperliquid の分析](reports/hyperliquid/README.md)** |
+| **[Pendle Boros](https://boros.pendle.finance/)** | 各取引所の perp ファンディングレートを implied APR 建てで取引する板・全 188 市場 | 注文イベント(Arbitrum オンチェーンログ) | 進行中 | **[Pendle Boros の分析](reports/pendle/README.md)** |
 | その他の DEX | 未定 | — | 未着手 | — |
 
 新しい取引所を足すときは `reports/<取引所名>/README.md` を作り、この表に 1 行足します。
@@ -31,7 +34,8 @@
 
 | 知りたいこと | 行き先 |
 |---|---|
-| 結論だけ知りたい | [Hyperliquid の分析 — 何が判ったか](reports/hyperliquid/README.md#何が判ったか) |
+| Hyperliquid の結論だけ知りたい | [Hyperliquid の分析 — 何が判ったか](reports/hyperliquid/README.md#何が判ったか) |
+| Pendle Boros の結論だけ知りたい | [Pendle Boros の分析 — 主な結果](reports/pendle/README.md#主な結果) |
 | 銘柄ごとの分析を読みたい | [`xyz:MU` 分析索引](reports/MU/README.md) |
 | 用語の意味を調べたい | [用語辞書](GLOSSARY.md) |
 | 「予測できた」の定義を知りたい | [予測の定義](reports/predicting_definition.md) |
@@ -87,10 +91,11 @@
 | 接頭辞 | 役割 | 例 |
 |---|---|---|
 | `inventory_` | 作業用バケットの中身と行数を棚卸しする | `inventory_s3.py`, `inventory_rows.py` |
-| `fetch_` | 必要な列だけを手元に落とす | `fetch_fills.py`, `fetch_bbo.py`, `fetch_l1.py` |
+| `fetch_` | 必要な列だけを手元に落とす | `fetch_fills.py`, `fetch_bbo.py`, `fetch_l1.py`, `fetch_l1_extra.py` |
 | `build_` | 特徴量・集計・検定結果を算出して `data/` に書く | `build_obi_ofi.py`, `build_sign_persistence.py` |
 | `plot_` | `data/` を読んで `charts/` に図を書く | `plot_obi_ofi.py`, `plot_microprice.py` |
 | `regress_` | 回帰して散布図を描く | `regress_oi_volume.py` |
+| `boros_` | Pendle Boros の分析一式(取得・算出・作図。作図は `_plot` 接尾辞) | `boros_pooled_all.py`, `boros_pooled_plot.py` |
 
 このほかに `palette_check.py` があり、図の配色が色覚特性下でも判別できるかを
 計算で検査します。
