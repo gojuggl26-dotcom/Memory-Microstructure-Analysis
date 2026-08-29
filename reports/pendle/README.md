@@ -3,7 +3,7 @@
 [← ホーム](../../README.md)
 
 <p>
-  <a href="https://www.pendle.finance/"><img src="../../photo/pendle-logo.png" alt="Pendle" height="76"></a>
+  <a href="https://www.pendle.finance/"><img src="../../photo/pendle-logo.png" alt="Pendle" height="152"></a>
 </p>
 
 Pendle(利回りトークン化プロトコル)の市場マイクロストラクチャー分析。
