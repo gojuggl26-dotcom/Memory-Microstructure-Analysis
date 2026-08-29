@@ -45,6 +45,7 @@
 | [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
+| [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -167,6 +168,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **束の間の注文(fleeting order)** — 日次の本数と数量、閾値ごとの FLR、側別・距離帯別・数量帯別、口座ごとの分布と二項の帰無対照、口座の集中。解説: [束の間の注文は板の何割を占めるか](mu_fleeting_report.md)
 
 ![xyz:MU 束の間の注文。日次の本数と数量、閾値ごとの fleeting-liquidity ratio、bid/ask 別、最良気配からの距離帯別、注文数量帯別、口座ごとの分布と帰無対照、口座の集中](../../../charts/xyz_MU_fleeting.png)
+
+**口座の集中度(wallet concentration)** — 口座数、最良気配を持つ口座数、HHI と実効口座数、ジニ係数、上位 k のシェア、集中の偏り、touch と deep、日内の推移。解説: [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md)
+
+![xyz:MU 口座の集中度。板に数量を置いている口座数、最良気配を持つ口座数、wallet HHI と実効口座数、Gini 係数、上位 k のシェア、concentration imbalance、touch と deep の HHI、日内の推移](../../../charts/xyz_MU_wallet_conc.png)
 
 **指値注文の生存率** — 6 条件それぞれの層別生存率 S(τ)。横軸は経過時間(対数)。解説: [指値注文の生存率・取消率・約定率](mu_hazard_report.md)
 
@@ -319,6 +324,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | fleeting_daily_xyz_MU.parquet | 日 × 閾値の合計と大口の内訳 | `build_fleeting.py` |
 | fleeting_wallet_xyz_MU.parquet | 口座別の本数・数量と束の間の内訳(14,125 者) | `build_fleeting.py` |
 | [fleeting_meta_xyz_MU.csv](../../../data/fleeting_meta_xyz_MU.csv) | 日ごとの検算と大口の閾値(98 行) | `build_fleeting.py` |
+| [wallet_conc_daily_xyz_MU.csv](../../../data/wallet_conc_daily_xyz_MU.csv) | 日 × 14 指標の平均と 5 分位、検算(98 行 × 112 列) | `build_wallet_conc.py` |
+| wallet_conc_hourly_xyz_MU.parquet | 日 × 時 × 指標の平均(2,352 行) | `build_wallet_conc.py` |
 | sign_persist_counts_xyz_MU.parquet | 日 × 特徴量 × k × (符号, 次の符号)の生計数 | `build_sign_persistence.py` |
 | sign_persist_cells_xyz_MU.parquet | 日区分 × 特徴量 × k の集計・区間・帰無対照 | `build_sign_persistence.py` |
 | sign_persist_ident_xyz_MU.parquet | 恒等式の検算結果(日ごとの不一致件数) | `build_sign_persistence.py` |
@@ -377,6 +384,8 @@ uv run python scripts/build_hazard.py --coin xyz:MU
 uv run python scripts/plot_hazard.py --coin xyz:MU
 uv run python scripts/build_fleeting.py --coin xyz:MU
 uv run python scripts/plot_fleeting.py --coin xyz:MU
+uv run python scripts/build_wallet_conc.py --coin xyz:MU
+uv run python scripts/plot_wallet_conc.py --coin xyz:MU
 uv run python scripts/build_impact.py --coin xyz:MU
 uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
