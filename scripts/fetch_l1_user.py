@@ -69,7 +69,11 @@ def main() -> None:
             return day, f"行数が違う {u.height:,} vs {loc.height:,}", 0
         if not (u["status"].to_numpy() == loc["status"].to_numpy()).all():
             return day, "status の並びが一致しない", 0
-        u.select("user").write_parquet(outdir / f"dt={day}.parquet", compression="zstd")
+        # ★一時ファイルへ書いてから rename する。直接書くと、
+        #   並行して読む側が書きかけの parquet を掴む(実際に踏んだ)
+        tmp = outdir / f".dt={day}.parquet.tmp"
+        u.select("user").write_parquet(tmp, compression="zstd")
+        tmp.replace(outdir / f"dt={day}.parquet")
         return day, None, t.nbytes
 
     nb = 0

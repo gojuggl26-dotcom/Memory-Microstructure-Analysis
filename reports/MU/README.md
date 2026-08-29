@@ -40,6 +40,7 @@
 | [出来高の買い・売り内訳とニュース](mu_volume_side_news_report.md) | テイカー側で出来高を買い・売りに分解し、HAC 帰無対照で偏りを検定。標本期間の主なニュースとの対応づけ、および 6 月 24 日決算発表という「発表時刻が事前に判っている」1 件だけの厳密な検証。 |
 | [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
 | [板の深さごとの注文到着率](mu_arrival_depth_report.md) | 1 秒あたり何本の注文が mid からどれだけ離れた価格に届くかを、6 つの時間帯 × 買い売り別 × 9 つの距離帯で測る。開場後は閉場日の昼の 21 倍。最頻帯は 2–5 bp だが開場後だけ 10–25 bp へ外側にずれる。買いと売りの非対称は 6 窓を補正すると残らない。 |
+| [このウォレットはマーケットメイカーか](mu_wallet_mm_report.md) | 板を厚く出している 5 者を 13 基準(両建て・連続在席・BBO 参加・対称性・更新頻度・取消率・生存時間・補充・建玉感応・板厚寄与・カバレッジ・幅と量の安定性)で採点。**板に出す金額の大きさと MM らしさは一致しない** — 最大の出し手は mid から 73.8bp 離れ、±10bp に置くのは 2.3% だけ。 |
 | [置いた指値が約定する確率](mu_fill_rate_report.md) | 指値が最終的に約定する確率を、発注の瞬間に確定する 2 条件(同じ側の最良気配から何ティック離れているか / 同じ価格に既に何本並んでいたか)で層別する。効くのは水準よりキュー位置で、先客 1 本で 2.5 分の 1、5〜9 本で 20 分の 1 になる。トリガー注文を板に入れて 99.95% の時間クロスさせた失敗も記録。**10 日分の暫定値**。 |
 | [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
@@ -195,6 +196,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 板の応答指標のシグナルとしての強さ。向き・大きさ・実現ボラティリティに対する前向き相関の行列と、後ろ向き・帰無対照・偏相関の比較](../../charts/xyz_MU_impact_signal.png)
 
+**ウォレットの MM らしさ 13 基準の採点表** — 5 者 × 13 基準の採点表、位置取り(距離と最良気配率)、最も MM らしい 1 者の日ごとの在席。解説: [このウォレットはマーケットメイカーか](mu_wallet_mm_report.md)
+
+![xyz:MU ウォレットの MM らしさ。5 者 × 13 基準の採点表、位置取り、日ごとの在席](../../charts/xyz_MU_wallet_mm.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -298,6 +303,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [resil_ols_xyz_MU.csv](../../data/resil_ols_xyz_MU.csv) | 弾力性の指標 × 側 × 日区分 × 変換 × 目的変数 × ホライズンの OLS(2,880 行) | `analyze_resilience.py` |
 | [resil_trans_xyz_MU.csv](../../data/resil_trans_xyz_MU.csv) | 弾力性の帯 × ホライズンの上昇確率と日単位ブートストラップの区間 | `analyze_resilience.py` |
 | [resil_daily_xyz_MU.csv](../../data/resil_daily_xyz_MU.csv) | 日ごとの κ_bid / κ_ask / 非対称(98 行) | `analyze_resilience.py` |
+| [wallet_mm_xyz_MU.csv](../../data/wallet_mm_xyz_MU.csv) | ウォレット × 13 の MM 基準(日ごとの中央値) | `build_wallet_mm.py` |
+| [wallet_mm_daily_xyz_MU.csv](../../data/wallet_mm_daily_xyz_MU.csv) | ウォレット × 日 の内訳 | `build_wallet_mm.py` |
 | microprice_cells_xyz_MU.parquet | 日区分 × 差の帯 × ホライズンの上昇確率・区間・帰無対照 | `build_microprice.py` |
 | obi_ofi_cells_xyz_MU.parquet | 説明変数 × 日区分 × 帯 × ホライズンの上昇確率・期待値動き・区間・帰無対照 | `build_obi_ofi.py` |
 | obi_ofi_joint_xyz_MU.parquet | OBI × OFI の同時分布(k=1/10/100) | `build_obi_ofi.py` |
