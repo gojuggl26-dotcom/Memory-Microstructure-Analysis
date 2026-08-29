@@ -1,0 +1,42 @@
+{
+  "n_maker_fills": 1546583,
+  "gross_capture_bp": {
+    "mean": 0.4031770476383442,
+    "median": 0.1876419041896064
+  },
+  "spread_bp_median": 1.5762393181634329,
+  "maker_fee_bp": 0.088,
+  "taker_fee_bp": 0.846,
+  "1s": {
+    "realized_bp_mean": 0.08484019646105309,
+    "realized_bp_median": 0.09782486414783231,
+    "adverse_bp": 0.3183408731012707,
+    "net_after_fee_bp": -0.0031598035389469037,
+    "share_positive": 0.5456832048334243,
+    "n": 1546564
+  },
+  "10s": {
+    "realized_bp_mean": -0.06350908664410906,
+    "realized_bp_median": -0.08399126490885056,
+    "adverse_bp": 0.46671366542005355,
+    "net_after_fee_bp": -0.15150908664410906,
+    "share_positive": 0.49548839943427964,
+    "n": 1546347
+  },
+  "60s": {
+    "realized_bp_mean": -0.15691176216334515,
+    "realized_bp_median": -0.18837358330785636,
+    "adverse_bp": 0.5602877930527713,
+    "net_after_fee_bp": -0.24491176216334515,
+    "share_positive": 0.49357740447659376,
+    "n": 1545014
+  },
+  "300s": {
+    "realized_bp_mean": -0.3476703800960414,
+    "realized_bp_median": -0.2898382702452142,
+    "adverse_bp": 0.7512790284606483,
+    "net_after_fee_bp": -0.4356703800960414,
+    "share_positive": 0.49620983761453064,
+    "n": 1540963
+  }
+}

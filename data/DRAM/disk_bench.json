@@ -1,0 +1,69 @@
+{
+  "staged_ssd": {
+    "obi_bytes": 1502635205,
+    "grid_bytes": 2825187622,
+    "obi_files": 30,
+    "grid_files": 594
+  },
+  "staged_hdd": {
+    "obi_bytes": 1502635205,
+    "grid_bytes": 2825187622,
+    "obi_files": 30,
+    "grid_files": 594
+  },
+  "hdd_write_sec": 20.07437609999033,
+  "SSD (NVMe)": {
+    "drive": "SSD (NVMe)",
+    "seq_read": {
+      "sec": 2.1890544000052614,
+      "bytes": 1502635205,
+      "MB_per_s": 686.4311846230904
+    },
+    "parquet_all_cols": {
+      "sec": 2.5020068000012543,
+      "rows": 18517092,
+      "Mrows_per_s": 7.4008959527970575
+    },
+    "parquet_3cols": {
+      "sec": 0.523323999994318,
+      "rows": 18517092,
+      "Mrows_per_s": 35.38360938959622
+    },
+    "many_small_files": {
+      "sec": 8.648854300001403,
+      "files": 594,
+      "rows": 124982019,
+      "files_per_s": 68.67961690601074
+    }
+  },
+  "HDD (7200rpm)": {
+    "drive": "HDD (7200rpm)",
+    "seq_read": {
+      "sec": 20.41332869998587,
+      "bytes": 1502635205,
+      "MB_per_s": 73.61049376533286
+    },
+    "parquet_all_cols": {
+      "sec": 73.70123469999817,
+      "rows": 18517092,
+      "Mrows_per_s": 0.25124534311228386
+    },
+    "parquet_3cols": {
+      "sec": 23.770981299996492,
+      "rows": 18517092,
+      "Mrows_per_s": 0.7789788636114375
+    },
+    "many_small_files": {
+      "sec": 47.77000030000636,
+      "files": 594,
+      "rows": 124982019,
+      "files_per_s": 12.434582295782839
+    }
+  },
+  "ratio_hdd_over_ssd": {
+    "seq_read": 9.325181091861767,
+    "parquet_all_cols": 29.45684827873418,
+    "parquet_3cols": 45.42306735455394,
+    "many_small_files": 5.523274949839149
+  }
+}

@@ -1,0 +1,28 @@
+{
+ "0ms": {
+  "warned_share": 0.7625677850742416,
+  "loss_avoided_share": 0.8181140023938812,
+  "mean_if_pull": 0.6658065835665001
+ },
+ "100ms": {
+  "warned_share": 0.7635633470310068,
+  "loss_avoided_share": 0.8193215237909361,
+  "mean_if_pull": 0.5941778500247653
+ },
+ "200ms": {
+  "warned_share": 0.7334555250813509,
+  "loss_avoided_share": 0.7840371443852339,
+  "mean_if_pull": 0.39859615458944897
+ },
+ "500ms": {
+  "warned_share": 0.6098807372689714,
+  "loss_avoided_share": 0.6469583437480257,
+  "mean_if_pull": 0.12109060057284945
+ },
+ "1s": {
+  "warned_share": 0.5666086486199426,
+  "loss_avoided_share": 0.5878486398834526,
+  "mean_if_pull": 0.06890311808382828
+ },
+ "baseline_all": 0.0
+}

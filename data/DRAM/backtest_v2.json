@@ -1,0 +1,158 @@
+{
+ "best": {
+  "gate_q": 0.0,
+  "improve": false,
+  "inv_limit": 0.0,
+  "days": 5,
+  "fills": 1464.4,
+  "pnl": 16142.144876296947,
+  "mean_bp": 9.85353285279316,
+  "pnl_med": 5031.944676517403,
+  "max_inv": 137.8
+ },
+ "all": [
+  {
+   "gate_q": 0.0,
+   "improve": false,
+   "inv_limit": 0.0,
+   "days": 5,
+   "fills": 1464.4,
+   "pnl": 16142.144876296947,
+   "mean_bp": 9.85353285279316,
+   "pnl_med": 5031.944676517403,
+   "max_inv": 137.8
+  },
+  {
+   "gate_q": 0.0,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 1199.6,
+   "pnl": -550.05074395722,
+   "mean_bp": -0.2271810057203374,
+   "pnl_med": -133.8346208940661,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.1,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 1112.6,
+   "pnl": -181.01273607200156,
+   "mean_bp": 0.19568406060139273,
+   "pnl_med": -13.237587231437354,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.2,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 1040.8,
+   "pnl": -305.3177396181268,
+   "mean_bp": 0.32770466811341076,
+   "pnl_med": 257.670827221704,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.3,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 970.4,
+   "pnl": -439.68983548832585,
+   "mean_bp": 0.0828409773171391,
+   "pnl_med": 221.96845830541878,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.4,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 875.0,
+   "pnl": -670.1331560782332,
+   "mean_bp": -0.17779919582349685,
+   "pnl_med": 221.33335894795695,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.5,
+   "improve": false,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 793.0,
+   "pnl": -582.448462091575,
+   "mean_bp": 0.055711933799690395,
+   "pnl_med": 220.66316321122585,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.0,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 4897.2,
+   "pnl": 1743.6749682315592,
+   "mean_bp": 0.34311139485589365,
+   "pnl_med": 1836.5417810796246,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.1,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 4319.2,
+   "pnl": 1943.210315399848,
+   "mean_bp": 0.5723228777954523,
+   "pnl_med": 1391.7536599736086,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.2,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 3943.0,
+   "pnl": 2130.309196556241,
+   "mean_bp": 0.7934580925380779,
+   "pnl_med": 1636.408516554771,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.3,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 3604.0,
+   "pnl": 2022.4165540536337,
+   "mean_bp": 0.8657172431581956,
+   "pnl_med": 1916.2297136025668,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.4,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 3298.6,
+   "pnl": 2120.6889277095684,
+   "mean_bp": 1.1563458757642988,
+   "pnl_med": 1608.0098585564454,
+   "max_inv": 5.0
+  },
+  {
+   "gate_q": 0.5,
+   "improve": true,
+   "inv_limit": 5.0,
+   "days": 5,
+   "fills": 3029.2,
+   "pnl": 2157.0848999882483,
+   "mean_bp": 1.4616516413755019,
+   "pnl_med": 1935.6747428542612,
+   "max_inv": 5.0
+  }
+ ]
+}

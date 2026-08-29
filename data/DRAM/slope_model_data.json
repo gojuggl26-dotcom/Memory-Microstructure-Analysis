@@ -1,0 +1,101 @@
+{
+ "stage": [
+  {
+   "名称": "結合直後(クロス・resync 除去済みの panel_v2 基準)",
+   "行数": 8451761,
+   "日数": 98
+  },
+  {
+   "名称": "立ち上げ 7 日を除外",
+   "行数": 7850047,
+   "日数": 91,
+   "除外日": [
+    "2026-05-05",
+    "2026-05-06",
+    "2026-05-07",
+    "2026-05-08",
+    "2026-05-09",
+    "2026-05-10",
+    "2026-05-11"
+   ]
+  },
+  {
+   "名称": "非有限値(NaN/Inf)を除去",
+   "行数": 7847517
+  },
+  {
+   "名称": "板が 5 秒以上停止した行を除去",
+   "行数": 6991507
+  },
+  {
+   "名称": "前日ボラで正規化する列 vol_prev を付与(因果)",
+   "行数": 6991507
+  }
+ ],
+ "days_total": 99,
+ "winsor": {
+  "lower_bp": -15.169820590377192,
+  "upper_bp": 15.096250220754115,
+  "source": "学習期間のみの 0.05% / 99.95% 分位"
+ },
+ "splits": [
+  {
+   "split": "train",
+   "n": 3323013,
+   "days": 45,
+   "d0": "2026-05-12",
+   "d1": "2026-06-25"
+  },
+  {
+   "split": "val",
+   "n": 1418194,
+   "days": 18,
+   "d0": "2026-06-26",
+   "d1": "2026-07-13"
+  },
+  {
+   "split": "oos",
+   "n": 2250300,
+   "days": 28,
+   "d0": "2026-07-14",
+   "d1": "2026-08-10"
+  }
+ ],
+ "features": {
+  "slope": [
+   "slope_diff",
+   "s_bid",
+   "s_ask",
+   "slope_sum",
+   "slope_ratio",
+   "d_slope_diff",
+   "d_s_bid",
+   "d_s_ask",
+   "slope_diff_ma5",
+   "slope_diff_ma30",
+   "slope_diff_sd30",
+   "slope_diff_dev",
+   "q_diff",
+   "slope_x_qty",
+   "slope_x_spread",
+   "slope_x_depth"
+  ],
+  "control": [
+   "m_bp",
+   "spread_bp",
+   "obi_5",
+   "log_depth",
+   "r_prev",
+   "voi_sum",
+   "ofi_sum",
+   "oi",
+   "n_trades",
+   "cancel_diff_vol",
+   "new_intensity_diff",
+   "hhi_diff",
+   "top1_diff",
+   "stale_ns"
+  ]
+ },
+ "horizon_sec": 1
+}

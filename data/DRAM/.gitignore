@@ -1,0 +1,35 @@
+# 全解像度の生成物。GitHub の 100MB/ファイル制限を超える or リポジトリを膨らませるため除外。
+# scripts/build_microprice_dram.py で再生成できる(README 参照)
+microprice/
+microprice_1s.parquet
+obi/
+features/
+flow_grid/
+queue_qi/
+cancel_grid/
+panel_1s/
+candidate_features/
+new_features/
+panel_v2/
+book_slope_grain/
+slope25/
+fill_prob/
+recal_test.npy
+*.npy
+slope_model/dataset.parquet
+slope_model/pred_wf.npy
+obi_levels/*.npz
+slope_spline/*.npz
+
+# Python のバイトコード
+
+# SDE シミュレーションの経路(scripts/sde_simulate.py で再生成可)
+sde_paths.npz
+sde_day_ensemble.npz
+sde_calib_fills.npz
+
+# 旧リポジトリで追跡されていた例外
+!minute_lasso_coefs.npy
+# 旧リポジトリでも未追跡だった中間物
+binance/
+funding_ols_sample.parquet

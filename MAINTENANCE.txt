@@ -102,6 +102,14 @@ README.md は「初めて読む人」だけに向けて書く。作業手順・�
     reports/pendle/<主題>_report.md。市場単位の分析なので銘柄フォルダは無い。
     (2026-08-29 に gojuggl26-dotcom/Pendle-microstructure-Analysis@c100fb7 を統合)
 
+    例外: xyz:DRAM(reports/hyperliquid/DRAM/)は旧 DRAM-microprice リポジトリの
+    統合分(2026-08-29、@d598648)。スクリプト名は統合元のまま(接頭辞規則外。
+    唯一の衝突 build_microprice.py は build_microprice_dram.py に改名)。
+    図は charts/xyz_DRAM_<旧番号名>.png。データは data/DRAM/ に置き、
+    小さな成果物 parquet/npz も版管理する(ルート .gitignore 末尾の
+    !data/DRAM/** と data/DRAM/.gitignore が管理。重い中間物 17GB は
+    ローカルのみ・再生成可)。
+
 
 6. 版管理
 --------------------------------------------------------------------------------

@@ -1,0 +1,7 @@
+{
+ "lambda": 0.2,
+ "test_relmse_before": 0.9671734277435341,
+ "test_share_before": 0.6948285194115043,
+ "test_relmse_after": 0.9793410014719505,
+ "test_share_after": 0.8605274811789598
+}

@@ -1,0 +1,16 @@
+{
+  "days": 10,
+  "always": {
+    "mean_of_daily": 0.06666428349772097,
+    "median_of_daily": 0.05635807742002833,
+    "fills_per_day": 1419.8,
+    "total_bp_per_day": 124.32567321008182
+  },
+  "gated": {
+    "mean_of_daily": 0.11179166182683657,
+    "median_of_daily": 0.08512814342352004,
+    "fills_per_day": 882.3,
+    "total_bp_per_day": 113.7050847362464
+  },
+  "fill_retention": 0.6214255528947739
+}

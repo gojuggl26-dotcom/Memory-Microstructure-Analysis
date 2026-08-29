@@ -1,0 +1,24 @@
+{
+  "n_blocks": 33,
+  "block_days": 2.9696969696969697,
+  "alpha": 0.0161,
+  "relation": {
+    "raw": {
+      "corr_logvar_vs_relmse": -0.04537441613557678,
+      "corr_logvar_vs_corr": -0.1449868363998265,
+      "relmse_median": 0.9921283532492089,
+      "relmse_min": 0.9449992536277124,
+      "relmse_max": 1.0617906741433143,
+      "n_blocks_worse_than_null": 10
+    },
+    "volnorm": {
+      "corr_logvar_vs_relmse": 0.1078382203753695,
+      "corr_logvar_vs_corr": -0.2189727698157546,
+      "relmse_median": 0.9892187423448493,
+      "relmse_min": 0.9487419022577973,
+      "relmse_max": 1.0163547810873361,
+      "n_blocks_worse_than_null": 6
+    },
+    "var_ratio_vs_relmse_raw": -0.17229657534908652
+  }
+}

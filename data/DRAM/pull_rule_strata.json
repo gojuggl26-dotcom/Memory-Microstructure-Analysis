@@ -1,0 +1,440 @@
+{
+ "n_days": 27,
+ "delta_ms": 100,
+ "cells_per_stratum": 60,
+ "strata": [
+  {
+   "label": "最良気配|q<=20|両側",
+   "n_days": 27,
+   "n_fills": 58423,
+   "base_mean_median": -0.4867431982502457,
+   "base_total_median": -796.5670887380738,
+   "base_neg_days": 26,
+   "base_pos_days": 1,
+   "base_sign_p": 0.9999999925494194,
+   "base_ci": [
+    -1686.8508266544573,
+    -763.3931779109288
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": -64.75701007991661,
+    "pos_days_vs_zero": 4,
+    "sign_p_vs_zero": 0.9999753832817078,
+    "lift_median": 0.07855265314646742,
+    "lift_pos_days": 19,
+    "pull_rate": 0.9137931034482759,
+    "rand_beat_days": 5
+   }
+  },
+  {
+   "label": "最良気配|q<=20|Bid",
+   "n_days": 27,
+   "n_fills": 28751,
+   "base_mean_median": -0.4833259308224737,
+   "base_total_median": -435.94106755405244,
+   "base_neg_days": 26,
+   "base_pos_days": 1,
+   "base_sign_p": 0.9999999925494194,
+   "base_ci": [
+    -868.7584178456003,
+    -380.3637507201903
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": -24.44875447451948,
+    "pos_days_vs_zero": 4,
+    "sign_p_vs_zero": 0.9999753832817078,
+    "lift_median": 0.13510414406775223,
+    "lift_pos_days": 20,
+    "pull_rate": 0.9182968929804373,
+    "rand_beat_days": 9
+   }
+  },
+  {
+   "label": "最良気配|q<=20|Ask",
+   "n_days": 27,
+   "n_fills": 29672,
+   "base_mean_median": -0.4900674661630731,
+   "base_total_median": -466.1826867684708,
+   "base_neg_days": 26,
+   "base_pos_days": 1,
+   "base_sign_p": 0.9999999925494194,
+   "base_ci": [
+    -829.021186690853,
+    -378.20731687734764
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": -34.810167148710505,
+    "pos_days_vs_zero": 3,
+    "sign_p_vs_zero": 0.9999971762299538,
+    "lift_median": 0.04063044011153022,
+    "lift_pos_days": 15,
+    "pull_rate": 0.9141016463851109,
+    "rand_beat_days": 2
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|両側",
+   "n_days": 27,
+   "n_fills": 47203,
+   "base_mean_median": -0.22987042296954302,
+   "base_total_median": -342.93728831410846,
+   "base_neg_days": 23,
+   "base_pos_days": 4,
+   "base_sign_p": 0.9999753832817078,
+   "base_ci": [
+    -839.5504111268069,
+    -310.67901532454806
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 100,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": -12.637395702302456,
+    "pos_days_vs_zero": 9,
+    "sign_p_vs_zero": 0.9738805070519447,
+    "lift_median": 0.13476902953359937,
+    "lift_pos_days": 22,
+    "pull_rate": 0.8711111111111111,
+    "rand_beat_days": 9
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|Bid",
+   "n_days": 26,
+   "n_fills": 23364,
+   "base_mean_median": -0.279789040185063,
+   "base_total_median": -159.92431778088346,
+   "base_neg_days": 24,
+   "base_pos_days": 2,
+   "base_sign_p": 0.9999995976686478,
+   "base_ci": [
+    -438.0999860850181,
+    -170.05442473366946
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 26,
+    "remaining_total_median": -5.915805969387966,
+    "pos_days_vs_zero": 9,
+    "sign_p_vs_zero": 0.9622406512498856,
+    "lift_median": 0.1691023485878501,
+    "lift_pos_days": 22,
+    "pull_rate": 0.8489766081871345,
+    "rand_beat_days": 8
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|Ask",
+   "n_days": 26,
+   "n_fills": 23679,
+   "base_mean_median": -0.28821855625853254,
+   "base_total_median": -163.89692237227797,
+   "base_neg_days": 22,
+   "base_pos_days": 4,
+   "base_sign_p": 0.9999560117721558,
+   "base_ci": [
+    -439.8445909034677,
+    -140.15303256317497
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.25,
+    "n_days": 26,
+    "remaining_total_median": -9.002829510719307,
+    "pos_days_vs_zero": 11,
+    "sign_p_vs_zero": 0.8365302085876465,
+    "lift_median": 0.11510319763101033,
+    "lift_pos_days": 21,
+    "pull_rate": 0.828100669925765,
+    "rand_beat_days": 8
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|両側",
+   "n_days": 24,
+   "n_fills": 40076,
+   "base_mean_median": -0.0018420039472664882,
+   "base_total_median": -4.404440145943511,
+   "base_neg_days": 13,
+   "base_pos_days": 11,
+   "base_sign_p": 0.7293719053268433,
+   "base_ci": [
+    -253.75851983717664,
+    47.45587329100638
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 500,
+    "threshold": 0.75,
+    "n_days": 24,
+    "remaining_total_median": 88.36810874939033,
+    "pos_days_vs_zero": 18,
+    "sign_p_vs_zero": 0.011327922344207764,
+    "lift_median": 0.11336521389914972,
+    "lift_pos_days": 22,
+    "pull_rate": 0.5537145157404941,
+    "rand_beat_days": 17
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|Bid",
+   "n_days": 23,
+   "n_fills": 19550,
+   "base_mean_median": -0.03267980243050261,
+   "base_total_median": -28.888945348564306,
+   "base_neg_days": 12,
+   "base_pos_days": 11,
+   "base_sign_p": 0.6611802577972412,
+   "base_ci": [
+    -155.38130946040434,
+    25.9426613725311
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.9,
+    "n_days": 23,
+    "remaining_total_median": 37.27977034449584,
+    "pos_days_vs_zero": 15,
+    "sign_p_vs_zero": 0.10501980781555176,
+    "lift_median": 0.0751490932443751,
+    "lift_pos_days": 20,
+    "pull_rate": 0.3916083916083916,
+    "rand_beat_days": 12
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|Ask",
+   "n_days": 23,
+   "n_fills": 20372,
+   "base_mean_median": 0.04858294180169985,
+   "base_total_median": 12.27563167363536,
+   "base_neg_days": 10,
+   "base_pos_days": 13,
+   "base_sign_p": 0.3388197422027588,
+   "base_ci": [
+    -113.69135967245995,
+    32.017797403255194
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 500,
+    "threshold": 0.75,
+    "n_days": 23,
+    "remaining_total_median": 53.82191080600023,
+    "pos_days_vs_zero": 18,
+    "sign_p_vs_zero": 0.005311012268066406,
+    "lift_median": 0.14265512965042948,
+    "lift_pos_days": 22,
+    "pull_rate": 0.5721271393643031,
+    "rand_beat_days": 11
+   }
+  },
+  {
+   "label": "最良気配|q>400|両側",
+   "n_days": 20,
+   "n_fills": 17192,
+   "base_mean_median": 0.03173055790794123,
+   "base_total_median": 24.7664430923732,
+   "base_neg_days": 8,
+   "base_pos_days": 12,
+   "base_sign_p": 0.2517223358154297,
+   "base_ci": [
+    -49.86694978593801,
+    164.1827807218683
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 20,
+    "remaining_total_median": 52.63220740109671,
+    "pos_days_vs_zero": 13,
+    "sign_p_vs_zero": 0.13158798217773438,
+    "lift_median": 0.03247993860607337,
+    "lift_pos_days": 16,
+    "pull_rate": 0.06445363917924893,
+    "rand_beat_days": 8
+   }
+  },
+  {
+   "label": "最良気配|q>400|Bid",
+   "n_days": 20,
+   "n_fills": 8450,
+   "base_mean_median": 0.05092249133147405,
+   "base_total_median": 12.710599668324601,
+   "base_neg_days": 9,
+   "base_pos_days": 11,
+   "base_sign_p": 0.41190147399902344,
+   "base_ci": [
+    -57.79579600747652,
+    64.94722251987915
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 20,
+    "remaining_total_median": 39.277425590903206,
+    "pos_days_vs_zero": 12,
+    "sign_p_vs_zero": 0.2517223358154297,
+    "lift_median": 0.04070483408067385,
+    "lift_pos_days": 16,
+    "pull_rate": 0.07375216533054021,
+    "rand_beat_days": 8
+   }
+  },
+  {
+   "label": "最良気配|q>400|Ask",
+   "n_days": 19,
+   "n_fills": 8678,
+   "base_mean_median": 0.07911316661607651,
+   "base_total_median": 41.53441247344017,
+   "base_neg_days": 8,
+   "base_pos_days": 11,
+   "base_sign_p": 0.3238029479980469,
+   "base_ci": [
+    0.831063372318542,
+    122.11978669139147
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 19,
+    "remaining_total_median": 50.34756940603126,
+    "pos_days_vs_zero": 14,
+    "sign_p_vs_zero": 0.0317840576171875,
+    "lift_median": 0.03863197347577215,
+    "lift_pos_days": 14,
+    "pull_rate": 0.05922551252847381,
+    "rand_beat_days": 8
+   }
+  },
+  {
+   "label": "外側|q<=20|両側",
+   "n_days": 27,
+   "n_fills": 85583,
+   "base_mean_median": -0.152047047537118,
+   "base_total_median": -386.1543351933346,
+   "base_neg_days": 22,
+   "base_pos_days": 5,
+   "base_sign_p": 0.9998446255922318,
+   "base_ci": [
+    -956.398162493759,
+    -212.82495979406477
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 100,
+    "threshold": 0.5,
+    "n_days": 27,
+    "remaining_total_median": 33.3360665589571,
+    "pos_days_vs_zero": 20,
+    "sign_p_vs_zero": 0.0095786452293396,
+    "lift_median": 0.27459325043702765,
+    "lift_pos_days": 25,
+    "pull_rate": 0.9138305575669804,
+    "rand_beat_days": 14
+   }
+  },
+  {
+   "label": "外側|20<q<=100|両側",
+   "n_days": 27,
+   "n_fills": 105841,
+   "base_mean_median": -0.07380225135076525,
+   "base_total_median": -250.2649173140499,
+   "base_neg_days": 21,
+   "base_pos_days": 6,
+   "base_sign_p": 0.9992431402206421,
+   "base_ci": [
+    -714.9739032717273,
+    192.3803440381405
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": 15.77681029587984,
+    "pos_days_vs_zero": 15,
+    "sign_p_vs_zero": 0.3505540192127228,
+    "lift_median": 0.18890054189284905,
+    "lift_pos_days": 17,
+    "pull_rate": 0.9203289642765355,
+    "rand_beat_days": 10
+   }
+  },
+  {
+   "label": "外側|100<q<=400|両側",
+   "n_days": 27,
+   "n_fills": 150230,
+   "base_mean_median": -0.05393735653780887,
+   "base_total_median": -205.72738482803106,
+   "base_neg_days": 18,
+   "base_pos_days": 9,
+   "base_sign_p": 0.9738805070519447,
+   "base_ci": [
+    -1101.054360411488,
+    519.8769667556429
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 500,
+    "threshold": 0.25,
+    "n_days": 27,
+    "remaining_total_median": 70.56020497530967,
+    "pos_days_vs_zero": 20,
+    "sign_p_vs_zero": 0.0095786452293396,
+    "lift_median": 0.29140936148859087,
+    "lift_pos_days": 21,
+    "pull_rate": 0.8552317247969422,
+    "rand_beat_days": 17
+   }
+  },
+  {
+   "label": "外側|q>400|両側",
+   "n_days": 27,
+   "n_fills": 84871,
+   "base_mean_median": -0.26355771745522205,
+   "base_total_median": -446.0123608261333,
+   "base_neg_days": 21,
+   "base_pos_days": 6,
+   "base_sign_p": 0.9992431402206421,
+   "base_ci": [
+    -891.2706520888421,
+    135.21899068264287
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 100,
+    "threshold": 0.1,
+    "n_days": 27,
+    "remaining_total_median": -24.57547286152706,
+    "pos_days_vs_zero": 8,
+    "sign_p_vs_zero": 0.9904213547706604,
+    "lift_median": 0.006507292937222353,
+    "lift_pos_days": 14,
+    "pull_rate": 0.881403791851553,
+    "rand_beat_days": 5
+   }
+  }
+ ],
+ "n_strata": 16
+}

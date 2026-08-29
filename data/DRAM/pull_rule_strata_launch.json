@@ -1,0 +1,446 @@
+{
+ "n_days": 42,
+ "regime": "launch",
+ "dropped_days": [
+  "2026-08-10"
+ ],
+ "delta_ms": 100,
+ "cells_per_stratum": 96,
+ "strata": [
+  {
+   "label": "最良気配|q<=20|両側",
+   "n_days": 42,
+   "n_fills": 34833,
+   "base_mean_median": 0.0772519633111034,
+   "base_total_median": 70.21019537643969,
+   "base_neg_days": 19,
+   "base_pos_days": 23,
+   "base_sign_p": 0.32198447818518616,
+   "base_ci": [
+    -283.02914609761825,
+    290.53494378843453
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 100,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 42,
+    "remaining_total_median": 4.425583587887733,
+    "pos_days_vs_zero": 22,
+    "sign_p_vs_zero": 0.4388071643761577,
+    "lift_median": -0.001044017459906843,
+    "lift_pos_days": 20,
+    "gain_vs_base_median": -9.343621123463585,
+    "gain_pos_days": 19,
+    "gain_sign_p": 0.7796004663287022,
+    "pull_rate": 0.23584382209502672,
+    "rand_beat_days": 4
+   }
+  },
+  {
+   "label": "最良気配|q<=20|Bid",
+   "n_days": 37,
+   "n_fills": 16079,
+   "base_mean_median": -0.2885791366842934,
+   "base_total_median": -153.7146363127849,
+   "base_neg_days": 26,
+   "base_pos_days": 11,
+   "base_sign_p": 0.996183960698545,
+   "base_ci": [
+    -245.6580356493164,
+    14.483641103670392
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": "frac0.25",
+    "is_abs": false,
+    "n_days": 37,
+    "remaining_total_median": -12.131056161880498,
+    "pos_days_vs_zero": 13,
+    "sign_p_vs_zero": 0.976484486280242,
+    "lift_median": -0.02500187770626283,
+    "lift_pos_days": 17,
+    "gain_vs_base_median": 119.32947428769086,
+    "gain_pos_days": 25,
+    "gain_sign_p": 0.02351551371975802,
+    "pull_rate": 0.9184210526315789,
+    "rand_beat_days": 1
+   }
+  },
+  {
+   "label": "最良気配|q<=20|Ask",
+   "n_days": 37,
+   "n_fills": 17962,
+   "base_mean_median": 0.2010079816814924,
+   "base_total_median": 59.46049384605881,
+   "base_neg_days": 14,
+   "base_pos_days": 23,
+   "base_sign_p": 0.09387077949941158,
+   "base_ci": [
+    -117.20108054927437,
+    227.27419172478014
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 100,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 37,
+    "remaining_total_median": 43.096420334279536,
+    "pos_days_vs_zero": 22,
+    "sign_p_vs_zero": 0.1620043000439182,
+    "lift_median": -0.010753549362984227,
+    "lift_pos_days": 17,
+    "gain_vs_base_median": -25.68983941095881,
+    "gain_pos_days": 10,
+    "gain_sign_p": 0.9987183960038237,
+    "pull_rate": 0.24798154555940022,
+    "rand_beat_days": 4
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|両側",
+   "n_days": 35,
+   "n_fills": 11369,
+   "base_mean_median": 0.05365127240732063,
+   "base_total_median": 9.818182850539674,
+   "base_neg_days": 17,
+   "base_pos_days": 18,
+   "base_sign_p": 0.5000000000000001,
+   "base_ci": [
+    -13.937389121253188,
+    182.70893362458264
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 35,
+    "remaining_total_median": 8.770470731854441,
+    "pos_days_vs_zero": 19,
+    "sign_p_vs_zero": 0.3679394004284405,
+    "lift_median": 0.00991992681331666,
+    "lift_pos_days": 19,
+    "gain_vs_base_median": -1.491778876543023,
+    "gain_pos_days": 14,
+    "gain_sign_p": 0.912267375504598,
+    "pull_rate": 0.07142857142857142,
+    "rand_beat_days": 5
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|Bid",
+   "n_days": 26,
+   "n_fills": 4480,
+   "base_mean_median": 0.07801519088757676,
+   "base_total_median": 12.408707746177932,
+   "base_neg_days": 12,
+   "base_pos_days": 14,
+   "base_sign_p": 0.42250949144363403,
+   "base_ci": [
+    -24.89173630516887,
+    93.20058783680885
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 500,
+    "threshold": "abs20",
+    "is_abs": true,
+    "n_days": 26,
+    "remaining_total_median": 6.155063460290431,
+    "pos_days_vs_zero": 16,
+    "sign_p_vs_zero": 0.16346979141235352,
+    "lift_median": 0.060880358049064304,
+    "lift_pos_days": 13,
+    "gain_vs_base_median": 7.662565485656273,
+    "gain_pos_days": 14,
+    "gain_sign_p": 0.42250949144363403,
+    "pull_rate": 0.7660550458715596,
+    "rand_beat_days": 4
+   }
+  },
+  {
+   "label": "最良気配|20<q<=100|Ask",
+   "n_days": 30,
+   "n_fills": 5809,
+   "base_mean_median": 0.19979743661953686,
+   "base_total_median": 31.10245630842448,
+   "base_neg_days": 11,
+   "base_pos_days": 19,
+   "base_sign_p": 0.10024421103298667,
+   "base_ci": [
+    -10.989302568227501,
+    130.15366736691047
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 30,
+    "remaining_total_median": 29.117669140399364,
+    "pos_days_vs_zero": 19,
+    "sign_p_vs_zero": 0.10024421103298667,
+    "lift_median": 0.03391774926476654,
+    "lift_pos_days": 21,
+    "gain_vs_base_median": -0.5539146933555501,
+    "gain_pos_days": 15,
+    "gain_sign_p": 0.572232224047184,
+    "pull_rate": 0.07198371576609919,
+    "rand_beat_days": 5
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|両側",
+   "n_days": 24,
+   "n_fills": 6292,
+   "base_mean_median": 0.3080513507064548,
+   "base_total_median": 76.88262626600266,
+   "base_neg_days": 8,
+   "base_pos_days": 16,
+   "base_sign_p": 0.07579481601715088,
+   "base_ci": [
+    25.23082451756041,
+    179.33818870881342
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 24,
+    "remaining_total_median": 59.54492387560009,
+    "pos_days_vs_zero": 19,
+    "sign_p_vs_zero": 0.003305375576019287,
+    "lift_median": 0.04623007922159054,
+    "lift_pos_days": 18,
+    "gain_vs_base_median": 1.9210164961814655,
+    "gain_pos_days": 15,
+    "gain_sign_p": 0.15372812747955322,
+    "pull_rate": 0.09870337995337995,
+    "rand_beat_days": 6
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|Bid",
+   "n_days": 12,
+   "n_fills": 2054,
+   "base_mean_median": 0.3899035813033221,
+   "base_total_median": 76.63279203834944,
+   "base_neg_days": 2,
+   "base_pos_days": 10,
+   "base_sign_p": 0.019287109375,
+   "base_ci": [
+    18.63521043116593,
+    117.69447353816535
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": "abs20",
+    "is_abs": true,
+    "n_days": 12,
+    "remaining_total_median": 64.82866370183044,
+    "pos_days_vs_zero": 10,
+    "sign_p_vs_zero": 0.019287109375,
+    "lift_median": 0.05964222821842708,
+    "lift_pos_days": 8,
+    "gain_vs_base_median": -0.49312973180413566,
+    "gain_pos_days": 5,
+    "gain_sign_p": 0.80615234375,
+    "pull_rate": 0.07090490155006285,
+    "rand_beat_days": 3
+   }
+  },
+  {
+   "label": "最良気配|100<q<=400|Ask",
+   "n_days": 15,
+   "n_fills": 2833,
+   "base_mean_median": 0.3599488800129581,
+   "base_total_median": 59.359771839262905,
+   "base_neg_days": 3,
+   "base_pos_days": 12,
+   "base_sign_p": 0.017578125,
+   "base_ci": [
+    28.78762558561353,
+    162.14775521101234
+   ],
+   "best": {
+    "signal": "exec",
+    "window_ms": 10,
+    "threshold": "abs20",
+    "is_abs": true,
+    "n_days": 15,
+    "remaining_total_median": 66.87834594589472,
+    "pos_days_vs_zero": 13,
+    "sign_p_vs_zero": 0.003692626953125,
+    "lift_median": 0.01263926811494298,
+    "lift_pos_days": 11,
+    "gain_vs_base_median": -0.40236846530440573,
+    "gain_pos_days": 7,
+    "gain_sign_p": 0.696380615234375,
+    "pull_rate": 0.05454545454545454,
+    "rand_beat_days": 4
+   }
+  },
+  {
+   "label": "最良気配|q>400|両側",
+   "n_days": 10,
+   "n_fills": 2113,
+   "base_mean_median": 0.10250671373539533,
+   "base_total_median": 22.480577250093216,
+   "base_neg_days": 5,
+   "base_pos_days": 5,
+   "base_sign_p": 0.623046875,
+   "base_ci": [
+    -56.940647992655634,
+    125.48180093530132
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 500,
+    "threshold": "frac0.75",
+    "is_abs": false,
+    "n_days": 9,
+    "remaining_total_median": 15.745660522639746,
+    "pos_days_vs_zero": 6,
+    "sign_p_vs_zero": 0.25390625,
+    "lift_median": -0.09295737066641968,
+    "lift_pos_days": 4,
+    "gain_vs_base_median": 17.38371074700356,
+    "gain_pos_days": 5,
+    "gain_sign_p": 0.5,
+    "pull_rate": 0.6789473684210526,
+    "rand_beat_days": 0
+   }
+  },
+  {
+   "label": "外側|q<=20|両側",
+   "n_days": 40,
+   "n_fills": 32574,
+   "base_mean_median": 0.3962651720757183,
+   "base_total_median": 293.97077098578075,
+   "base_neg_days": 8,
+   "base_pos_days": 32,
+   "base_sign_p": 9.108291487791575e-05,
+   "base_ci": [
+    131.79224099171876,
+    536.6838143450237
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 100,
+    "threshold": "abs5",
+    "is_abs": true,
+    "n_days": 40,
+    "remaining_total_median": 183.88678052294014,
+    "pos_days_vs_zero": 29,
+    "sign_p_vs_zero": 0.003213288047845708,
+    "lift_median": -0.10924362036822094,
+    "lift_pos_days": 9,
+    "gain_vs_base_median": -133.9678529743552,
+    "gain_pos_days": 5,
+    "gain_sign_p": 0.9999999071487764,
+    "pull_rate": 0.3336155982580222,
+    "rand_beat_days": 0
+   }
+  },
+  {
+   "label": "外側|20<q<=100|両側",
+   "n_days": 38,
+   "n_fills": 17557,
+   "base_mean_median": 0.9608533717070775,
+   "base_total_median": 477.653194417119,
+   "base_neg_days": 6,
+   "base_pos_days": 32,
+   "base_sign_p": 1.2171280104666948e-05,
+   "base_ci": [
+    296.7571307155599,
+    675.6258878927903
+   ],
+   "best": {
+    "signal": "cancel",
+    "window_ms": 10,
+    "threshold": "abs50",
+    "is_abs": true,
+    "n_days": 38,
+    "remaining_total_median": 307.55962261420586,
+    "pos_days_vs_zero": 32,
+    "sign_p_vs_zero": 1.2171280104666948e-05,
+    "lift_median": -0.04684175910021776,
+    "lift_pos_days": 17,
+    "gain_vs_base_median": -112.09438504868749,
+    "gain_pos_days": 5,
+    "gain_sign_p": 0.9999996980732249,
+    "pull_rate": 0.2535802537180441,
+    "rand_beat_days": 3
+   }
+  },
+  {
+   "label": "外側|100<q<=400|両側",
+   "n_days": 25,
+   "n_fills": 11767,
+   "base_mean_median": 1.2357475123256443,
+   "base_total_median": 325.76796034592394,
+   "base_neg_days": 0,
+   "base_pos_days": 25,
+   "base_sign_p": 2.9802322387695312e-08,
+   "base_ci": [
+    270.6117981816139,
+    933.5317725914435
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 500,
+    "threshold": "abs150",
+    "is_abs": true,
+    "n_days": 25,
+    "remaining_total_median": 212.82110736852886,
+    "pos_days_vs_zero": 23,
+    "sign_p_vs_zero": 9.715557098388672e-06,
+    "lift_median": 0.1198423832834754,
+    "lift_pos_days": 15,
+    "gain_vs_base_median": -128.57996090519612,
+    "gain_pos_days": 2,
+    "gain_sign_p": 0.9999992251396179,
+    "pull_rate": 0.44385026737967914,
+    "rand_beat_days": 2
+   }
+  },
+  {
+   "label": "外側|q>400|両側",
+   "n_days": 11,
+   "n_fills": 4143,
+   "base_mean_median": 1.3338770617001308,
+   "base_total_median": 305.19033326250315,
+   "base_neg_days": 1,
+   "base_pos_days": 10,
+   "base_sign_p": 0.005859375,
+   "base_ci": [
+    179.3841043723452,
+    949.3502744237076
+   ],
+   "best": {
+    "signal": "total",
+    "window_ms": 10,
+    "threshold": "frac0.75",
+    "is_abs": false,
+    "n_days": 11,
+    "remaining_total_median": 146.02638924491606,
+    "pos_days_vs_zero": 10,
+    "sign_p_vs_zero": 0.005859375,
+    "lift_median": 0.49186441858866803,
+    "lift_pos_days": 8,
+    "gain_vs_base_median": -153.28991241562548,
+    "gain_pos_days": 1,
+    "gain_sign_p": 0.99951171875,
+    "pull_rate": 0.6113801452784504,
+    "rand_beat_days": 3
+   }
+  }
+ ],
+ "n_strata": 14
+}

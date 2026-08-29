@@ -1,0 +1,41 @@
+{
+ "symmetry": {
+  "beta_A": 0.021686458405788474,
+  "beta_B": -0.02284486565283408,
+  "sum": -0.0011584072470456064,
+  "se": 0.0008273641559739947,
+  "t98": -1.4001177579199078
+ },
+ "corr_S_ask_S_bid": 0.302087009826552,
+ "high_corr_pairs": [
+  [
+   "lambda_cancel_bid",
+   "lambda_new_buy",
+   0.9702377866322783
+  ],
+  [
+   "lambda_cancel_ask",
+   "lambda_new_sell",
+   0.9686922680972283
+  ],
+  [
+   "hhi_new_bid",
+   "top1_share_new_bid",
+   0.98077802439091
+  ],
+  [
+   "hhi_new_ask",
+   "top1_share_new_ask",
+   0.9806477948560605
+  ],
+  [
+   "hhi_diff",
+   "top1_diff",
+   0.9895634479516792
+  ]
+ ],
+ "degenerate": [],
+ "sd_S_ask": 3.5919676522725257,
+ "sd_S_bid": 3.635733009589275,
+ "half_spread_median_bp": 1.1533227227643275
+}

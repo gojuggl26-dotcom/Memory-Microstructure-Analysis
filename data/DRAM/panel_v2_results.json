@@ -1,0 +1,288 @@
+{
+  "n_rows": 8451761,
+  "old_features": [
+    "m_bp",
+    "spread_bp",
+    "depth_one_level",
+    "log_depth",
+    "stale_ns",
+    "obi_2",
+    "obi_3",
+    "obi_5",
+    "obi_10",
+    "voi_sum",
+    "ofi_sum",
+    "n_events",
+    "oi",
+    "n_trades",
+    "vol_trade",
+    "lambda_cancel_bid",
+    "lambda_cancel_ask",
+    "lambda_new_buy",
+    "lambda_new_sell",
+    "new_intensity_diff",
+    "cancel_diff_n",
+    "cancel_diff_vol",
+    "q_ahead_new_bid",
+    "q_ahead_new_ask",
+    "r_prev"
+  ],
+  "added": [
+    "book_slope_bid",
+    "book_slope_ask",
+    "book_slope_diff",
+    "hhi_new_bid",
+    "hhi_new_ask",
+    "hhi_diff",
+    "top1_share_new_bid",
+    "top1_share_new_ask",
+    "top1_diff",
+    "reject_rate",
+    "alo_reject_rate"
+  ],
+  "daily_corr_full_period": {
+    "m_bp": {
+      "median": -0.05655828852146805,
+      "days": 98,
+      "n_neg": 95
+    },
+    "spread_bp": {
+      "median": -0.00015428931091615125,
+      "days": 98,
+      "n_neg": 51
+    },
+    "depth_one_level": {
+      "median": 0.06340006239546382,
+      "days": 98,
+      "n_neg": 1
+    },
+    "log_depth": {
+      "median": 4.223109465183758e-05,
+      "days": 98,
+      "n_neg": 49
+    },
+    "stale_ns": {
+      "median": 0.0002605795440578076,
+      "days": 98,
+      "n_neg": 45
+    },
+    "obi_2": {
+      "median": 0.05808069864921254,
+      "days": 98,
+      "n_neg": 2
+    },
+    "obi_3": {
+      "median": 0.054929667372884496,
+      "days": 98,
+      "n_neg": 2
+    },
+    "obi_5": {
+      "median": 0.04440112631418537,
+      "days": 98,
+      "n_neg": 1
+    },
+    "obi_10": {
+      "median": 0.037243616513132516,
+      "days": 98,
+      "n_neg": 5
+    },
+    "voi_sum": {
+      "median": 0.09638371411178068,
+      "days": 98,
+      "n_neg": 5
+    },
+    "ofi_sum": {
+      "median": 0.10513535006414142,
+      "days": 98,
+      "n_neg": 11
+    },
+    "n_events": {
+      "median": -0.0019256636758281348,
+      "days": 98,
+      "n_neg": 56
+    },
+    "oi": {
+      "median": 0.05597458513748962,
+      "days": 98,
+      "n_neg": 3
+    },
+    "n_trades": {
+      "median": -0.0052183121601177065,
+      "days": 98,
+      "n_neg": 61
+    },
+    "vol_trade": {
+      "median": -0.0016269375621323651,
+      "days": 98,
+      "n_neg": 51
+    },
+    "lambda_cancel_bid": {
+      "median": -0.00986465435352122,
+      "days": 98,
+      "n_neg": 72
+    },
+    "lambda_cancel_ask": {
+      "median": 0.009615392260925207,
+      "days": 98,
+      "n_neg": 29
+    },
+    "lambda_new_buy": {
+      "median": 0.009566658337928018,
+      "days": 98,
+      "n_neg": 31
+    },
+    "lambda_new_sell": {
+      "median": -0.008932694360980424,
+      "days": 98,
+      "n_neg": 64
+    },
+    "new_intensity_diff": {
+      "median": 0.018850174549290222,
+      "days": 98,
+      "n_neg": 29
+    },
+    "cancel_diff_n": {
+      "median": 0.035292123127442135,
+      "days": 98,
+      "n_neg": 15
+    },
+    "cancel_diff_vol": {
+      "median": 0.022038046397557187,
+      "days": 98,
+      "n_neg": 18
+    },
+    "q_ahead_new_bid": {
+      "median": 0.005656865482814723,
+      "days": 98,
+      "n_neg": 18
+    },
+    "q_ahead_new_ask": {
+      "median": -0.004340660614420087,
+      "days": 98,
+      "n_neg": 75
+    },
+    "r_prev": {
+      "median": 0.10702881257248151,
+      "days": 98,
+      "n_neg": 18
+    },
+    "book_slope_bid": {
+      "median": -0.08590458126488126,
+      "days": 98,
+      "n_neg": 98
+    },
+    "book_slope_ask": {
+      "median": 0.0819605565013457,
+      "days": 98,
+      "n_neg": 1
+    },
+    "book_slope_diff": {
+      "median": -0.13480242287492794,
+      "days": 98,
+      "n_neg": 98
+    },
+    "hhi_new_bid": {
+      "median": -0.0038967775726912565,
+      "days": 98,
+      "n_neg": 71
+    },
+    "hhi_new_ask": {
+      "median": 0.004478776876719406,
+      "days": 98,
+      "n_neg": 21
+    },
+    "hhi_diff": {
+      "median": -0.006698600219742199,
+      "days": 98,
+      "n_neg": 77
+    },
+    "top1_share_new_bid": {
+      "median": -0.0012496159394025574,
+      "days": 98,
+      "n_neg": 58
+    },
+    "top1_share_new_ask": {
+      "median": 0.002650016062996213,
+      "days": 98,
+      "n_neg": 35
+    },
+    "top1_diff": {
+      "median": -0.0037304975780034586,
+      "days": 98,
+      "n_neg": 65
+    },
+    "reject_rate": {
+      "median": -0.0010040344900279063,
+      "days": 98,
+      "n_neg": 57
+    },
+    "alo_reject_rate": {
+      "median": -0.0021236455476262295,
+      "days": 98,
+      "n_neg": 57
+    }
+  },
+  "r2_on_existing": {
+    "book_slope_bid": 0.5066477689411815,
+    "book_slope_ask": 0.20106748584540035,
+    "book_slope_diff": 0.049820826363598414,
+    "hhi_new_bid": 0.07148987077015767,
+    "hhi_new_ask": 0.06374002946231772,
+    "hhi_diff": 0.01673835328460349,
+    "top1_share_new_bid": 0.04983530402161751,
+    "top1_share_new_ask": 0.0489937403634052,
+    "top1_diff": 0.01938283896717452,
+    "reject_rate": 0.08706788234440888,
+    "alo_reject_rate": 0.08073122791311127
+  },
+  "lasso_old": {
+    "tag": "既存 25",
+    "alpha": 0.01610262027560939,
+    "n_features": 25,
+    "n_selected": 9,
+    "coef": {
+      "depth_one_level": 0.03868261271394271,
+      "obi_2": 0.011460271207981924,
+      "obi_3": 0.016021711379940125,
+      "obi_5": 0.007947885853614951,
+      "voi_sum": 0.04787112063185174,
+      "ofi_sum": 0.021822898603514086,
+      "oi": 0.02745316441559979,
+      "cancel_diff_n": 0.04079924751815239,
+      "r_prev": 0.07470973134430683
+    },
+    "oos_daily_corr_median": 0.20282277618940148,
+    "oos_days_negative": 0,
+    "oos_days": 28
+  },
+  "lasso_new": {
+    "tag": "既存 25 + 追加 11",
+    "alpha": 0.004520353656360245,
+    "n_features": 36,
+    "n_selected": 19,
+    "coef": {
+      "m_bp": 0.01923375165614013,
+      "depth_one_level": 0.05721371328588542,
+      "log_depth": -0.00010143954584700874,
+      "obi_2": 0.010348536367170156,
+      "obi_3": 0.009865886685060435,
+      "obi_10": -0.014215955476697368,
+      "voi_sum": 0.056974723366594836,
+      "ofi_sum": 0.008489378447460593,
+      "n_events": -0.007469315763496091,
+      "oi": 0.03556126641782281,
+      "n_trades": -0.0002569579255127431,
+      "cancel_diff_n": 0.04858730400483811,
+      "cancel_diff_vol": 0.007859267326340746,
+      "q_ahead_new_ask": -0.0032007496684682245,
+      "r_prev": 0.07383330559641191,
+      "book_slope_ask": 0.00803288208182805,
+      "book_slope_diff": -0.13391640445481345,
+      "hhi_diff": -0.006401766594818038,
+      "alo_reject_rate": -0.005156172720749482
+    },
+    "oos_daily_corr_median": 0.2432941138060718,
+    "oos_days_negative": 0,
+    "oos_days": 28
+  }
+}

@@ -1,0 +1,1 @@
+{"dt": "2026-06-20", "n_targets": 3008, "n_valid": 3008, "q_ahead_median": 8.300000190734863, "suspect": false, "signals": ["cancel", "exec", "total"], "windows_ms": [10, 50, 100, 500], "thresholds": ["frac0.25", "frac0.5", "frac0.75", "abs5", "abs20", "abs50", "abs150", "abs400"]}

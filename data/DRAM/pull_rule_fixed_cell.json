@@ -1,0 +1,80 @@
+{
+ "cell": [
+  "exec",
+  10,
+  "abs5"
+ ],
+ "fee_bp": 0.088,
+ "results": {
+  "全期間|両側": {
+   "n_days": 41,
+   "base_median": 17.207339515031588,
+   "base_sign_p": 0.3776143287523155,
+   "gain_median": 25.52040071392061,
+   "gain_pos_days": 32,
+   "gain_sign_p": 0.0002154285211872775,
+   "pull_rate": 0.1339155749636099,
+   "rand_beat": 17
+  },
+  "全期間|Bid": {
+   "n_days": 35,
+   "base_median": 11.864678596496546,
+   "base_sign_p": 0.5000000000000001,
+   "gain_median": 14.484693392336375,
+   "gain_pos_days": 27,
+   "gain_sign_p": 0.0009391127387061716,
+   "pull_rate": 0.128099173553719,
+   "rand_beat": 11
+  },
+  "全期間|Ask": {
+   "n_days": 33,
+   "base_median": 22.14162879001964,
+   "base_sign_p": 0.3641662404406816,
+   "gain_median": 14.985684376358947,
+   "gain_pos_days": 24,
+   "gain_sign_p": 0.0067654934246093035,
+   "pull_rate": 0.11554621848739496,
+   "rand_beat": 10
+  },
+  "立ち上げ|両側": {
+   "n_days": 10,
+   "base_median": 22.480577250093216,
+   "base_sign_p": 0.623046875,
+   "gain_median": 16.000168539553897,
+   "gain_pos_days": 9,
+   "gain_sign_p": 0.0107421875,
+   "pull_rate": 0.17232076866223206,
+   "rand_beat": 3
+  },
+  "成熟|両側": {
+   "n_days": 31,
+   "base_median": 17.207339515031588,
+   "base_sign_p": 0.360050065908581,
+   "gain_median": 29.81721894782784,
+   "gain_pos_days": 23,
+   "gain_sign_p": 0.005336920265108347,
+   "pull_rate": 0.12206572769953052,
+   "rand_beat": 14
+  },
+  "成熟|Bid": {
+   "n_days": 30,
+   "base_median": 6.332605240852278,
+   "base_sign_p": 0.572232224047184,
+   "gain_median": 19.278937003821138,
+   "gain_pos_days": 23,
+   "gain_sign_p": 0.0026114396750926976,
+   "pull_rate": 0.12629025067727445,
+   "rand_beat": 11
+  },
+  "成熟|Ask": {
+   "n_days": 29,
+   "base_median": 20.73204313296296,
+   "base_sign_p": 0.5,
+   "gain_median": 15.619133695363985,
+   "gain_pos_days": 21,
+   "gain_sign_p": 0.01205977238714695,
+   "pull_rate": 0.11510791366906475,
+   "rand_beat": 9
+  }
+ }
+}

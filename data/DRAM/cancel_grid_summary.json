@@ -1,0 +1,30 @@
+{
+  "days": 99,
+  "cancels": 340236484,
+  "vol_bid": 31099490278.200005,
+  "vol_ask": 29629031745.099995,
+  "1ms": {
+    "windows": 41110727,
+    "cancels_per_window": 8.276099909398342
+  },
+  "10ms": {
+    "windows": 41109343,
+    "cancels_per_window": 8.276378535166568
+  },
+  "100ms": {
+    "windows": 34799275,
+    "cancels_per_window": 9.777114149648233
+  },
+  "1s": {
+    "windows": 6990263,
+    "cancels_per_window": 48.67291602619243
+  },
+  "10s": {
+    "windows": 831788,
+    "cancels_per_window": 409.04230885754544
+  },
+  "60s": {
+    "windows": 140623,
+    "cancels_per_window": 2419.4938523570113
+  }
+}

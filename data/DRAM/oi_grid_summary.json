@@ -1,0 +1,34 @@
+{
+  "days": 99,
+  "trades": 5961092,
+  "1ms": {
+    "windows": 2863698,
+    "trades_per_window": 2.0816063705041525,
+    "saturated_share": 0.9781125663390483
+  },
+  "10ms": {
+    "windows": 2863687,
+    "trades_per_window": 2.0816143663745375,
+    "saturated_share": 0.9781117838646473
+  },
+  "100ms": {
+    "windows": 2788134,
+    "trades_per_window": 2.1380220606326668,
+    "saturated_share": 0.9726526773820771
+  },
+  "1s": {
+    "windows": 1893395,
+    "trades_per_window": 3.148361541041357,
+    "saturated_share": 0.8546167070262677
+  },
+  "10s": {
+    "windows": 560566,
+    "trades_per_window": 10.634059147361773,
+    "saturated_share": 0.48516677786380197
+  },
+  "60s": {
+    "windows": 127579,
+    "trades_per_window": 46.724711747231126,
+    "saturated_share": 0.2083885278925215
+  }
+}

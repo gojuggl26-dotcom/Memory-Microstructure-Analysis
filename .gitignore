@@ -22,3 +22,8 @@ secrets/
 # OS
 Thumbs.db
 .DS_Store
+
+# --- DRAM 統合分(2026-08-29) ---
+# 旧 DRAM-microprice リポジトリは小さな成果物 parquet/npz/npy を版管理していた。
+# data/DRAM/ 配下はそれを引き継ぐ(重い中間生成物の除外は data/DRAM/.gitignore が持つ)
+!data/DRAM/**
