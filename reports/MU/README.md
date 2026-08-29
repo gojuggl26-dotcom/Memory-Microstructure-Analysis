@@ -1,5 +1,7 @@
 # `xyz:MU` 分析索引
 
+[← ホーム](../../README.md) / [Hyperliquid の分析](../hyperliquid/README.md)
+
 <p>
   <a href="https://www.micron.com/"><img src="../../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
 </p>
