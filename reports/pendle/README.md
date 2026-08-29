@@ -2,6 +2,10 @@
 
 [← ホーム](../../README.md)
 
+<p>
+  <a href="https://www.pendle.finance/"><img src="../../photo/pendle-logo.png" alt="Pendle" height="76"></a>
+</p>
+
 Pendle(利回りトークン化プロトコル)の市場マイクロストラクチャー分析。
 
 **対象**: **Boros(V3)** — 各取引所の perp ファンディングレートを implied APR 建ての
