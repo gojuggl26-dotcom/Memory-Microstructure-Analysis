@@ -9,7 +9,7 @@
 
 再現: `scripts/fetch_bbo.py` → `scripts/build_obi_ofi.py` → `scripts/plot_obi_ofi.py`
 
-![OBI と OFI の確率推移行列](../../charts/xyz_MU_obi_ofi_matrix.png)
+![OBI と OFI の確率推移行列](../../../charts/xyz_MU_obi_ofi_matrix.png)
 
 ---
 
@@ -77,7 +77,7 @@ s_{t-1} = \mathrm{std}\bigl(\mathrm{OFI}_{t-5000}, \dots, \mathrm{OFI}_{t-1}\big
 
 説明変数が確定する時刻が目的変数の期間の開始時刻と一致しており、先読みは無い。
 `shift(-k)` は目的変数側にしか使っていない。判定の作法は
-[予測の定義](../predicting_definition.md) に従う。
+[予測の定義](../../predicting_definition.md) に従う。
 
 $`\mathrm{mid} > 0`$ なので $`y`$ の符号はリターンの符号と厳密に一致する。
 

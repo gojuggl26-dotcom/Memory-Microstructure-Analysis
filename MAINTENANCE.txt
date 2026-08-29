@@ -33,10 +33,10 @@ README.md は「初めて読む人」だけに向けて書く。作業手順・�
                       取引所ごとに違うもの(板の作り・記録の粒度・データの出所・
                       銘柄一覧・再現手順)はそこに書き、共通のものはホームに置く。
 
-★銘柄フォルダは今のところ reports/<COIN>/ に平置きしてある。
-  取引所が 2 つ目になる時点で reports/<VENUE>/<COIN>/ へ移すこと。
-  移すときは各レポートの相対リンク(../../charts/ → ../../../charts/、
-  ../predicting_definition.md → ../../predicting_definition.md)を全部直す。
+銘柄フォルダは reports/<VENUE>/<COIN>/ に置く。Hyperliquid の銘柄は
+  reports/hyperliquid/<COIN>/(2026-08-29 に reports/<COIN>/ から移設。相対リンクは
+  ../../charts/ → ../../../charts/、../predicting_definition.md →
+  ../../predicting_definition.md、../hyperliquid/README.md → ../README.md に直した)。
 
 ルート README.md にはレポート件数を書かない。件数を書くと必ず古くなる
 (実際に 5 のまま 12 本まで放置された)。件数が要るときは銘柄索引を見る。

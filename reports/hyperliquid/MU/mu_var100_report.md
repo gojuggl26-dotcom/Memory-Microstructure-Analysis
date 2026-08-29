@@ -1,13 +1,13 @@
 # 100ms 窓の分散は将来のリターンを説明するか
 
-[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../GLOSSARY.md)
+[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../../GLOSSARY.md)
 
 対象 `xyz:MU` ／ 標本 2026-05-04 〜 2026-08-09 の 98 日(立会日 67 / 閉場日 31)
 
 板の量を 10ms の時計に載せ、100ms ごとの **標本分散** を説明変数にして、
 10ms から 100 秒までの 12 のホライズンの将来 log リターンへ OLS で当てました。
 
-![100ms 窓の分散と将来リターン](../../charts/xyz_MU_var100.png)
+![100ms 窓の分散と将来リターン](../../../charts/xyz_MU_var100.png)
 
 ---
 
@@ -19,8 +19,8 @@
 |---|---|---|---|
 | `bid_depth` | 最良買い気配の数量 | 状態 | T 以前の最後の値(空区間は持ち越し) |
 | `ask_depth` | 最良売り気配の数量 | 状態 | 同上 |
-| `obi` | [OBI](../../GLOSSARY.md) | 状態 | 同上 |
-| `ofi` | [OFI](../../GLOSSARY.md) | 流量 | 区間内の合計(空区間は 0) |
+| `obi` | [OBI](../../../GLOSSARY.md) | 状態 | 同上 |
+| `ofi` | [OFI](../../../GLOSSARY.md) | 流量 | 区間内の合計(空区間は 0) |
 
 を 10 点ずつ(= 100ms)まとめ、その標本分散(ddof=1)を取ります。
 
@@ -153,7 +153,7 @@ OBI の分散だけは $`[-1, 1]`$ に有界なので生でも変わりません
 |---|---|
 | `data/var100_xyz_MU/dt=*.parquet` | 98 日 × 864,000 窓の特徴量(`ts, n_ev, var_*, mean_*, mid_T`) |
 | `data/var100_acc_xyz_MU/dt=*.parquet` | 日ごとの OLS 十分統計量(再開用) |
-| [`data/var100_ols_xyz_MU.csv`](../../data/var100_ols_xyz_MU.csv) | 2,304 セルの推定結果 |
+| [`data/var100_ols_xyz_MU.csv`](../../../data/var100_ols_xyz_MU.csv) | 2,304 セルの推定結果 |
 
 ## 10. 再現手順
 

@@ -9,7 +9,7 @@
 
 再現: `scripts/fetch_bbo.py` → `scripts/build_cancel_rate.py` → `scripts/plot_cancel_rate.py`
 
-![キャンセル率の傾き](../../charts/xyz_MU_cancel_rate.png)
+![キャンセル率の傾き](../../../charts/xyz_MU_cancel_rate.png)
 
 ---
 
@@ -93,7 +93,7 @@ $`F_i`$ はその区間にテイカー買いで約定した数量である。
 
 深さと mid は後ろ向き asof(その格子時刻以前で最後に観測した値)で取っている。
 `shift(-k)` は目的変数側にしか使っていない。判定の作法は
-[予測の定義](../predicting_definition.md) に従う。
+[予測の定義](../../predicting_definition.md) に従う。
 
 ---
 

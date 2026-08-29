@@ -8,7 +8,7 @@
 
 再現: `scripts/fetch_bbo.py` → `scripts/build_microprice.py` → `scripts/plot_microprice.py`
 
-![確率推移行列](../../charts/xyz_MU_microprice_matrix.png)
+![確率推移行列](../../../charts/xyz_MU_microprice_matrix.png)
 
 ---
 
@@ -47,7 +47,7 @@ micro は ask 側 = 上へ寄る。厚い側へ価格が動きやすい、とい
 
 説明変数が確定する時刻が目的変数の期間の開始時刻と一致しており、先読みは無い。
 `shift(-k)` は目的変数側にしか使っていない。判定の作法は
-[予測の定義](../predicting_definition.md) に従う。
+[予測の定義](../../predicting_definition.md) に従う。
 
 ### 除外した行
 

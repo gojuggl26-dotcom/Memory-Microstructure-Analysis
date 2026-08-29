@@ -8,7 +8,7 @@
 再現: `uv run python scripts/build_churn.py --coin xyz:MU`
 図の再生成: `uv run python scripts/plot_churn.py --coin xyz:MU --day 立会日`
 
-![xyz:MU churn 7 種と将来 log リターンの OLS。特徴量ごとの相関のホライズン依存 7 枚と、符号つきリターンとの相関の一覧 2 枚](../../charts/xyz_MU_churn_ols.png)
+![xyz:MU churn 7 種と将来 log リターンの OLS。特徴量ごとの相関のホライズン依存 7 枚と、符号つきリターンとの相関の一覧 2 枚](../../../charts/xyz_MU_churn_ols.png)
 
 ---
 

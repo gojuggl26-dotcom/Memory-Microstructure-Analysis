@@ -11,7 +11,7 @@ OBI・OFI(同時点)と板の回復力(前向き)との関係を調べた。
 `uv run python scripts/analyze_gaps.py --coin xyz:MU`
 図の再生成: `uv run python scripts/plot_gaps.py --coin xyz:MU`
 
-![xyz:MU 板の隙間 13 種と OBI / OFI / 板の回復力。同時点の関係と前向きの関係のヒートマップ、用量反応、スプレッドを抜いた偏相関、隙間の分布](../../charts/xyz_MU_gaps.png)
+![xyz:MU 板の隙間 13 種と OBI / OFI / 板の回復力。同時点の関係と前向きの関係のヒートマップ、用量反応、スプレッドを抜いた偏相関、隙間の分布](../../../charts/xyz_MU_gaps.png)
 
 ---
 

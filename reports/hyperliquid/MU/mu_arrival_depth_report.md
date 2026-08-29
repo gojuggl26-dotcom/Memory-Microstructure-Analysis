@@ -7,7 +7,7 @@
 再現: `uv run python scripts/build_arrival_depth.py --coin xyz:MU`
 図の再生成: `uv run python scripts/plot_arrival_depth.py --coin xyz:MU`
 
-![板の深さごとの注文到着率](../../charts/xyz_MU_arrival_depth.png)
+![板の深さごとの注文到着率](../../../charts/xyz_MU_arrival_depth.png)
 
 ---
 

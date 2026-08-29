@@ -1,6 +1,6 @@
 # 板の弾力性 — 流動性ショックからの回復
 
-[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../GLOSSARY.md)
+[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../../GLOSSARY.md)
 
 対象 `xyz:MU` ／ 標本 2026-05-04 〜 2026-08-09 の 98 日(立会日 67 / 閉場日 31)
 
@@ -43,7 +43,7 @@ R(t) = \frac{D(t) - D_{\text{shock}}}{D_0 - D_{\text{shock}}} = 1 - e^{-\kappa t
 
 ## 3. 回復曲線と指標の分布
 
-![回復曲線と指標の分布](../../charts/xyz_MU_resilience_curve.png)
+![回復曲線と指標の分布](../../../charts/xyz_MU_resilience_curve.png)
 
 ### ★ 指数模型は平均経路には当てはまらない
 
@@ -88,7 +88,7 @@ R(t) = \frac{D(t) - D_{\text{shock}}}{D_0 - D_{\text{shock}}} = 1 - e^{-\kappa t
 
 ## 4. 将来リターンとの回帰
 
-![指標 × ホライズンの回帰](../../charts/xyz_MU_resilience_ols.png)
+![指標 × ホライズンの回帰](../../../charts/xyz_MU_resilience_ols.png)
 
 **時間契約**: 指標はすべて区間 $`[t_0,\, t_0+1s]`$ の中で決まるので、
 x の確定時刻を $`t_0+1s`$、y の期間を $`(t_0+1s,\, t_0+1s+h]`$ としました。
@@ -136,7 +136,7 @@ latency はもともと裾が軽いので変わりません。
 
 ## 5. 確率遷移行列
 
-![指標の帯 × ホライズンの上昇確率](../../charts/xyz_MU_resilience_matrix.png)
+![指標の帯 × ホライズンの上昇確率](../../../charts/xyz_MU_resilience_matrix.png)
 
 価格は離散なので短いホライズンでは「変化なし」が多数を占めます。
 生の P(上昇) ではなく **P(上昇 | 動いた)** を、無条件値との差 [pp] で示しています。
@@ -179,9 +179,9 @@ Bonferroni なら |t| = 4.7 相当が要ります。標本が 300 万件超あ�
 |---|---|
 | `data/resil_xyz_MU/dt=*.parquet` | ショック 1 件ごとの 12 指標と 12 ホライズンのリターン(818 万行) |
 | `data/resil_path_xyz_MU.parquet` | 側 × ショックの大きさ × 22 の時刻の平均回復経路 |
-| [`data/resil_ols_xyz_MU.csv`](../../data/resil_ols_xyz_MU.csv) | 指標 × 側 × 日区分 × 変換 × 目的変数 × ホライズンの OLS(2,880 行) |
-| [`data/resil_trans_xyz_MU.csv`](../../data/resil_trans_xyz_MU.csv) | 帯 × ホライズンの上昇確率と区間 |
-| [`data/resil_daily_xyz_MU.csv`](../../data/resil_daily_xyz_MU.csv) | 日ごとの κ_bid / κ_ask / 非対称(98 行) |
+| [`data/resil_ols_xyz_MU.csv`](../../../data/resil_ols_xyz_MU.csv) | 指標 × 側 × 日区分 × 変換 × 目的変数 × ホライズンの OLS(2,880 行) |
+| [`data/resil_trans_xyz_MU.csv`](../../../data/resil_trans_xyz_MU.csv) | 帯 × ホライズンの上昇確率と区間 |
+| [`data/resil_daily_xyz_MU.csv`](../../../data/resil_daily_xyz_MU.csv) | 日ごとの κ_bid / κ_ask / 非対称(98 行) |
 
 ## 8. 再現手順
 

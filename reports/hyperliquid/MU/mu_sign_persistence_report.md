@@ -7,7 +7,7 @@
 再現: `uv run python scripts/build_sign_persistence.py --coin xyz:MU`
 図の再生成: `uv run python scripts/plot_sign_persistence.py --coin xyz:MU`
 
-![符号の持続性](../../charts/xyz_MU_sign_persistence.png)
+![符号の持続性](../../../charts/xyz_MU_sign_persistence.png)
 
 ---
 
@@ -20,7 +20,7 @@ x 自身の符号の自己相関であって、将来の価格を当てる力で
 「OBI が正なら次も正である確率が 74.9%」は、**OBI が正なら価格が上がる確率**では
 まったくない。価格の予測力については
 [OBI と OFI から見た上昇確率](mu_obi_ofi_report.md) と
-[予測の定義](../predicting_definition.md) を参照すること。あちらでは同じ
+[予測の定義](../../predicting_definition.md) を参照すること。あちらでは同じ
 説明変数の予測確率が 5 割前後で、かつ**スプレッドを超えない**ことを示している。
 
 本レポートは取引の根拠にならない。費用(手数料・スプレッド・スリッページ)も

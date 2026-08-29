@@ -12,7 +12,7 @@
 再現: `scripts/fetch_l1.py` → `scripts/build_obi_levels.py` →
 `scripts/fit_obi_levels.py` → `scripts/plot_obi_levels.py`
 
-![ティック水準別 OBI](../../charts/xyz_MU_obi_levels.png)
+![ティック水準別 OBI](../../../charts/xyz_MU_obi_levels.png)
 
 ---
 
@@ -196,7 +196,7 @@ Hyperliquid の刻みは有効数字で決まる。bbo 3,518 万行の実測で
 
 `mid` も厳密に $`t`$ 未満の最後の bbo 行を使う(後ろ向き asof)。
 `shift(-k)` に当たる操作は $`y`$ にしかない。判定の作法は
-[予測の定義](../predicting_definition.md) に従う。
+[予測の定義](../../predicting_definition.md) に従う。
 
 ---
 

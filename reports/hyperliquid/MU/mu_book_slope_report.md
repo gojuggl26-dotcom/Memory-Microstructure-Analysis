@@ -8,7 +8,7 @@
 
 再現: `scripts/fetch_bbo.py` → `scripts/build_book_slope.py` → `scripts/plot_book_slope.py`
 
-![Book Slope と log リターンの関係、OLS と GLS の比較](../../charts/xyz_MU_book_slope.png)
+![Book Slope と log リターンの関係、OLS と GLS の比較](../../../charts/xyz_MU_book_slope.png)
 
 ---
 

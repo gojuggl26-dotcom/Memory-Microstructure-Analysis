@@ -1,15 +1,15 @@
 # OBI と OFI の自己相関(200ms 格子)
 
-[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../GLOSSARY.md)
+[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../../GLOSSARY.md)
 
 対象 `xyz:MU` ／ 標本 2026-05-04 〜 2026-08-09 の 98 日(立会日 67 / 閉場日 31)
 
-板の残高の偏り([OBI](../../GLOSSARY.md))と流量の偏り([OFI](../../GLOSSARY.md))を
+板の残高の偏り([OBI](../../../GLOSSARY.md))と流量の偏り([OFI](../../../GLOSSARY.md))を
 200ms の時計に載せ直し、それぞれの自己相関を 200ms から 5 分までのラグで測りました。
 結論を先に書くと、**OBI の高い自己相関はほぼ標本化の副作用**で、
 **OFI は実質的に無記憶**です。
 
-![OBI と OFI の自己相関](../../charts/xyz_MU_acf_200ms.png)
+![OBI と OFI の自己相関](../../../charts/xyz_MU_acf_200ms.png)
 
 ---
 
@@ -115,9 +115,9 @@ OFI の自己相関は 200ms で +0.0196、1 秒で +0.0065、それより先は
 | ファイル | 中身 |
 |---|---|
 | `data/feat200_xyz_MU/dt=*.parquet` | 98 日 × 432,000 格子点(計 4,234 万行、791MB)。列 = `ts, n_ev, obi, ofi, obi_rho1_60s, obi_rho1_5m, ofi_rho1_60s, ofi_rho1_5m` |
-| [`data/acf_200ms_xyz_MU.csv`](../../data/acf_200ms_xyz_MU.csv) | 変数 × 日区分 × 156 ラグの自己相関・区間・帰無対照 |
+| [`data/acf_200ms_xyz_MU.csv`](../../../data/acf_200ms_xyz_MU.csv) | 変数 × 日区分 × 156 ラグの自己相関・区間・帰無対照 |
 | `data/acf_200ms_daily_xyz_MU.parquet` | 日ごとの素の自己相関 |
-| [`data/acf_200ms_daily_lag1_xyz_MU.csv`](../../data/acf_200ms_daily_lag1_xyz_MU.csv) | 日ごとの 1 ラグ自己相関と空区間の割合(第 3 節の元データ) |
+| [`data/acf_200ms_daily_lag1_xyz_MU.csv`](../../../data/acf_200ms_daily_lag1_xyz_MU.csv) | 日ごとの 1 ラグ自己相関と空区間の割合(第 3 節の元データ) |
 
 `*_rho1_60s` / `*_rho1_5m` は **T で終わる後ろ向き窓**(60 秒 / 5 分)の中だけで計算した
 1 ラグ自己相関なので、そのまま説明変数に使えます。`shift(-k)` は使っていません。

@@ -1,13 +1,13 @@
 # このウォレットはマーケットメイカーか — 13 基準
 
-[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../GLOSSARY.md)
+[← xyz:MU の分析索引](README.md) ／ [用語辞書](../../../GLOSSARY.md)
 
 対象 `xyz:MU` ／ 標本 2026-05-04 〜 2026-07-26 のうち各ウォレットが活動していた日
 
 板を厚く出している 5 者について、**マーケットメイクらしさ**を 13 の基準で採点しました。
 結論から書くと、**板に出している金額の大きさと MM らしさは一致しません**。
 
-![13 基準の採点表](../../charts/xyz_MU_wallet_mm.png)
+![13 基準の採点表](../../../charts/xyz_MU_wallet_mm.png)
 
 ---
 
@@ -107,8 +107,8 @@ mid から 5.7bp、注文の 76.4% を ±10bp に置き、最良気配に 11.9%�
 
 | ファイル | 中身 |
 |---|---|
-| [`data/wallet_mm_xyz_MU.csv`](../../data/wallet_mm_xyz_MU.csv) | ウォレット × 13 基準(日ごとの中央値) |
-| [`data/wallet_mm_daily_xyz_MU.csv`](../../data/wallet_mm_daily_xyz_MU.csv) | ウォレット × 日 の内訳 |
+| [`data/wallet_mm_xyz_MU.csv`](../../../data/wallet_mm_xyz_MU.csv) | ウォレット × 13 基準(日ごとの中央値) |
+| [`data/wallet_mm_daily_xyz_MU.csv`](../../../data/wallet_mm_daily_xyz_MU.csv) | ウォレット × 日 の内訳 |
 | `data/wallet_xyz_MU/dt=*.parquet` | 全ウォレット × 24 指標(日ごと。算出中) |
 
 ## 7. 再現手順

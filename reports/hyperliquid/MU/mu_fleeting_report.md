@@ -10,7 +10,7 @@
 再現: `scripts/fetch_l1.py` → `scripts/fetch_l1_extra.py` →
 `scripts/build_fleeting.py` → `scripts/plot_fleeting.py`
 
-![束の間の注文](../../charts/xyz_MU_fleeting.png)
+![束の間の注文](../../../charts/xyz_MU_fleeting.png)
 
 ---
 
@@ -260,7 +260,7 @@ FLR(\tau) = \frac{V_f(\tau)}{V_{all}} \quad (数量ベース) \qquad
 
 1. **これは記述統計であって予測ではない。** 束の間の注文が多いことが将来の
    値動きを教えるかは一切検証していない。判定の作法は
-   [予測の定義](../predicting_definition.md) に従うこと。
+   [予測の定義](../../predicting_definition.md) に従うこと。
 2. **取消の理由は区別していない。** 値段を追いかけ直すための取消、
    在庫調整、対向注文の消滅への追随は、すべて同じ「取消」として数えている。
 3. **距離の層別は非単調**(第 6 節)。301-1000 ティックで底を打つ理由は
