@@ -3,7 +3,7 @@
 [← ホーム](../../../README.md) / [Hyperliquid の分析](../README.md)
 
 <p>
-  <a href="https://www.micron.com/"><img src="../../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
+  <a href="https://www.micron.com/"><img src="../../../photo/micron-logo.png" alt="Micron Technology" height="76"></a>
 </p>
 
 | 項目 | 内容 |
