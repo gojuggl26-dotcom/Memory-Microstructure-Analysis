@@ -47,6 +47,7 @@
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
 | [メッセージの流量(quote stuffing / message activity)](mu_msg_activity_report.md) | 板を作らず、流れてくるメッセージ 13.3 億通そのものを数える。中央 111 通/秒、最繁の秒は 4,448 通。約定 1 件あたり 103 通・新規発注 47 本で、7 通に 1 通は拒否。★**「イベント間隔」はチェーンのブロック周期 67.3ms に量子化されており**(99 日を通して 67.18〜67.50ms)、間隔・分散・CV・burstiness は参加者の速さではなく「動きのあったブロックの間引き」を測っている。群れは Fano factor(1 秒窓で 172、ポアソンなら 1)と 1 時間先まで残る自己相関に出る。**全 99 日**。 |
+| [最良気配近くのメイカーの混み具合と競争](mu_maker_crowd_report.md) | 最良から 10 ティック以内に居る口座だけを取り出し、混み具合と競争を 9 指標で測る。中央 10.6 者居ても **実効は 3.35 者**で、上位 1 者が数量の 50.6% を持つ。★**帯を 0 → 25 ティックに広げると人数は 8.4 倍になるのに実効は 3.2 倍止まりで、均等度(MCI)は 0.659 → 0.261 へ下がる**(奥のメイカーは競争の実体になっていない)。顔ぶれは 1 分で 6 割入れ替わり、1 価格には 1.54 者しか居ない。帯 0 の人数が[口座の集中度]の BBO wallet count と 98 日すべてで一致(相関 1.00000)。**全 98 日**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -177,6 +178,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **メッセージの流量(quote stuffing / message activity)** — 秒あたりの通数、種別の内訳、1 ブロックの詰まり方、ブロック間隔の分布、burstiness と memory の平面、窓長ごとの Fano factor、activity entropy、自己相関。解説: [メッセージの流量](mu_msg_activity_report.md)
 
 ![xyz:MU メッセージの流量。秒あたりの通数、NEW/REMOVE/UPDATE/REJECTED の内訳、1 ブロックのメッセージ数、ブロック間隔の分布とチェーンの周期、burstiness と memory、窓長ごとの Fano factor、activity entropy、activity autocorrelation](../../../charts/xyz_MU_msg_activity.png)
+
+**メイカーの混み具合と競争(maker crowd / competition)** — 近傍のメイカー数、HHI と実効メイカー数、競争指数、帯を広げたときの変わり方、入替・参入・退出、quote overlap と clustering、立会日と閉場日。解説: [最良気配近くのメイカーの混み具合と競争](mu_maker_crowd_report.md)
+
+![xyz:MU メイカーの混み具合と競争。最良から 10 ティック以内のメイカー数、maker concentration と effective maker count、maker competition index、帯を広げたときの変化、turnover / entry / exit、quote overlap と maker clustering、立会日と閉場日の比較](../../../charts/xyz_MU_maker_crowd.png)
 
 **指値注文の生存率** — 6 条件それぞれの層別生存率 S(τ)。横軸は経過時間(対数)。解説: [指値注文の生存率・取消率・約定率](mu_hazard_report.md)
 
@@ -337,6 +342,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [msg_activity_daily_xyz_MU.csv](../../../data/msg_activity_daily_xyz_MU.csv) | 日 × 14 指標と検算(99 行 × 46 列) | `build_msg_activity.py` |
 | msg_activity_curves_xyz_MU.parquet | 日 × 曲線(Fano / ACF / 間隔分布 / 時刻別) | `build_msg_activity.py` |
 | msg_activity_burst_xyz_MU.parquet | 日ごとの最繁 10 秒とその口座集中(990 行) | `build_msg_activity.py` |
+| [maker_crowd_daily_xyz_MU.csv](../../../data/maker_crowd_daily_xyz_MU.csv) | 日 × 9 指標の平均と 5 分位、検算(98 行) | `build_maker_crowd.py` |
+| maker_crowd_curves_xyz_MU.parquet | 日 × 帯 K(0/5/10/25)と時間差 Δ の曲線 | `build_maker_crowd.py` |
 
 ## 再現手順
 
@@ -396,6 +403,8 @@ uv run python scripts/build_wallet_conc.py --coin xyz:MU
 uv run python scripts/plot_wallet_conc.py --coin xyz:MU
 uv run python scripts/build_msg_activity.py --coin xyz:MU
 uv run python scripts/plot_msg_activity.py --coin xyz:MU
+uv run python scripts/build_maker_crowd.py --coin xyz:MU
+uv run python scripts/plot_maker_crowd.py --coin xyz:MU
 uv run python scripts/build_impact.py --coin xyz:MU
 uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
