@@ -46,6 +46,7 @@
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
+| [メッセージの流量(quote stuffing / message activity)](mu_msg_activity_report.md) | 板を作らず、流れてくるメッセージ 13.3 億通そのものを数える。中央 111 通/秒、最繁の秒は 4,448 通。約定 1 件あたり 103 通・新規発注 47 本で、7 通に 1 通は拒否。★**「イベント間隔」はチェーンのブロック周期 67.3ms に量子化されており**(99 日を通して 67.18〜67.50ms)、間隔・分散・CV・burstiness は参加者の速さではなく「動きのあったブロックの間引き」を測っている。群れは Fano factor(1 秒窓で 172、ポアソンなら 1)と 1 時間先まで残る自己相関に出る。**全 99 日**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -172,6 +173,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **口座の集中度(wallet concentration)** — 口座数、最良気配を持つ口座数、HHI と実効口座数、ジニ係数、上位 k のシェア、集中の偏り、touch と deep、日内の推移。解説: [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md)
 
 ![xyz:MU 口座の集中度。板に数量を置いている口座数、最良気配を持つ口座数、wallet HHI と実効口座数、Gini 係数、上位 k のシェア、concentration imbalance、touch と deep の HHI、日内の推移](../../../charts/xyz_MU_wallet_conc.png)
+
+**メッセージの流量(quote stuffing / message activity)** — 秒あたりの通数、種別の内訳、1 ブロックの詰まり方、ブロック間隔の分布、burstiness と memory の平面、窓長ごとの Fano factor、activity entropy、自己相関。解説: [メッセージの流量](mu_msg_activity_report.md)
+
+![xyz:MU メッセージの流量。秒あたりの通数、NEW/REMOVE/UPDATE/REJECTED の内訳、1 ブロックのメッセージ数、ブロック間隔の分布とチェーンの周期、burstiness と memory、窓長ごとの Fano factor、activity entropy、activity autocorrelation](../../../charts/xyz_MU_msg_activity.png)
 
 **指値注文の生存率** — 6 条件それぞれの層別生存率 S(τ)。横軸は経過時間(対数)。解説: [指値注文の生存率・取消率・約定率](mu_hazard_report.md)
 
@@ -329,6 +334,9 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | sign_persist_counts_xyz_MU.parquet | 日 × 特徴量 × k × (符号, 次の符号)の生計数 | `build_sign_persistence.py` |
 | sign_persist_cells_xyz_MU.parquet | 日区分 × 特徴量 × k の集計・区間・帰無対照 | `build_sign_persistence.py` |
 | sign_persist_ident_xyz_MU.parquet | 恒等式の検算結果(日ごとの不一致件数) | `build_sign_persistence.py` |
+| [msg_activity_daily_xyz_MU.csv](../../../data/msg_activity_daily_xyz_MU.csv) | 日 × 14 指標と検算(99 行 × 46 列) | `build_msg_activity.py` |
+| msg_activity_curves_xyz_MU.parquet | 日 × 曲線(Fano / ACF / 間隔分布 / 時刻別) | `build_msg_activity.py` |
+| msg_activity_burst_xyz_MU.parquet | 日ごとの最繁 10 秒とその口座集中(990 行) | `build_msg_activity.py` |
 
 ## 再現手順
 
@@ -386,6 +394,8 @@ uv run python scripts/build_fleeting.py --coin xyz:MU
 uv run python scripts/plot_fleeting.py --coin xyz:MU
 uv run python scripts/build_wallet_conc.py --coin xyz:MU
 uv run python scripts/plot_wallet_conc.py --coin xyz:MU
+uv run python scripts/build_msg_activity.py --coin xyz:MU
+uv run python scripts/plot_msg_activity.py --coin xyz:MU
 uv run python scripts/build_impact.py --coin xyz:MU
 uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
