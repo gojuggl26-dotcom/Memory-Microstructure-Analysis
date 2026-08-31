@@ -43,9 +43,12 @@
 | [このウォレットはマーケットメイカーか](mu_wallet_mm_report.md) | 板を厚く出している 5 者を 13 基準(両建て・連続在席・BBO 参加・対称性・更新頻度・取消率・生存時間・補充・建玉感応・板厚寄与・カバレッジ・幅と量の安定性)で採点。**板に出す金額の大きさと MM らしさは一致しない** — 最大の出し手は mid から 73.8bp 離れ、±10bp に置くのは 2.3% だけ。 |
 | [置いた指値が約定する確率](mu_fill_rate_report.md) | 指値が最終的に約定する確率を、発注の瞬間に確定する 2 条件(同じ側の最良気配から何ティック離れているか / 同じ価格に既に何本並んでいたか)で層別する。効くのは水準よりキュー位置で、先客 1 本で 2.5 分の 1、5〜9 本で 20 分の 1 になる。トリガー注文を板に入れて 99.95% の時間クロスさせた失敗も記録。**10 日分の暫定値**。 |
 | [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
+| [見せかけの板を疑う 18 指標](mu_manipulation_report.md) | spoofing / layering の教科書的な形 18 通りを注文 1 本ごとに測り、口座別に集計する。**母集団のベースラインが高すぎて、ほとんど何も選り分けない** — 最良気配に届いた注文の 87% は約定せず引かれ、取消率は 98.9%。fleeting liquidity は本数で 54% だが表示時間で数えると 1.3%(41 倍差)。決定的な検証(大口を出したあと自分が反対側で売り抜けたか)では**署名が出ないどころか符号が逆**で、反対側で売った層では値段がその注文と逆へ 3.50 bp 動いていた。口座は内部連番のみで扱う。 |
+| [複数の口座は同時に動くか — 同期の 8 指標](mu_sync_report.md) | 上位 60 口座(全注文の 87.7%)1,445 ペアについて、ブロック粒度の共起と秒粒度の相関を帰無との比で測る。**同時性は本物**(分層化した期待値の 1.43 倍、取消は 1.70 倍)だが、**向きは同期しない**(符号つき出し入れの超過相関は +0.0085 しかない)。さらに**同期の 9 割は「全員が同じ市場に反応している」で説明でき**、両者を除いた市場を統制すると超過は +0.137 → +0.014 へ落ちる。ただし 1,445 ペア中 **18〜19 ペアだけは残差相関が 0.5 を超える**(帰無では 0 件)。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
+| [ウォレットの行動クラスタ](mu_wallet_clusters_report.md) | 注文の作り方を 7 領域の分布(数量・距離・生存時間・時刻・取消・価格の置き方・最良気配)で表し、Jensen–Shannon 距離から類似度・クラスタ・2 次元の埋め込みを作る。380 者・72,010 組。**分かれるのは「どこに置くか」で、「いくらで置くか」では分かれない**(size-profile の分離幅は −0.005)。事前宣言した規則では潰れた分割しか出ず、手法を変えた経緯も記録。 |
 | [メッセージの流量(quote stuffing / message activity)](mu_msg_activity_report.md) | 板を作らず、流れてくるメッセージ 13.3 億通そのものを数える。中央 111 通/秒、最繁の秒は 4,448 通。約定 1 件あたり 103 通・新規発注 47 本で、7 通に 1 通は拒否。★**「イベント間隔」はチェーンのブロック周期 67.3ms に量子化されており**(99 日を通して 67.18〜67.50ms)、間隔・分散・CV・burstiness は参加者の速さではなく「動きのあったブロックの間引き」を測っている。群れは Fano factor(1 秒窓で 172、ポアソンなら 1)と 1 時間先まで残る自己相関に出る。**全 99 日**。 |
 | [最良気配近くのメイカーの混み具合と競争](mu_maker_crowd_report.md) | 最良から 10 ティック以内に居る口座だけを取り出し、混み具合と競争を 9 指標で測る。中央 10.6 者居ても **実効は 3.35 者**で、上位 1 者が数量の 50.6% を持つ。★**帯を 0 → 25 ティックに広げると人数は 8.4 倍になるのに実効は 3.2 倍止まりで、均等度(MCI)は 0.659 → 0.261 へ下がる**(奥のメイカーは競争の実体になっていない)。顔ぶれは 1 分で 6 割入れ替わり、1 価格には 1.54 者しか居ない。帯 0 の人数が[口座の集中度]の BBO wallet count と 98 日すべてで一致(相関 1.00000)。**全 98 日**。 |
 
@@ -215,6 +218,34 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU ウォレットの MM らしさ。5 者 × 13 基準の採点表、位置取り、日ごとの在席](../../../charts/xyz_MU_wallet_mm.png)
 
+**ウォレットの行動クラスタ** — 行動の埋め込み(MDS)、どの行動領域で分かれているか、クラスタごとの生存時間と距離の分布。解説: [ウォレットの行動クラスタ](mu_wallet_clusters_report.md)
+
+![xyz:MU ウォレットの行動クラスタ。埋め込み、領域ごとの分離、クラスタごとの生存時間と距離の分布](../../../charts/xyz_MU_wallet_clusters.png)
+
+**見せかけの板 — 母集団のベースライン** — fleeting liquidity・fake depth persistence・cancel-before-touch・注文の集中。解説: [見せかけの板を疑う 18 指標](mu_manipulation_report.md)
+
+![xyz:MU 見せかけの板を疑う指標の母集団ベースライン。fleeting liquidity、fake depth persistence、cancel-before-touch、大口の閾値、注文の集中、発注前後の mid の動き](../../../charts/xyz_MU_manip_base.png)
+
+**見せかけの板 — 口座別の分布と 2 つの合成スコア**。解説: [同上](mu_manipulation_report.md)
+
+![xyz:MU 見せかけの板を疑う指標の口座別分布。12 指標の累積分布と、spoof score / layering score の散布図](../../../charts/xyz_MU_manip_wallets.png)
+
+**見せかけの板 — 検証**。大口を出したあと自分が何をしたか。解説: [同上](mu_manipulation_report.md)
+
+![xyz:MU 見せかけの板の検証。スコア十分位ごとの押した分と並べ替え検定、大口を出したあと自分が何をしたか、スコアの分布と活動量との関係](../../../charts/xyz_MU_manip_check.png)
+
+**同期 — ブロック粒度** 同じブロックに一緒に動くか。期待値は分ごとに層化。解説: [複数の口座は同時に動くか](mu_sync_report.md)
+
+![xyz:MU ブロック粒度の同時性。発注と取消の共起を分層化した期待値で割った比の分布、比の行列、活動量との関係](../../../charts/xyz_MU_sync_block.png)
+
+**同期 — 秒粒度の相関** 観測と帰無(±300 秒ずらし)。解説: [同上](mu_sync_report.md)
+
+![xyz:MU 秒粒度の相関。発注本数・取消本数・符号つき出し入れ・発注価格の距離について、観測と帰無の分布](../../../charts/xyz_MU_sync_corr.png)
+
+**同期 — 共通成分と herding**。解説: [同上](mu_sync_report.md)
+
+![xyz:MU 共通成分と herding。自分を除いた市場合計への決定係数、相関行列の固有値、herding score の分布と規模との関係](../../../charts/xyz_MU_sync_common.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -345,6 +376,18 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [maker_crowd_daily_xyz_MU.csv](../../../data/maker_crowd_daily_xyz_MU.csv) | 日 × 9 指標の平均と 5 分位、検算(98 行) | `build_maker_crowd.py` |
 | maker_crowd_curves_xyz_MU.parquet | 日 × 帯 K(0/5/10/25)と時間差 Δ の曲線 | `build_maker_crowd.py` |
 
+| [manip_daily_xyz_MU.csv](../../../data/manip_daily_xyz_MU.csv) | 見せかけの板の指標の市場全体ベースライン(98 行) | `build_manip.py` |
+| [manip_scores_xyz_MU.csv](../../../data/manip_scores_xyz_MU.csv) | 口座ごとの 18 指標と spoof / layering スコア(729 行) | `plot_manip.py` |
+| [manip_meta_xyz_MU.csv](../../../data/manip_meta_xyz_MU.csv) | 見せかけの板の日ごとの検算(98 行) | `build_manip.py` |
+| manip_wallet_xyz_MU.parquet | 口座 × 日 の集計(69,448 行、版管理外) | `build_manip.py` |
+| manip_episodes_xyz_MU.parquet | 最良の近くに出した大口 1 本ごと(307,599 行、版管理外) | `build_manip.py` |
+
+| [sync_pairs_xyz_MU.csv](../../../data/sync_pairs_xyz_MU.csv) | 口座ペアごとの共起比・相関・偏相関と帰無(1,445 行) | `plot_sync.py` |
+| [sync_wallet_xyz_MU.csv](../../../data/sync_wallet_xyz_MU.csv) | 口座ごとの共通成分と herding score(60 行) | `plot_sync.py` |
+| [sync_meta_xyz_MU.csv](../../../data/sync_meta_xyz_MU.csv) | 同期の日ごとの検算(98 行) | `build_sync.py` |
+| sync_raw_xyz_MU.npz | 日 × 口座 × 口座 の十分統計(版管理外) | `build_sync.py` |
+| [wallet_clusters_xyz_MU.csv](../../../data/wallet_clusters_xyz_MU.csv) | ウォレット × クラスタ ID・埋め込み座標・平均類似度(380 行) | `build_wallet_clusters.py` |
+
 ## 再現手順
 
 上から順に実行すると、このページの図と数値がすべて再現できます。
@@ -408,6 +451,10 @@ uv run python scripts/plot_maker_crowd.py --coin xyz:MU
 uv run python scripts/build_impact.py --coin xyz:MU
 uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
+uv run python scripts/build_manip.py --coin xyz:MU
+uv run python scripts/plot_manip.py --coin xyz:MU
+uv run python scripts/build_sync.py --coin xyz:MU
+uv run python scripts/plot_sync.py --coin xyz:MU
 ```
 
 ---
