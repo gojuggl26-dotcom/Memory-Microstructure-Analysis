@@ -51,6 +51,7 @@
 | [ウォレットの行動クラスタ](mu_wallet_clusters_report.md) | 注文の作り方を 7 領域の分布(数量・距離・生存時間・時刻・取消・価格の置き方・最良気配)で表し、Jensen–Shannon 距離から類似度・クラスタ・2 次元の埋め込みを作る。380 者・72,010 組。**分かれるのは「どこに置くか」で、「いくらで置くか」では分かれない**(size-profile の分離幅は −0.005)。事前宣言した規則では潰れた分割しか出ず、手法を変えた経緯も記録。 |
 | [メッセージの流量(quote stuffing / message activity)](mu_msg_activity_report.md) | 板を作らず、流れてくるメッセージ 13.3 億通そのものを数える。中央 111 通/秒、最繁の秒は 4,448 通。約定 1 件あたり 103 通・新規発注 47 本で、7 通に 1 通は拒否。★**「イベント間隔」はチェーンのブロック周期 67.3ms に量子化されており**(99 日を通して 67.18〜67.50ms)、間隔・分散・CV・burstiness は参加者の速さではなく「動きのあったブロックの間引き」を測っている。群れは Fano factor(1 秒窓で 172、ポアソンなら 1)と 1 時間先まで残る自己相関に出る。**全 99 日**。 |
 | [最良気配近くのメイカーの混み具合と競争](mu_maker_crowd_report.md) | 最良から 10 ティック以内に居る口座だけを取り出し、混み具合と競争を 9 指標で測る。中央 10.6 者居ても **実効は 3.35 者**で、上位 1 者が数量の 50.6% を持つ。★**帯を 0 → 25 ティックに広げると人数は 8.4 倍になるのに実効は 3.2 倍止まりで、均等度(MCI)は 0.659 → 0.261 へ下がる**(奥のメイカーは競争の実体になっていない)。顔ぶれは 1 分で 6 割入れ替わり、1 価格には 1.54 者しか居ない。帯 0 の人数が[口座の集中度]の BBO wallet count と 98 日すべてで一致(相関 1.00000)。**全 98 日**。 |
+| [最良気配の入れ替わり(BBO turnover)](mu_bbo_turnover_report.md) | 最良価格が保たれる時間は中央 343ms しかなく 1 秒格子では測れないので、格子を使わず区間の交差だけで ns 精度で測る。置換 1.32 回/秒、1 秒後も同じ価格である確率は 0.40。★**注文は毎秒 2.87 本入れ替わるのに数量は 0.15 回転/秒しか入れ替わらず、19 倍の開きがある**(入れ替わっているのは小さい注文で、厚みを作る注文は長く居座る)。口座が最良を保つ時間は 363ms で、1 本の注文が居る 335ms とほぼ変わらない。**全 98 日**。 |
 
 ### B. 板の状態は将来の値動きを教えてくれるか
 
@@ -185,6 +186,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 **メイカーの混み具合と競争(maker crowd / competition)** — 近傍のメイカー数、HHI と実効メイカー数、競争指数、帯を広げたときの変わり方、入替・参入・退出、quote overlap と clustering、立会日と閉場日。解説: [最良気配近くのメイカーの混み具合と競争](mu_maker_crowd_report.md)
 
 ![xyz:MU メイカーの混み具合と競争。最良から 10 ティック以内のメイカー数、maker concentration と effective maker count、maker competition index、帯を広げたときの変化、turnover / entry / exit、quote overlap と maker clustering、立会日と閉場日の比較](../../../charts/xyz_MU_maker_crowd.png)
+
+**最良気配の入れ替わり(BBO turnover)** — 置換回数、BBO lifetime の分布、order / wallet / size の 3 つの回転率、best-price と touch の持続、所有時間の分布、立会日と閉場日、被覆率の検算。解説: [最良気配の入れ替わり](mu_bbo_turnover_report.md)
+
+![xyz:MU 最良気配の入れ替わり。BBO replacement count、BBO lifetime の分布、order / wallet / size turnover、best-price persistence と touch persistence、touch ownership duration の分布、3 つの時間の日次推移、立会日と閉場日、再構成が最良を覆えているかの検算](../../../charts/xyz_MU_bbo_turnover.png)
 
 **指値注文の生存率** — 6 条件それぞれの層別生存率 S(τ)。横軸は経過時間(対数)。解説: [指値注文の生存率・取消率・約定率](mu_hazard_report.md)
 
@@ -375,6 +380,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | msg_activity_burst_xyz_MU.parquet | 日ごとの最繁 10 秒とその口座集中(990 行) | `build_msg_activity.py` |
 | [maker_crowd_daily_xyz_MU.csv](../../../data/maker_crowd_daily_xyz_MU.csv) | 日 × 9 指標の平均と 5 分位、検算(98 行) | `build_maker_crowd.py` |
 | maker_crowd_curves_xyz_MU.parquet | 日 × 帯 K(0/5/10/25)と時間差 Δ の曲線 | `build_maker_crowd.py` |
+| [bbo_turnover_daily_xyz_MU.csv](../../../data/bbo_turnover_daily_xyz_MU.csv) | 日 × 9 指標と検算(98 行) | `build_bbo_turnover.py` |
+| bbo_turnover_curves_xyz_MU.parquet | 日 × 持続曲線と寿命 / 所有時間の分布 | `build_bbo_turnover.py` |
 
 | [manip_daily_xyz_MU.csv](../../../data/manip_daily_xyz_MU.csv) | 見せかけの板の指標の市場全体ベースライン(98 行) | `build_manip.py` |
 | [manip_scores_xyz_MU.csv](../../../data/manip_scores_xyz_MU.csv) | 口座ごとの 18 指標と spoof / layering スコア(729 行) | `plot_manip.py` |
@@ -448,6 +455,8 @@ uv run python scripts/build_msg_activity.py --coin xyz:MU
 uv run python scripts/plot_msg_activity.py --coin xyz:MU
 uv run python scripts/build_maker_crowd.py --coin xyz:MU
 uv run python scripts/plot_maker_crowd.py --coin xyz:MU
+uv run python scripts/build_bbo_turnover.py --coin xyz:MU
+uv run python scripts/plot_bbo_turnover.py --coin xyz:MU
 uv run python scripts/build_impact.py --coin xyz:MU
 uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
