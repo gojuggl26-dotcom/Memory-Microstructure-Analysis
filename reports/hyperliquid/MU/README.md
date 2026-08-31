@@ -69,6 +69,7 @@
 | [100ms 窓の分散は将来のリターンを説明するか](mu_var100_report.md) | 最良気配の買い数量・売り数量・OBI・OFI を 10ms 格子に載せ、100ms ごとの標本分散を 12 のホライズン(10ms〜100s)の将来 log リターンへ回帰。絶対リターンには OFI の分散が最も効く(500ms で r=+0.132)。**生の分散では何も見えず log(1+x) で初めて見える**こと、片側に紐づいた分散は符号つきリターンとも鏡像の関係を持つこと(事前の予測を外した経緯)を含む。 |
 | [板の弾力性 — 流動性ショックからの回復](mu_resilience_report.md) | 最良気配の数量が直前 1 秒の平均に対して 50% 以上失われた瞬間を「ショック」とし(818 万件)、D(t) = D0 + (D_shock − D0)e^{−κt} で回復を測る 12 指標。**指数模型が平均経路には当てはまらない**(戻る件と戻らない件の混合)こと、1 秒後の回復度 R が上昇確率に 20.6pp の単調な用量反応を持つこと、買い側と売り側で弾力性に差が無いことを示す。 |
 | [ティック水準別 OBI と将来 log リターンの回帰](mu_obi_levels_report.md) | 最良気配から 1〜10 ティックの各水準について OBI を作り、100ms〜50 秒の 9 ホライズンで log リターンへ回帰。板は l1 の注文イベントから組み直した。279 格子すべてが Bonferroni 後も有意だが、**生の傾きは水準 1 が最大でも 1σ で測ると水準 2 が最大**で、累積の傾きの伸びは情報の増加ではなく ばらつきの縮小である(4 ティックで頭打ち)。bbo の 53 行の壊れた記録が標準偏差を支配していた事故と、その掃除も記録。 |
+| [板と注文イベントのエントロピー 13 種](mu_entropy_report.md) | 板の散らばり具合を 13 通り(価格水準別の数量・本数、注文数量、口座、滞留時間、最良の待ち行列、イベントの種別・側・向き、Δエントロピー、エントロピー率、条件付き、遷移)測り、6 地平 × 2 目的変数の 156 セルへ当てる。**Bonferroni を通った 49 セルは全部がボラティリティで、向きは 0 セル**。さらに前向き < 後ろ向き・活動量の統制で大半が消え、**4 段の検査を全部通ったのは156 セル中 1 つ**(Δエントロピーの 1 秒)。順位相関では見えなかった **U 字**を十分位表で見つけて結論を訂正した経緯も記録。**全 98 日**。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -316,6 +317,14 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU OBI と OFI の自己相関。ラグ 200ms〜5 分の自己相関、空の格子点の割合との関係、OFI の符号が日によって変わること](../../../charts/xyz_MU_acf_200ms.png)
 
+**エントロピー 13 種は何を捉えているか** — 3 系統の分布、実効的な個数 2^H、日ごとの平均、13 種 + 統制 2 の順位相関。解説: [板と注文イベントのエントロピー 13 種](mu_entropy_report.md)
+
+![xyz:MU 板と注文イベントのエントロピー 13 種。板・イベント・動的の 3 系統の分布、実効的な個数 2^H、日ごとの平均の推移、13 種と統制 2 変数の順位相関](../../../charts/xyz_MU_entropy.png)
+
+**エントロピーは将来の値動きを予測するか** — 156 セル全件の符号検定、前向き 対 後ろ向き、帰無対照、活動量の統制、U 字の十分位。解説: [同上](mu_entropy_report.md)
+
+![xyz:MU エントロピー 13 種の予測力。将来ボラティリティと向きへの符号検定の行列、予測か後始末かの散布図、帰無対照、活動量を統制した偏相関、Δエントロピーの十分位が描く U 字](../../../charts/xyz_MU_entropy_predict.png)
+
 ### D. 板の中の量どうしの関係
 
 **5 つの量の相関行列** — スプレッド幅・注文量・約定量・OBI・OFI のスピアマン順位相関。解説: [スプレッド幅・注文量・約定量と OBI / OFI の関係](mu_spread_flow_report.md)
@@ -396,6 +405,13 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [manip_meta_xyz_MU.csv](../../../data/manip_meta_xyz_MU.csv) | 見せかけの板の日ごとの検算(98 行) | `build_manip.py` |
 | manip_wallet_xyz_MU.parquet | 口座 × 日 の集計(69,448 行、版管理外) | `build_manip.py` |
 | manip_episodes_xyz_MU.parquet | 最良の近くに出した大口 1 本ごと(307,599 行、版管理外) | `build_manip.py` |
+| [entropy_fit_xyz_MU.csv](../../../data/entropy_fit_xyz_MU.csv) | 156 セルの全結果(効果量・符号検定・帰無対照・統制・後ろ向き) | `fit_entropy.py` |
+| [entropy_corr_xyz_MU.csv](../../../data/entropy_corr_xyz_MU.csv) | 13 種 + 統制 2 の順位相関行列 | `fit_entropy.py` |
+| [entropy_daily_xyz_MU.csv](../../../data/entropy_daily_xyz_MU.csv) | 日ごとの平均(98 行) | `fit_entropy.py` |
+| [entropy_abschg_xyz_MU.csv](../../../data/entropy_abschg_xyz_MU.csv) | \|Δh_depth\| の追試(6 地平) | `fit_entropy.py` |
+| [entropy_decile_xyz_MU.csv](../../../data/entropy_decile_xyz_MU.csv) | Δh_depth の十分位ごとの将来 \|r\|(U 字の数値) | `fit_entropy.py` |
+| [entropy_meta_xyz_MU.csv](../../../data/entropy_meta_xyz_MU.csv) | 日ごとの検算(格子数・欠測・薄い格子・繰越) | `build_entropy.py` |
+| entropy_xyz_MU.parquet | 1 秒格子 × 13 特徴量 + 統制 2 + 将来リターン(846 万行、版管理外) | `build_entropy.py` |
 
 | [sync_pairs_xyz_MU.csv](../../../data/sync_pairs_xyz_MU.csv) | 口座ペアごとの共起比・相関・偏相関と帰無(1,445 行) | `plot_sync.py` |
 | [sync_wallet_xyz_MU.csv](../../../data/sync_wallet_xyz_MU.csv) | 口座ごとの共通成分と herding score(60 行) | `plot_sync.py` |
@@ -472,6 +488,11 @@ uv run python scripts/build_impact_signal.py --coin xyz:MU
 uv run python scripts/plot_impact.py --coin xyz:MU
 uv run python scripts/build_manip.py --coin xyz:MU
 uv run python scripts/plot_manip.py --coin xyz:MU
+uv run python scripts/build_entropy.py --selftest
+uv run python scripts/build_entropy.py --coin xyz:MU
+uv run python scripts/build_entropy.py --coin xyz:MU --merge
+uv run python scripts/fit_entropy.py --coin xyz:MU
+uv run python scripts/plot_entropy.py --coin xyz:MU
 uv run python scripts/build_sync.py --coin xyz:MU
 uv run python scripts/plot_sync.py --coin xyz:MU
 ```
