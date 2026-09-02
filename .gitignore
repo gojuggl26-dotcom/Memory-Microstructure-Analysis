@@ -30,3 +30,6 @@ Thumbs.db
 
 # エントロピー分析の日別中間ファイル(build_entropy.py --merge で 1 本にまとめ直せる)
 data/entropy_days_*/
+
+# 口座別約定分析の日別中間ファイル(--merge で 1 本にまとめ直せる)
+data/wfill_days_*/

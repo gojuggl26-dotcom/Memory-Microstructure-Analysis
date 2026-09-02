@@ -41,6 +41,7 @@
 | [時間帯ごとのオーダーサイズ分布](mu_order_size_report.md) | 開場後・昼・閉場前・深夜の 4 つの 2 時間帯について、成行注文 1 本のサイズ分布を比較。開場後だけが明確に大きく、どの帯でも上位 1% が数量の 1/3 以上を占める。 |
 | [板の深さごとの注文到着率](mu_arrival_depth_report.md) | 1 秒あたり何本の注文が mid からどれだけ離れた価格に届くかを、6 つの時間帯 × 買い売り別 × 9 つの距離帯で測る。開場後は閉場日の昼の 21 倍。最頻帯は 2–5 bp だが開場後だけ 10–25 bp へ外側にずれる。買いと売りの非対称は 6 窓を補正すると残らない。 |
 | [このウォレットはマーケットメイカーか](mu_wallet_mm_report.md) | 板を厚く出している 5 者を 13 基準(両建て・連続在席・BBO 参加・対称性・更新頻度・取消率・生存時間・補充・建玉感応・板厚寄与・カバレッジ・幅と量の安定性)で採点。**板に出す金額の大きさと MM らしさは一致しない** — 最大の出し手は mid から 73.8bp 離れ、±10bp に置くのは 2.3% だけ。 |
+| [口座ごとの約定のされ方 11 指標](mu_wallet_fill_report.md) | 板に指値を置いた口座から見て、置いた注文がどれだけ約定に至ったかを 11 通りで測る(fill rate / fill probability / fill-to-order / fill-to-cancel / maker execution share / volume executed÷quoted / average time to fill / partial-fill frequency / fill size / queue-position-at-fill / adverse selection after fill)。**うち 4 つは分子と分母の取り方が違うだけの近い量**で、口座間の順位相関は +0.95 以上。**約定の 87.6% は「前に誰もいない」状態で起きる**(キュー位置は効かない)。**メイカーは約定 10 秒後に中央値 +1.36bp 不利へ動き、時刻をずらす帰無対照では +0.009bp と消える**。ただし**大口ほど逆選択が小さい**(上位 20 者 +0.52bp 対 その他 +1.41bp、ρ=−0.46)。約定量の数え方で 3 割変わる落とし穴と node_fills による 99.0% の照合つき。**全 98 日**。 |
 | [置いた指値が約定する確率](mu_fill_rate_report.md) | 指値が最終的に約定する確率を、発注の瞬間に確定する 2 条件(同じ側の最良気配から何ティック離れているか / 同じ価格に既に何本並んでいたか)で層別する。効くのは水準よりキュー位置で、先客 1 本で 2.5 分の 1、5〜9 本で 20 分の 1 になる。トリガー注文を板に入れて 99.95% の時間クロスさせた失敗も記録。**10 日分の暫定値**。 |
 | [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
 | [見せかけの板を疑う 18 指標](mu_manipulation_report.md) | spoofing / layering の教科書的な形 18 通りを注文 1 本ごとに測り、口座別に集計する。**母集団のベースラインが高すぎて、ほとんど何も選り分けない** — 最良気配に届いた注文の 87% は約定せず引かれ、取消率は 98.9%。fleeting liquidity は本数で 54% だが表示時間で数えると 1.3%(41 倍差)。決定的な検証(大口を出したあと自分が反対側で売り抜けたか)では**署名が出ないどころか符号が逆**で、反対側で売った層では値段がその注文と逆へ 3.50 bp 動いていた。口座は内部連番のみで扱う。 |
@@ -257,6 +258,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 共通成分と herding。自分を除いた市場合計への決定係数、相関行列の固有値、herding score の分布と規模との関係](../../../charts/xyz_MU_sync_common.png)
 
+**口座ごとの約定のされ方** — 4 つの約定割合の重なり、出した量と約定量、待ち時間と約定の大きさ、約定時のキュー位置、約定後の逆選択。解説: [口座ごとの約定のされ方 11 指標](mu_wallet_fill_report.md)
+
+![xyz:MU 口座ごとの約定のされ方 11 指標。約定割合 4 種の分布と相互相関、出した数量と約定した数量の散布、待ち時間と約定の大きさ、約定した瞬間に先頭だった割合、メイカー約定シェア上位 20 口座の約定後 10 秒の逆選択](../../../charts/xyz_MU_wallet_fill.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -412,6 +417,11 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [entropy_decile_xyz_MU.csv](../../../data/entropy_decile_xyz_MU.csv) | Δh_depth の十分位ごとの将来 \|r\|(U 字の数値) | `fit_entropy.py` |
 | [entropy_meta_xyz_MU.csv](../../../data/entropy_meta_xyz_MU.csv) | 日ごとの検算(格子数・欠測・薄い格子・繰越) | `build_entropy.py` |
 | entropy_xyz_MU.parquet | 1 秒格子 × 13 特徴量 + 統制 2 + 将来リターン(846 万行、版管理外) | `build_entropy.py` |
+| [wfmetrics_xyz_MU.csv](../../../data/wfmetrics_xyz_MU.csv) | 口座 × 11 指標(395 口座) | `fit_wallet_fill.py` |
+| [wfmetrics_corr_xyz_MU.csv](../../../data/wfmetrics_corr_xyz_MU.csv) | 11 指標どうしの順位相関 | `fit_wallet_fill.py` |
+| [wfill_meta_xyz_MU.csv](../../../data/wfill_meta_xyz_MU.csv) | 日ごとの検算(事象数・約定数・孤児・打ち切り) | `build_wallet_fill.py` |
+| wfill_wallet_xyz_MU.parquet | 口座ごとの集計(14,877 者、版管理外) | `build_wallet_fill.py` |
+| wfill_fills_xyz_MU.parquet | 約定 1 件ごとの記録(765.9 万件、キュー位置と逆選択つき、版管理外) | `build_wallet_fill.py` |
 
 | [sync_pairs_xyz_MU.csv](../../../data/sync_pairs_xyz_MU.csv) | 口座ペアごとの共起比・相関・偏相関と帰無(1,445 行) | `plot_sync.py` |
 | [sync_wallet_xyz_MU.csv](../../../data/sync_wallet_xyz_MU.csv) | 口座ごとの共通成分と herding score(60 行) | `plot_sync.py` |
@@ -493,6 +503,10 @@ uv run python scripts/build_entropy.py --coin xyz:MU
 uv run python scripts/build_entropy.py --coin xyz:MU --merge
 uv run python scripts/fit_entropy.py --coin xyz:MU
 uv run python scripts/plot_entropy.py --coin xyz:MU
+uv run python scripts/build_wallet_fill.py --coin xyz:MU
+uv run python scripts/build_wallet_fill.py --coin xyz:MU --merge
+uv run python scripts/fit_wallet_fill.py --coin xyz:MU
+uv run python scripts/plot_wallet_fill.py --coin xyz:MU
 uv run python scripts/build_sync.py --coin xyz:MU
 uv run python scripts/plot_sync.py --coin xyz:MU
 ```
