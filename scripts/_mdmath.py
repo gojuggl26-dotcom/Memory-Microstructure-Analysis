@@ -32,5 +32,9 @@ def inline_spans(line: str) -> list[re.Match]:
 
 
 def count_dollars(line: str) -> int:
-    """コード内を除いた `$` の数。奇偶の検査用。"""
-    return mask_code(line).count("$")
+    """コード内を除いた `$` の数。奇偶の検査用。
+
+    ★エスケープ済みの `\\$`(金額の表記)は数えない。数えると
+    「$0.27」のような文書で偽陽性が出て、本当の不均衡が埋もれる。
+    """
+    return len(re.findall(r"(?<!\\)\$", mask_code(line)))

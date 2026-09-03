@@ -17,7 +17,6 @@
 ```math
 \mathrm{mid}_t = \frac{P^{\mathrm{bid}}_t + P^{\mathrm{ask}}_t}{2}
 ```
-
 ```math
 \mathrm{micro}_t = \frac{P^{\mathrm{bid}}_t Q^{\mathrm{ask}}_t + P^{\mathrm{ask}}_t Q^{\mathrm{bid}}_t}{Q^{\mathrm{bid}}_t + Q^{\mathrm{ask}}_t}
 ```
@@ -122,7 +121,7 @@ $`y = 0`$ であり、上昇にも下落にも数えられない。
 
 ### 同値を除くと方向の情報だけが残る
 
-「動いた場合に限った上昇確率」$`P(y > 0 \mid y \ne 0)`$ を取ると、無条件では
+「動いた場合に限った上昇確率」$`P(y \gt  0 \mid y \ne 0)`$ を取ると、無条件では
 どのホライズンでも **50.0〜50.7%** に収まる。つまり無条件の確率が 50% を割るのは
 **すべて同値のせいであって、ドリフトのせいではない。**
 

@@ -67,7 +67,6 @@ HHI は 0.5 になる。**どちらか一方だけでは「混んでいるのに
 ```math
 turnover(\Delta) = 1 - \frac{\sum_t |S_t \cap S_{t+\Delta}|}{\sum_t |S_t \cup S_{t+\Delta}|}
 ```
-
 ```math
 entry(\Delta) = \frac{\sum_t |S_{t+\Delta} \setminus S_t|}{\sum_t |S_t|} \qquad
 exit(\Delta) = \frac{\sum_t |S_t \setminus S_{t+\Delta}|}{\sum_t |S_t|}

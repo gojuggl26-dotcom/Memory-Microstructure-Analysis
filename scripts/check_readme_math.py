@@ -80,7 +80,14 @@ def math_spans(lines: list[str]) -> list[tuple[int, str, str]]:
             out.append((i, "block", ln))
         else:
             for m in inline_spans(ln):
-                out.append((i, "inline", ln[m.start() + 1:m.end() - 1]))
+                body = ln[m.start() + 1:m.end() - 1]
+                # ★$`...`$ はコードスパンなので、CommonMark の規則により
+                #   バックスラッシュエスケープが処理されない。この形は
+                #   「エスケープを食われる」検査の対象外にする(kind で分ける)。
+                if len(body) >= 2 and body[0] == "`" and body[-1] == "`":
+                    out.append((i, "code", body[1:-1]))
+                else:
+                    out.append((i, "inline", body))
     return out
 
 
@@ -146,6 +153,8 @@ def main() -> int:
     # --- (ii) ★記号の前のバックスラッシュ ------------------------------------
     hits = []
     for ln, kind, m in spans:
+        if kind == "code":          # $`...`$ は食われない(上記のとおり)
+            continue
         for mo in re.finditer(r"\\(.)", m):
             if mo.group(1) in ESCAPABLE:
                 hits.append((ln, kind, mo.group(0), m.strip()[:70]))

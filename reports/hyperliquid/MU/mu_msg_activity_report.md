@@ -72,7 +72,6 @@ CV = \frac{\sigma_\tau}{\mu_\tau} \qquad
 B = \frac{\sigma_\tau - \mu_\tau}{\sigma_\tau + \mu_\tau} \qquad
 M = \mathrm{corr}(\tau_i,\ \tau_{i+1})
 ```
-
 ```math
 F(T) = \frac{\mathrm{Var}(N_T)}{\mathrm{E}(N_T)} \qquad
 H = -\sum_s p_s \ln p_s,\quad p_s = \frac{c_s}{\sum_u c_u}

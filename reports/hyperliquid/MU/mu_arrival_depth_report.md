@@ -258,4 +258,4 @@ $`\alpha = 0.05/6 = 0.0083`$ である。**
 | `data/arrival_depth_xyz_MU.csv` | 窓 × 側 × 深さ帯の要約(率の平均・中央・p10・p90) |
 | `charts/xyz_MU_arrival_depth.png` | 図(上段 1 枚 + 下段 6 枚) |
 
-S3 からの読み取りは 2.22 GB、Glacier IR 取得 + 転送の概算で **$0.27** である。
+S3 からの読み取りは 2.22 GB、Glacier IR 取得 + 転送の概算で **\$0.27** である。

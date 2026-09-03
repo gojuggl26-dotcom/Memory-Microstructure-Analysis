@@ -52,7 +52,6 @@
 ```math
 w_i = \frac{Q_i}{\sum_j Q_j}
 ```
-
 ```math
 HHI = \sum_i w_i^2 \qquad H = -\sum_i w_i \ln w_i \qquad
 Gini = \frac{\sum_{k} (2k - n - 1)\, Q_{(k)}}{n \sum_i Q_i}
