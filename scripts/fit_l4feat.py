@@ -56,7 +56,10 @@ FLAB = ["100ms", "500ms", "1s", "5s", "10s", "30s", "60s"]
 STRIDE = {"100ms": 20, "500ms": 20, "1s": 20, "5s": 20,
           "10s": 60, "30s": 60, "60s": 60}
 SETS = {"A": 20, "B": 60}
-HSET = {h: ("A" if STRIDE[h] == 5 else "B") for h in FLAB}
+# ★ここを定数 5 と直接比べていたため、STRIDE を 20 に変えたあと
+#   標本 A が一度も選ばれず、全ホライズンが 60 秒間隔で測られていた。
+#   SETS を参照して間引き幅から引く。
+HSET = {h: next(k for k, v in SETS.items() if v == STRIDE[h]) for h in FLAB}
 PLACEBO_SHIFT = 3600              # 帰無対照のずらし幅(秒)
 BATCH = 60
 

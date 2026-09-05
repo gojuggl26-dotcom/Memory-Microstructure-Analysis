@@ -1,0 +1,578 @@
+col,family
+best_bid,1.1 最良気配
+best_ask,1.1 最良気配
+bbo_qb,1.1 最良気配
+bbo_qa,1.1 最良気配
+mid,1.2 中値
+log_mid,1.2 中値
+spread,1.3 スプレッド
+spread_tick,1.3 スプレッド
+spread_bp,1.3 スプレッド
+log_spread,1.3 スプレッド
+is_1tick,1.3 スプレッド
+ret_100ms,1.2 中値
+mret_100ms,2.1 マイクロプライス
+ret_500ms,1.2 中値
+mret_500ms,2.1 マイクロプライス
+ret_1s,1.2 中値
+mret_1s,2.1 マイクロプライス
+ret_5s,1.2 中値
+mret_5s,2.1 マイクロプライス
+ret_10s,1.2 中値
+mret_10s,2.1 マイクロプライス
+ret_30s,1.2 中値
+mret_30s,2.1 マイクロプライス
+ret_60s,1.2 中値
+mret_60s,2.1 マイクロプライス
+d_mid,1.2 中値
+abs_d_mid,1.2 中値
+sgn_d_mid,1.2 中値
+d_spread,1.3 スプレッド
+sp_widen,1.3 スプレッド
+sp_narrow,1.3 スプレッド
+t_since_sp,1.3 スプレッド
+t_since_bbo,43 経過時間
+t_since_mid,43 経過時間
+spread_dur,1.3 スプレッド
+micro,2.1 マイクロプライス
+delta_bp,2.1 マイクロプライス
+delta_norm,2.1 マイクロプライス
+micro_bid,2.1 マイクロプライス
+ask_micro,2.1 マイクロプライス
+qb_l1,3.1 水準別の厚み
+qa_l1,3.1 水準別の厚み
+nb_l1,3.1 水準別の厚み
+na_l1,3.1 水準別の厚み
+qb_l2,3.1 水準別の厚み
+qa_l2,3.1 水準別の厚み
+nb_l2,3.1 水準別の厚み
+na_l2,3.1 水準別の厚み
+qb_l3,3.1 水準別の厚み
+qa_l3,3.1 水準別の厚み
+nb_l3,3.1 水準別の厚み
+na_l3,3.1 水準別の厚み
+qb_l5,3.1 水準別の厚み
+qa_l5,3.1 水準別の厚み
+nb_l5,3.1 水準別の厚み
+na_l5,3.1 水準別の厚み
+avgsz_b1,3.1 水準別の厚み
+sdsz_b1,3.1 水準別の厚み
+cvsz_b1,3.1 水準別の厚み
+logsz_b1,3.1 水準別の厚み
+avgsz_a1,3.1 水準別の厚み
+sdsz_a1,3.1 水準別の厚み
+cvsz_a1,3.1 水準別の厚み
+logsz_a1,3.1 水準別の厚み
+cdb1,3.2 累積の厚み
+cda1,3.2 累積の厚み
+cdtot1,3.2 累積の厚み
+obi1,4 板の偏り OBI
+obi_cnt1,4 板の偏り OBI
+obi_not1,4 板の偏り OBI
+cdb2,3.2 累積の厚み
+cda2,3.2 累積の厚み
+cdtot2,3.2 累積の厚み
+obi2,4 板の偏り OBI
+obi_cnt2,4 板の偏り OBI
+obi_not2,4 板の偏り OBI
+cdb3,3.2 累積の厚み
+cda3,3.2 累積の厚み
+cdtot3,3.2 累積の厚み
+obi3,4 板の偏り OBI
+obi_cnt3,4 板の偏り OBI
+obi_not3,4 板の偏り OBI
+cdb5,3.2 累積の厚み
+cda5,3.2 累積の厚み
+cdtot5,3.2 累積の厚み
+obi5,4 板の偏り OBI
+obi_cnt5,4 板の偏り OBI
+obi_not5,4 板の偏り OBI
+cdb10,3.2 累積の厚み
+cda10,3.2 累積の厚み
+cdtot10,3.2 累積の厚み
+obi10,4 板の偏り OBI
+obi_cnt10,4 板の偏り OBI
+obi_not10,4 板の偏り OBI
+cdb20,3.2 累積の厚み
+cda20,3.2 累積の厚み
+cdtot20,3.2 累積の厚み
+obi20,4 板の偏り OBI
+obi_cnt20,4 板の偏り OBI
+obi_not20,4 板の偏り OBI
+ndb,3.3 想定元本の厚み
+nda,3.3 想定元本の厚み
+ndtot,3.3 想定元本の厚み
+obi_dw,4 板の偏り OBI
+obi_iw,4 板の偏り OBI
+obi_ew,4 板の偏り OBI
+obi_avgsz,4 板の偏り OBI
+obi_age,4 板の偏り OBI
+age_b1,13 注文の年齢
+age_a1,13 注文の年齢
+age_asym,13 注文の年齢
+agelot_b1,13 注文の年齢
+agelot_a1,13 注文の年齢
+agesd_b1,13 注文の年齢
+agesd_a1,13 注文の年齢
+age_book_b,13 注文の年齢
+age_book_a,13 注文の年齢
+slope_b,5 板の形
+lslope_b,5 板の形
+curv_b,5 板の形
+top1_b,5 板の形
+top3_b,5 板の形
+top5_b,5 板の形
+hhi_b,5 板の形
+ent_b,5 板の形
+com_b,5 板の形
+disp_b,5 板の形
+nempty_b,19 板の空白
+gap1_b,19 板の空白
+gapmax_b,19 板の空白
+prs0.5_b,18 板の圧力
+prs1_b,18 板の圧力
+prs2_b,18 板の圧力
+elast_b,24 板の弾力性
+slope_a,5 板の形
+lslope_a,5 板の形
+curv_a,5 板の形
+top1_a,5 板の形
+top3_a,5 板の形
+top5_a,5 板の形
+hhi_a,5 板の形
+ent_a,5 板の形
+com_a,5 板の形
+disp_a,5 板の形
+nempty_a,19 板の空白
+gap1_a,19 板の空白
+gapmax_a,19 板の空白
+prs0.5_a,18 板の圧力
+prs1_a,18 板の圧力
+prs2_a,18 板の圧力
+elast_a,24 板の弾力性
+slope_asym,5 板の形
+lslope_asym,5 板の形
+curv_asym,5 板の形
+hhi_asym,5 板の形
+ent_asym,5 板の形
+com_asym,5 板の形
+disp_asym,5 板の形
+prs_net,18 板の圧力
+prs_imb,18 板の圧力
+elast_asym,24 板の弾力性
+gap_asym,19 板の空白
+slip10k_b,20/21 仮想的な成行の衝撃
+lvl10k_b,20/21 仮想的な成行の衝撃
+slip50k_b,20/21 仮想的な成行の衝撃
+lvl50k_b,20/21 仮想的な成行の衝撃
+slip200k_b,20/21 仮想的な成行の衝撃
+lvl200k_b,20/21 仮想的な成行の衝撃
+slip10k_a,20/21 仮想的な成行の衝撃
+lvl10k_a,20/21 仮想的な成行の衝撃
+slip50k_a,20/21 仮想的な成行の衝撃
+lvl50k_a,20/21 仮想的な成行の衝撃
+slip200k_a,20/21 仮想的な成行の衝撃
+lvl200k_a,20/21 仮想的な成行の衝撃
+slip10k_rt,20/21 仮想的な成行の衝撃
+slip10k_asym,20/21 仮想的な成行の衝撃
+slip50k_rt,20/21 仮想的な成行の衝撃
+slip50k_asym,20/21 仮想的な成行の衝撃
+slip200k_rt,20/21 仮想的な成行の衝撃
+slip200k_asym,20/21 仮想的な成行の衝撃
+impact_convex,20/21 仮想的な成行の衝撃
+mp_lv2,2.2 多水準のマイクロプライス
+mp_lv5,2.2 多水準のマイクロプライス
+mp_lv20,2.2 多水準のマイクロプライス
+mp_invd,2.2 多水準のマイクロプライス
+mp_exp,2.2 多水準のマイクロプライス
+mp_cnt,2.3 キューを見たマイクロプライス
+mp_age,2.3 キューを見たマイクロプライス
+mp_fresh,2.3 キューを見たマイクロプライス
+mp_persist,2.3 キューを見たマイクロプライス
+mp_mom,2.1 マイクロプライス
+new_rate_100ms,7 指値の到着
+new_imb_100ms,7 指値の到着
+newsz_imb_100ms,7 指値の到着
+cxl_rate_100ms,8 取消と除去
+cxl_imb_100ms,8 取消と除去
+cxlsz_imb_100ms,8 取消と除去
+car_100ms,8 取消と除去
+ofi_100ms,10 注文フローの偏り OFI
+ofi_norm_100ms,10 注文フローの偏り OFI
+ofi_new_100ms,10 注文フローの偏り OFI
+ofi_cxl_100ms,10 注文フローの偏り OFI
+ofi_fil_100ms,10 注文フローの偏り OFI
+churn_100ms,15 流動性の回転
+churn_imb_100ms,15 流動性の回転
+msg_rate_100ms,28 メッセージの流量
+new_rate_500ms,7 指値の到着
+new_imb_500ms,7 指値の到着
+newsz_imb_500ms,7 指値の到着
+cxl_rate_500ms,8 取消と除去
+cxl_imb_500ms,8 取消と除去
+cxlsz_imb_500ms,8 取消と除去
+car_500ms,8 取消と除去
+ofi_500ms,10 注文フローの偏り OFI
+ofi_norm_500ms,10 注文フローの偏り OFI
+ofi_new_500ms,10 注文フローの偏り OFI
+ofi_cxl_500ms,10 注文フローの偏り OFI
+ofi_fil_500ms,10 注文フローの偏り OFI
+churn_500ms,15 流動性の回転
+churn_imb_500ms,15 流動性の回転
+msg_rate_500ms,28 メッセージの流量
+new_rate_1s,7 指値の到着
+new_imb_1s,7 指値の到着
+newsz_imb_1s,7 指値の到着
+cxl_rate_1s,8 取消と除去
+cxl_imb_1s,8 取消と除去
+cxlsz_imb_1s,8 取消と除去
+car_1s,8 取消と除去
+ofi_1s,10 注文フローの偏り OFI
+ofi_norm_1s,10 注文フローの偏り OFI
+ofi_new_1s,10 注文フローの偏り OFI
+ofi_cxl_1s,10 注文フローの偏り OFI
+ofi_fil_1s,10 注文フローの偏り OFI
+churn_1s,15 流動性の回転
+churn_imb_1s,15 流動性の回転
+msg_rate_1s,28 メッセージの流量
+pdist_mean_1s,7 指値の到着
+pdist_sd_1s,7 指値の到着
+touch_share_1s,7 指値の到着
+deep_share_1s,7 指値の到着
+cxl_touch_1s,8 取消と除去
+osz_mean_1s,6 注文サイズの分布
+osz_cv_1s,6 注文サイズの分布
+osz_skew_1s,6 注文サイズの分布
+osz_kurt_1s,6 注文サイズの分布
+osz_logmean_1s,6 注文サイズの分布
+osz_hhi_1s,6 注文サイズの分布
+osz_ent_1s,6 注文サイズの分布
+new_rate_2s,7 指値の到着
+new_imb_2s,7 指値の到着
+newsz_imb_2s,7 指値の到着
+cxl_rate_2s,8 取消と除去
+cxl_imb_2s,8 取消と除去
+cxlsz_imb_2s,8 取消と除去
+car_2s,8 取消と除去
+ofi_2s,10 注文フローの偏り OFI
+ofi_norm_2s,10 注文フローの偏り OFI
+ofi_new_2s,10 注文フローの偏り OFI
+ofi_cxl_2s,10 注文フローの偏り OFI
+ofi_fil_2s,10 注文フローの偏り OFI
+churn_2s,15 流動性の回転
+churn_imb_2s,15 流動性の回転
+msg_rate_2s,28 メッセージの流量
+new_rate_5s,7 指値の到着
+new_imb_5s,7 指値の到着
+newsz_imb_5s,7 指値の到着
+cxl_rate_5s,8 取消と除去
+cxl_imb_5s,8 取消と除去
+cxlsz_imb_5s,8 取消と除去
+car_5s,8 取消と除去
+ofi_5s,10 注文フローの偏り OFI
+ofi_norm_5s,10 注文フローの偏り OFI
+ofi_new_5s,10 注文フローの偏り OFI
+ofi_cxl_5s,10 注文フローの偏り OFI
+ofi_fil_5s,10 注文フローの偏り OFI
+churn_5s,15 流動性の回転
+churn_imb_5s,15 流動性の回転
+msg_rate_5s,28 メッセージの流量
+new_rate_10s,7 指値の到着
+new_imb_10s,7 指値の到着
+newsz_imb_10s,7 指値の到着
+cxl_rate_10s,8 取消と除去
+cxl_imb_10s,8 取消と除去
+cxlsz_imb_10s,8 取消と除去
+car_10s,8 取消と除去
+ofi_10s,10 注文フローの偏り OFI
+ofi_norm_10s,10 注文フローの偏り OFI
+ofi_new_10s,10 注文フローの偏り OFI
+ofi_cxl_10s,10 注文フローの偏り OFI
+ofi_fil_10s,10 注文フローの偏り OFI
+churn_10s,15 流動性の回転
+churn_imb_10s,15 流動性の回転
+msg_rate_10s,28 メッセージの流量
+pdist_mean_10s,7 指値の到着
+pdist_sd_10s,7 指値の到着
+touch_share_10s,7 指値の到着
+deep_share_10s,7 指値の到着
+cxl_touch_10s,8 取消と除去
+osz_mean_10s,6 注文サイズの分布
+osz_cv_10s,6 注文サイズの分布
+osz_skew_10s,6 注文サイズの分布
+osz_kurt_10s,6 注文サイズの分布
+osz_logmean_10s,6 注文サイズの分布
+osz_hhi_10s,6 注文サイズの分布
+osz_ent_10s,6 注文サイズの分布
+new_rate_30s,7 指値の到着
+new_imb_30s,7 指値の到着
+newsz_imb_30s,7 指値の到着
+cxl_rate_30s,8 取消と除去
+cxl_imb_30s,8 取消と除去
+cxlsz_imb_30s,8 取消と除去
+car_30s,8 取消と除去
+ofi_30s,10 注文フローの偏り OFI
+ofi_norm_30s,10 注文フローの偏り OFI
+ofi_new_30s,10 注文フローの偏り OFI
+ofi_cxl_30s,10 注文フローの偏り OFI
+ofi_fil_30s,10 注文フローの偏り OFI
+churn_30s,15 流動性の回転
+churn_imb_30s,15 流動性の回転
+msg_rate_30s,28 メッセージの流量
+new_rate_60s,7 指値の到着
+new_imb_60s,7 指値の到着
+newsz_imb_60s,7 指値の到着
+cxl_rate_60s,8 取消と除去
+cxl_imb_60s,8 取消と除去
+cxlsz_imb_60s,8 取消と除去
+car_60s,8 取消と除去
+ofi_60s,10 注文フローの偏り OFI
+ofi_norm_60s,10 注文フローの偏り OFI
+ofi_new_60s,10 注文フローの偏り OFI
+ofi_cxl_60s,10 注文フローの偏り OFI
+ofi_fil_60s,10 注文フローの偏り OFI
+churn_60s,15 流動性の回転
+churn_imb_60s,15 流動性の回転
+msg_rate_60s,28 メッセージの流量
+pdist_mean_60s,7 指値の到着
+pdist_sd_60s,7 指値の到着
+touch_share_60s,7 指値の到着
+deep_share_60s,7 指値の到着
+cxl_touch_60s,8 取消と除去
+osz_mean_60s,6 注文サイズの分布
+osz_cv_60s,6 注文サイズの分布
+osz_skew_60s,6 注文サイズの分布
+osz_kurt_60s,6 注文サイズの分布
+osz_logmean_60s,6 注文サイズの分布
+osz_hhi_60s,6 注文サイズの分布
+osz_ent_60s,6 注文サイズの分布
+ofi_fast_slow,67 多尺度
+new_fast_slow,67 多尺度
+cxl_fast_slow,67 多尺度
+since_mid_ev,42 事象時間
+since_mid_new,42 事象時間
+since_mid_cxl,42 事象時間
+since_mid_fil,42 事象時間
+since_mid_ofi,42 事象時間
+since_mid_add,42 事象時間
+since_mid_rem,42 事象時間
+t_since_new,43 経過時間
+t_since_cxl,43 経過時間
+t_since_fil,43 経過時間
+burst_10s,44 群発性
+idur_10s,44 群発性
+idur_cv_10s,44 群発性
+nev_10s,28 メッセージの流量
+burst_60s,44 群発性
+idur_60s,44 群発性
+idur_cv_60s,44 群発性
+nev_60s,28 メッセージの流量
+trd_rate_1s,51 約定の符号
+trd_imb_1s,51 約定の符号
+vol_imb_1s,51 約定の符号
+sgn_vol_1s,51 約定の符号
+vol_1s,51 約定の符号
+vpin_1s,49 毒性の代理
+trd_sz_1s,51 約定の符号
+trd_sz2_1s,51 約定の符号
+trd_rate_2s,51 約定の符号
+trd_imb_2s,51 約定の符号
+vol_imb_2s,51 約定の符号
+sgn_vol_2s,51 約定の符号
+vol_2s,51 約定の符号
+vpin_2s,49 毒性の代理
+trd_sz_2s,51 約定の符号
+trd_sz2_2s,51 約定の符号
+trd_rate_5s,51 約定の符号
+trd_imb_5s,51 約定の符号
+vol_imb_5s,51 約定の符号
+sgn_vol_5s,51 約定の符号
+vol_5s,51 約定の符号
+vpin_5s,49 毒性の代理
+trd_sz_5s,51 約定の符号
+trd_sz2_5s,51 約定の符号
+trd_rate_10s,51 約定の符号
+trd_imb_10s,51 約定の符号
+vol_imb_10s,51 約定の符号
+sgn_vol_10s,51 約定の符号
+vol_10s,51 約定の符号
+vpin_10s,49 毒性の代理
+trd_sz_10s,51 約定の符号
+trd_sz2_10s,51 約定の符号
+trd_rate_30s,51 約定の符号
+trd_imb_30s,51 約定の符号
+vol_imb_30s,51 約定の符号
+sgn_vol_30s,51 約定の符号
+vol_30s,51 約定の符号
+vpin_30s,49 毒性の代理
+trd_sz_30s,51 約定の符号
+trd_sz2_30s,51 約定の符号
+trd_rate_60s,51 約定の符号
+trd_imb_60s,51 約定の符号
+vol_imb_60s,51 約定の符号
+sgn_vol_60s,51 約定の符号
+vol_60s,51 約定の符号
+vpin_60s,49 毒性の代理
+trd_sz_60s,51 約定の符号
+trd_sz2_60s,51 約定の符号
+kyle_10s,23 Kyle / Amihud
+amihud_10s,23 Kyle / Amihud
+kyle_60s,23 Kyle / Amihud
+amihud_60s,23 Kyle / Amihud
+vol_over_depth_1s,52 板と約定
+vol_over_bbo_1s,52 板と約定
+vol_over_depth_10s,52 板と約定
+vol_over_bbo_10s,52 板と約定
+vol_over_depth_60s,52 板と約定
+vol_over_bbo_60s,52 板と約定
+cvd_60s,51 約定の符号
+rv_1s,47 ボラティリティ
+bpv_1s,47 ボラティリティ
+rsv_up_1s,47 ボラティリティ
+rsv_dn_1s,47 ボラティリティ
+rq_1s,47 ボラティリティ
+jump_1s,47 ボラティリティ
+rv_2s,47 ボラティリティ
+bpv_2s,47 ボラティリティ
+rsv_up_2s,47 ボラティリティ
+rsv_dn_2s,47 ボラティリティ
+rq_2s,47 ボラティリティ
+jump_2s,47 ボラティリティ
+rv_5s,47 ボラティリティ
+bpv_5s,47 ボラティリティ
+rsv_up_5s,47 ボラティリティ
+rsv_dn_5s,47 ボラティリティ
+rq_5s,47 ボラティリティ
+jump_5s,47 ボラティリティ
+rv_10s,47 ボラティリティ
+bpv_10s,47 ボラティリティ
+rsv_up_10s,47 ボラティリティ
+rsv_dn_10s,47 ボラティリティ
+rq_10s,47 ボラティリティ
+jump_10s,47 ボラティリティ
+rv_30s,47 ボラティリティ
+bpv_30s,47 ボラティリティ
+rsv_up_30s,47 ボラティリティ
+rsv_dn_30s,47 ボラティリティ
+rq_30s,47 ボラティリティ
+jump_30s,47 ボラティリティ
+rv_60s,47 ボラティリティ
+bpv_60s,47 ボラティリティ
+rsv_up_60s,47 ボラティリティ
+rsv_dn_60s,47 ボラティリティ
+rq_60s,47 ボラティリティ
+jump_60s,47 ボラティリティ
+rv_micro_10s,47 ボラティリティ
+rv_spread_10s,47 ボラティリティ
+rv_micro_60s,47 ボラティリティ
+rv_spread_60s,47 ボラティリティ
+obi1__d,61 加速と高次の動き
+obi1__dd,61 加速と高次の動き
+obi1__z,60 衝撃(z 得点)
+obi1__dev,63 平均回帰
+obi1__streak,62 慣性
+obi5__d,61 加速と高次の動き
+obi5__dd,61 加速と高次の動き
+obi5__z,60 衝撃(z 得点)
+obi5__dev,63 平均回帰
+obi5__streak,62 慣性
+obi10__d,61 加速と高次の動き
+obi10__dd,61 加速と高次の動き
+obi10__z,60 衝撃(z 得点)
+obi10__dev,63 平均回帰
+obi10__streak,62 慣性
+delta_bp__d,61 加速と高次の動き
+delta_bp__dd,61 加速と高次の動き
+delta_bp__z,60 衝撃(z 得点)
+delta_bp__dev,63 平均回帰
+delta_bp__streak,62 慣性
+spread_bp__d,61 加速と高次の動き
+spread_bp__dd,61 加速と高次の動き
+spread_bp__z,60 衝撃(z 得点)
+spread_bp__dev,63 平均回帰
+spread_bp__streak,62 慣性
+cdtot10__d,61 加速と高次の動き
+cdtot10__dd,61 加速と高次の動き
+cdtot10__z,60 衝撃(z 得点)
+cdtot10__dev,63 平均回帰
+cdtot10__streak,62 慣性
+prs_imb__d,61 加速と高次の動き
+prs_imb__dd,61 加速と高次の動き
+prs_imb__z,60 衝撃(z 得点)
+prs_imb__dev,63 平均回帰
+prs_imb__streak,62 慣性
+ofi_1s__d,61 加速と高次の動き
+ofi_1s__dd,61 加速と高次の動き
+ofi_1s__z,60 衝撃(z 得点)
+ofi_1s__dev,63 平均回帰
+ofi_1s__streak,62 慣性
+ofi_10s__d,61 加速と高次の動き
+ofi_10s__dd,61 加速と高次の動き
+ofi_10s__z,60 衝撃(z 得点)
+ofi_10s__dev,63 平均回帰
+ofi_10s__streak,62 慣性
+cxl_imb_10s__d,61 加速と高次の動き
+cxl_imb_10s__dd,61 加速と高次の動き
+cxl_imb_10s__z,60 衝撃(z 得点)
+cxl_imb_10s__dev,63 平均回帰
+cxl_imb_10s__streak,62 慣性
+new_imb_10s__d,61 加速と高次の動き
+new_imb_10s__dd,61 加速と高次の動き
+new_imb_10s__z,60 衝撃(z 得点)
+new_imb_10s__dev,63 平均回帰
+new_imb_10s__streak,62 慣性
+churn_10s__d,61 加速と高次の動き
+churn_10s__dd,61 加速と高次の動き
+churn_10s__z,60 衝撃(z 得点)
+churn_10s__dev,63 平均回帰
+churn_10s__streak,62 慣性
+slope_asym__d,61 加速と高次の動き
+slope_asym__dd,61 加速と高次の動き
+slope_asym__z,60 衝撃(z 得点)
+slope_asym__dev,63 平均回帰
+slope_asym__streak,62 慣性
+elast_asym__d,61 加速と高次の動き
+elast_asym__dd,61 加速と高次の動き
+elast_asym__z,60 衝撃(z 得点)
+elast_asym__dev,63 平均回帰
+elast_asym__streak,62 慣性
+gap_asym__d,61 加速と高次の動き
+gap_asym__dd,61 加速と高次の動き
+gap_asym__z,60 衝撃(z 得点)
+gap_asym__dev,63 平均回帰
+gap_asym__streak,62 慣性
+age_asym__d,61 加速と高次の動き
+age_asym__dd,61 加速と高次の動き
+age_asym__z,60 衝撃(z 得点)
+age_asym__dev,63 平均回帰
+age_asym__streak,62 慣性
+rv_10s__d,61 加速と高次の動き
+rv_10s__dd,61 加速と高次の動き
+rv_10s__z,60 衝撃(z 得点)
+rv_10s__dev,63 平均回帰
+rv_10s__streak,62 慣性
+vol_imb_10s__d,61 加速と高次の動き
+vol_imb_10s__dd,61 加速と高次の動き
+vol_imb_10s__z,60 衝撃(z 得点)
+vol_imb_10s__dev,63 平均回帰
+vol_imb_10s__streak,62 慣性
+top1_b__d,61 加速と高次の動き
+top1_b__dd,61 加速と高次の動き
+top1_b__z,60 衝撃(z 得点)
+top1_b__dev,63 平均回帰
+top1_b__streak,62 慣性
+hhi_b__d,61 加速と高次の動き
+hhi_b__dd,61 加速と高次の動き
+hhi_b__z,60 衝撃(z 得点)
+hhi_b__dev,63 平均回帰
+hhi_b__streak,62 慣性
+obi5__x__spread_bp,70 交互作用
+obi5__x__rv_10s,70 交互作用
+ofi_10s__x__rv_10s,70 交互作用
+ofi_10s__x__cdtot10,70 交互作用
+cxl_imb_10s__x__cdtot10,70 交互作用
+delta_bp__x__spread_bp,70 交互作用
+obi5__x__gap_asym,70 交互作用
+hhi_b__x__ofi_10s,70 交互作用
+elast_asym__x__ofi_10s,70 交互作用
+ofi_over_depth,70 交互作用

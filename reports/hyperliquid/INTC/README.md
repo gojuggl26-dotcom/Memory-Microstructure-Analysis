@@ -28,6 +28,7 @@
 | [特徴量ライブラリ 229 本の設計と検証](intc_featlib_report.md) | 板と注文フローから 12 分類 229 本の特徴量を 1 秒格子で作り、欠損・重複・予測力・標本外・帰無対照まで通しで検証する。**冗長性の実測**(\|r\|>0.99 のペアと単連結クラスタ)、δ = microprice − mid の分解、`xyz:MU` との突合を含む。 |
 | [板の出どころを l2 から l1 へ移す](intc_bbo_l1_report.md) | `l2/bbo` が DEEP_ARCHIVE で読めないため、最良気配を `l1` から組み直した。**素直に組むと板は 100% クロスする**(黙って約定した注文が残るため)。older-loses の退去規則と負の丸めで解き、`xyz:MU` の 98 日で実物と突き合わせて誤差を測る。 |
 | [指値 1 本ごとの寿命とキュー位置](intc_orderlife_report.md) | L2 では作れない層。指値 **2 億 7,846 万本**を 1 本ずつ追い、発注の瞬間に判る 2 条件(最良からの距離・同じ価格に前から居た数量)で層別した約定確率、寿命の分布、束の間の注文の割合、そして口座別の集中度と癖。**9.53% の注文は 1 ナノ秒も板に居ない**。 |
+| [板と注文フローの特徴量 972 本 — 100ms 格子で 7 つのホライズンを測る](intc_l4feat_report.md) | 分類表 75 節のうち **42 節・972 本**を 100ms 格子で作り、**100ms / 500ms / 1s / 5s / 10s / 30s / 60s** で予測力を測る。**山は 1 秒**で、100ms では 80.7% が動かないため落ちる。「予測」と呼べる上位はほぼ全部が**流動性の持続**(置かれて 10 秒未満の数量の偏り)で、δ 系と違い **mid 建てでも強くなる**。板の再構成は独立な経路と厳密に一致(30/30)。★順位づけの同順位を平均せず偽の r = 0.66 を一度出した経緯も記録。 |
 
 ---
 
@@ -60,6 +61,22 @@
 **指値を出した口座の集中度と癖** — 何者が板を作っているか、集中度、上位 60 者の置き方と引きの速さ。解説: [指値 1 本ごとの寿命とキュー位置](intc_orderlife_report.md)
 
 ![xyz:INTC 指値を出した口座の集中度と癖](../../../charts/xyz_INTC_wallet_orders.png)
+
+**分類ごとの到達点と予測力(972 本 × 7 ホライズン)** — 分類 × ホライズンの到達点、10 秒の上位 18 本、帰無対照との比較。解説: [板と注文フローの特徴量 972 本](intc_l4feat_report.md)
+
+![xyz:INTC 板と注文フローの特徴量 — 分類ごとの到達点と予測力](../../../charts/xyz_INTC_l4feat.png)
+
+**ホライズン依存と、標本外・日ごとの安定性** — 山は 1 秒。目的変数が動かない割合、予測 vs 同時性、前半/後半、99 日の符号一致。解説: [同上](intc_l4feat_report.md)
+
+![xyz:INTC ホライズン依存と、標本外・日ごとの安定性](../../../charts/xyz_INTC_l4feat_h.png)
+
+**上位の用量反応と、板の主要量の分布** — 十分位ごとの将来リターン、スプレッド・厚み・注文の年齢の分布。解説: [同上](intc_l4feat_report.md)
+
+![xyz:INTC 上位特徴量の用量反応と、板の主要量の分布](../../../charts/xyz_INTC_l4feat_dist.png)
+
+**972 本の冗長性** — 分類順に並べた相関行列と、\|r\| > 0.99 で束ねた群の数。解説: [同上](intc_l4feat_report.md)
+
+![xyz:INTC 特徴量の冗長性](../../../charts/xyz_INTC_l4feat_corr.png)
 
 **`xyz:MU` の同じ棚卸し(参考)** — 同じ手順を MU の 21 日に当てたもの。解説: [特徴量ライブラリ](intc_featlib_report.md)
 
@@ -101,6 +118,12 @@
 | [wallet_profile_xyz_INTC.csv](../../../data/wallet_profile_xyz_INTC.csv) | 口座ごとの癖(通し番号のみ) | `analyze_wallet_orders.py` |
 | [bbo_l1_check_xyz_MU.csv](../../../data/bbo_l1_check_xyz_MU.csv) | 板の組み直しと実物の日次突合 | `validate_bbo_l1.py` |
 | [featlib_bbo_effect_xyz_MU.csv](../../../data/featlib_bbo_effect_xyz_MU.csv) | 板の出どころが特徴量に与える影響 | `featlib_bbo_effect.py` |
+| [l4feat_pred_xyz_INTC.csv](../../../data/l4feat_pred_xyz_INTC.csv) | 972 本 × 7 ホライズンの前向き / 後ろ向き / mid 建て / 帰無対照 / 前半後半 | `fit_l4feat.py --stage pool` |
+| [l4feat_daily_xyz_INTC.csv](../../../data/l4feat_daily_xyz_INTC.csv) | 上位特徴量の日ごとの r(平均・中央値・最悪・符号一致) | `fit_l4feat.py --stage daily` |
+| [l4feat_cols_xyz_INTC.csv](../../../data/l4feat_cols_xyz_INTC.csv) | 板とフロー層 577 列 → 分類表の節 | `build_l4feat.py` |
+| [l4life_cols_xyz_INTC.csv](../../../data/l4life_cols_xyz_INTC.csv) | 寿命層 105 列 → 同 | `build_l4life.py` |
+| [l4post_cols_xyz_INTC.csv](../../../data/l4post_cols_xyz_INTC.csv) | 派生層 290 列 → 同 | `build_l4post.py` |
+| [leadlag_xyz_INTC_xyz_MU.csv](../../../data/leadlag_xyz_INTC_xyz_MU.csv) | `xyz:MU` との先行・遅行(7 ホライズン、99 日) | `fit_leadlag_l4.py` |
 
 版管理外(大きいので手元にだけ置く): `data/l1_xyz_INTC/`(99 日 4.8GB)、
 `data/l1u_xyz_INTC/`(372MB)、`data/bbo_xyz_INTC.parquet`(228MB)、
@@ -140,4 +163,15 @@ uv run python scripts/build_bbo_l1.py     --coin xyz:MU --suffix _l1
 uv run python scripts/validate_bbo_l1.py  --coin xyz:MU
 uv run python scripts/build_featlib.py    --coin xyz:MU --bbo-suffix _l1 --out-suffix _l1 --days 21
 uv run python scripts/featlib_bbo_effect.py --coin xyz:MU
+
+# ★分類表 42 節・972 本の特徴量パネル(100ms 格子)。出力は E:/Memory-l4feat/
+uv run python scripts/build_l4feat.py  --coin xyz:INTC     # 板とフロー 577 列
+uv run python scripts/build_l4life.py  --coin xyz:INTC     # 寿命・口座 105 列
+uv run python scripts/build_l4post.py  --coin xyz:INTC     # 派生 290 列
+uv run python scripts/audit_l4feat.py  --coin xyz:INTC --dt 2026-05-05 -n 30
+uv run python scripts/fit_l4feat.py    --coin xyz:INTC --stage pool
+uv run python scripts/fit_l4feat.py    --coin xyz:INTC --stage daily
+uv run python scripts/fit_l4feat.py    --coin xyz:INTC --stage corr
+uv run python scripts/fit_leadlag_l4.py --a xyz:INTC --b xyz:MU
+uv run python scripts/plot_l4feat.py   --coin xyz:INTC
 ```
