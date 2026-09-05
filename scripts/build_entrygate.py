@@ -22,6 +22,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -36,40 +37,34 @@ from plot_latency import fit_logit  # noqa: E402
 COLS = NEED + [c for c in ("ts", "side") if c not in NEED]
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--coin", default="xyz:MU")
-    ap.add_argument("--sfx", default="_q1")
-    a = ap.parse_args()
-    tag = a.coin.replace(":", "_")
-    P = pl.read_parquet(DATA / f"inv_posts_{tag}{a.sfx}.parquet")
-    files = sorted((BULK / tag).glob("dt=*.parquet"))
-    ntr = int(round(len(files) * TRAIN_FRAC))
-    tr_days = {f.stem.split("=")[1] for f in files[:ntr]}
-    print(f"発注 {P.height:,} 件 / 学習 {len(tr_days)} 日", flush=True)
+def feats(f, G):
+    """その日の候補テーブルから、発注時刻・側に対応する行の説明変数を取る。"""
+    T = pl.read_parquet(f, columns=COLS)
+    X = design(T)
+    ts = T["ts"].cast(pl.Int64).to_numpy()
+    sd = T["side"].to_numpy()
+    out_x, out_i = [], []
+    for sg in (1, -1):
+        m = sd == sg
+        tt = ts[m]
+        g = G.filter(pl.col("side") == sg)
+        gt = g["t"].to_numpy()
+        j = np.searchsorted(tt, gt)
+        ok = (j < tt.size) & (tt[np.minimum(j, tt.size - 1)] == gt)
+        idx = np.flatnonzero(m)[np.minimum(j, tt.size - 1)]
+        out_x.append(X[idx[ok]])
+        out_i.append((g["filled"].to_numpy()[ok],
+                      g["rt_pnl"].to_numpy()[ok]))
+    return (np.concatenate(out_x),
+            np.concatenate([o[0] for o in out_i]),
+            np.concatenate([o[1] for o in out_i]))
 
-    def feats(f, G):
-        """その日の候補テーブルから、発注時刻・側に対応する行の説明変数を取る。"""
-        T = pl.read_parquet(f, columns=COLS)
-        X = design(T)
-        ts = T["ts"].cast(pl.Int64).to_numpy()
-        sd = T["side"].to_numpy()
-        out_x, out_i = [], []
-        for sg in (1, -1):
-            m = sd == sg
-            tt = ts[m]
-            g = G.filter(pl.col("side") == sg)
-            gt = g["t"].to_numpy()
-            j = np.searchsorted(tt, gt)
-            ok = (j < tt.size) & (tt[np.minimum(j, tt.size - 1)] == gt)
-            idx = np.flatnonzero(m)[np.minimum(j, tt.size - 1)]
-            out_x.append(X[idx[ok]])
-            out_i.append((g["filled"].to_numpy()[ok],
-                          g["rt_pnl"].to_numpy()[ok]))
-        return (np.concatenate(out_x),
-                np.concatenate([o[0] for o in out_i]),
-                np.concatenate([o[1] for o in out_i]))
 
+def fit_models(files, ntr, P, tag, sfx):
+    """学習期間だけでロジット(約定)と往復損益のモデルを当てはめる。
+
+    `build_decay.py` から再利用するので、係数を json にも残す。
+    """
     Xs, ys, ps, ms = [], [], [], []
     for k, f in enumerate(files[:ntr]):
         dt = f.stem.split("=")[1]
@@ -88,7 +83,6 @@ def main() -> None:
             print(f"  学習 {k+1}/{ntr}", flush=True)
     XA = np.concatenate(Xs).astype(np.float64)
     yA = np.concatenate(ys); isf = np.concatenate(ms); PN = np.concatenate(ps)
-    del Xs, ys, ps, ms
     base = XA[~isf]
     mu = base.mean(axis=0); sd_ = base.std(axis=0); sd_[sd_ < 1e-12] = 1.0
     print(f"ロジット {int((~isf).sum()):,} 行 (約定率 "
@@ -98,12 +92,35 @@ def main() -> None:
           flush=True)
     Z = np.column_stack([np.ones(int(isf.sum())), (XA[isf] - mu) / sd_])
     w_pnl, *_ = np.linalg.lstsq(Z, PN, rcond=None)
-    del XA, yA, isf, PN, base
+    json.dump({"mu": mu.tolist(), "sd": sd_.tolist(),
+               "w_fill": w_fill.tolist(), "w_pnl": w_pnl.tolist()},
+              open(DATA / f"entrygate_model_{tag}{sfx}.json", "w"))
+    return mu, sd_, w_fill, w_pnl
+
+
+def ev_of(X, mu, sd_, w_fill, w_pnl):
+    """EV = P(約定) × E[往復損益 | 約定]。X は t までの情報だけで作った行列。"""
+    Z = np.column_stack([np.ones(X.shape[0]), (X - mu) / sd_])
+    p = 1.0 / (1.0 + np.exp(-(Z @ w_fill)))
+    return p * (Z @ w_pnl)
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--coin", default="xyz:MU")
+    ap.add_argument("--sfx", default="_q1")
+    a = ap.parse_args()
+    tag = a.coin.replace(":", "_")
+    P = pl.read_parquet(DATA / f"inv_posts_{tag}{a.sfx}.parquet")
+    files = sorted((BULK / tag).glob("dt=*.parquet"))
+    ntr = int(round(len(files) * TRAIN_FRAC))
+    tr_days = {f.stem.split("=")[1] for f in files[:ntr]}
+    print(f"発注 {P.height:,} 件 / 学習 {len(tr_days)} 日", flush=True)
+
+    mu, sd_, w_fill, w_pnl = fit_models(files, ntr, P, tag, a.sfx)
 
     def ev(X):
-        Z = np.column_stack([np.ones(X.shape[0]), (X - mu) / sd_])
-        p = 1.0 / (1.0 + np.exp(-(Z @ w_fill)))
-        return p * (Z @ w_pnl), p, Z @ w_pnl
+        return ev_of(X, mu, sd_, w_fill, w_pnl), None, None
 
     rows = []
     stat = {"n": 0, "pass": 0}
