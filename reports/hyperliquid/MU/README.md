@@ -58,6 +58,7 @@
 | [遅延を織り込んだ取り消しの backtest](mu_cancel_bt_report.md) | 板が更新されるたびにスコアを計算し、閾値超えで取り消しを出す。取り消しは **L ミリ秒後**に有効になり、約定がそれより早ければ間に合わない。**スコアは本物**(無作為対照との差は L=130ms で +0.231 bp)だが、**「何もしない」との差は +0.098 bp しかなく L=300ms で消える**。実測遅延で到達できる最良の markout は **−0.850**(基準 −1.001)で、−0.6 には届かない。1 発注あたりの期待値は取り消しを増やすほど**ゼロに近づくが超えない**(block bootstrap 95% 区間が 22 通りすべてで 0 を跨がない)。 |
 | [BBO から 10 ティック奥までの P(Fill) × PnL_fill](mu_depth_report.md) | 最良気配から k=0..10 ティック奥に置いた場合。**奥へ置いても実際の優位は増えない**(名目の k ティックは、そこまで価格が落ちないと約定しないので丸ごと消える)。h ≥ 1 秒はどの深さも負。88 通り中**正で有意なのは 1 通りだけ** — **最良気配・待ち行列の先頭・保有 100 ミリ秒**(EV +0.036 bp、t=4.15、前半後半とも正)。待ち行列の優先権の価値がここに出ている。 |
 | [仮想発注候補テーブル(Step 1)](mu_quotes_table_report.md) | 今後の分析の**基礎データ**。1 行 = 1 つの発注候補で、候補時点は BBO 更新ごと、1 時点につき買い/売りの 2 行。**98 日 7,034 万行 × 54 列**(説明変数 45 / ラベル 9)。規則は **X_t は t までに観測可能な値だけ**で、これを独立再計算(相対差 5×10⁻⁸ 以下)と板の時刻の検定(t 以前のセル開始時点と一致 77〜88% 対 t 時点 0.1〜1.2%)で確かめた。無条件に最良気配へ置くと **1 秒 net PnL 平均 −3.756 bp、98 日中 97 日が負**。期間内で標本の性質が変わる(候補数 1.65 倍・スプレッド 2.34→0.98 bp)ので**まとめて平均してはいけない**。NaN と null の混在で偽陽性を大量に出した経緯も記録。 |
+| [250ms 約定ハザード × 条件つき損益](mu_fillpnl_report.md) | 60 秒 1 本の Hazard をやめ、**P(Fill 250ms) と E[PnL_1s|Fill] を別々に当てはめて** 予測値の 10×10 を見る。**EV>0 の島はある** — 55/100 が正、29 が Bonferroni を超え、無作為対照は 0/100。前後半の相関 +0.948、買い売り対称、遅延 130 ms でも 10 セル残る。ただし **EV は +0.0042 bp/候補・+0.346 bp/約定と小さく、mid の markout であって往復ではない**(手仕舞いに半スプレッド 0.74 bp を払えば消える)。構造は **符号は予測損益 Q が決め、大きさは約定確率 H が決める** — H は情報軸ではなく倍率。解釈可能な 3 変数版では島が 0 セルになるのが最大の留保。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
@@ -362,6 +363,14 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 候補テーブルの分布。上段は t 時点で観測可能な説明変数 4 つ、下段は未来を使うラベル 4 つ](../../../charts/xyz_MU_quotes_dist.png)
 
+**250ms 約定ハザード × 条件つき損益の 10×10**。解説: [EV>0 の島はあるか](mu_fillpnl_report.md)
+
+![xyz:MU 予測約定確率の十分位 × 予測損益の十分位。実測 P(Fill 250ms)、約定あたり損益、候補あたり EV、候補数の 4 枚組](../../../charts/xyz_MU_fillpnl.png)
+
+**島の頑健性**。解説: [同上](mu_fillpnl_report.md)
+
+![xyz:MU 遅延 0/65/130 ms の EV、評価期間の前後半の一致、3 変数版、セル平均スプレッドとの関係の 6 枚組](../../../charts/xyz_MU_fillpnl_rb.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -576,6 +585,12 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [quotes_stats_xyz_MU.csv](../../../data/quotes_stats_xyz_MU.csv) | 列ごとの欠損率と分位(dt/ts/sec/side を除く 41 列) | `check_quotes.py` |
 | [quotes_check_xyz_MU.json](../../../data/quotes_check_xyz_MU.json) | 整合性検査 8 項目の結果 | `check_quotes.py` |
 | [quotes_audit_xyz_MU.csv](../../../data/quotes_audit_xyz_MU.csv) | ルックアヘッド監査(3 日 × A/B/C) | `audit_quotes.py` |
+| [fillpnl_cells_xyz_MU.csv](../../../data/fillpnl_cells_xyz_MU.csv) | 10×10 セルの実測(遅延 0 ms) | `build_fillpnl.py` |
+| [fillpnl_cells_xyz_MU_lag65.csv](../../../data/fillpnl_cells_xyz_MU_lag65.csv) | 同・遅延 65 ms | `build_fillpnl.py` |
+| [fillpnl_cells_xyz_MU_lag130.csv](../../../data/fillpnl_cells_xyz_MU_lag130.csv) | 同・遅延 130 ms | `build_fillpnl.py` |
+| [fillpnl_cells_xyz_MU_simple.csv](../../../data/fillpnl_cells_xyz_MU_simple.csv) | 同・3 変数版 | `build_fillpnl.py` |
+| [fillpnl_summary_xyz_MU.csv](../../../data/fillpnl_summary_xyz_MU.csv) | 遅延ごとの要約 | `plot_fillpnl.py` |
+| [fillpnl_meta_xyz_MU.json](../../../data/fillpnl_meta_xyz_MU.json) | 2 モデルの係数 | `build_fillpnl.py` |
 
 ## 再現手順
 
@@ -686,6 +701,11 @@ uv run python scripts/fix_quotes_nan.py --coin xyz:MU
 uv run python scripts/check_quotes.py --coin xyz:MU
 uv run python scripts/audit_quotes.py --coin xyz:MU
 uv run python scripts/plot_quotes.py --coin xyz:MU
+uv run python scripts/build_fillpnl.py --coin xyz:MU
+uv run python scripts/build_fillpnl.py --coin xyz:MU --lag 0.065
+uv run python scripts/build_fillpnl.py --coin xyz:MU --lag 0.130
+uv run python scripts/build_fillpnl.py --coin xyz:MU --simple
+uv run python scripts/plot_fillpnl.py --coin xyz:MU
 ```
 
 ---
