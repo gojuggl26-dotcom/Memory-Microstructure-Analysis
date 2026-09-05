@@ -51,37 +51,61 @@ plt.rcParams.update({
 HSEC = [0.1, 0.5, 1, 5, 10, 30, 60]
 
 
+def logfmt(a, axis="y"):
+    """★`text.parse_math: False` だと対数軸の既定ラベルが
+    `$¥mathdefault{10^{3}}$` という生の文字列で出る(実際に 3 回踏んだ)。
+    指数を明示の目盛りに置き換える。"""
+    from matplotlib.ticker import FuncFormatter, LogLocator
+    ax = a.yaxis if axis == "y" else a.xaxis
+    ax.set_major_locator(LogLocator(base=10))
+    ax.set_major_formatter(FuncFormatter(
+        lambda v, _: ("0" if v == 0 else
+                      (f"{v:,.0f}" if v >= 1 else f"{v:g}"))))
+    ax.set_minor_formatter(FuncFormatter(lambda v, _: ""))
+
+
 def save(fig, name):
     fig.savefig(CH / name, facecolor=SURFACE, bbox_inches="tight")
     print("保存:", CH / name, flush=True)
     plt.close(fig)
 
 
+def famkey(f: str):
+    """分類名の頭の番号で並べる('2.2 …' → (2, 2))。"""
+    import re
+    m = re.match(r"(\d+)(?:\.(\d+))?", f)
+    return (int(m.group(1)), int(m.group(2) or 0)) if m else (999, 0)
+
+
 def fig_overview(pred: pl.DataFrame, tag: str, coin: str):
-    fig, ax = plt.subplots(2, 2, figsize=(13.2, 9.0))
+    fig = plt.figure(figsize=(14.4, 10.6))
+    gs = fig.add_gridspec(2, 2, width_ratios=[1.05, 1], height_ratios=[1, 1],
+                          wspace=0.42, hspace=0.30)
+    axA = fig.add_subplot(gs[:, 0])
+    ax = {(0, 1): fig.add_subplot(gs[0, 1]), (1, 1): fig.add_subplot(gs[1, 1])}
     # (a) 分類 × ホライズンの最大 |r|
     p = pred.with_columns(ab=pl.col("r_fwd").abs())
     piv = (p.group_by(["family", "h"]).agg(pl.col("ab").max())
            .pivot(on="h", index="family", values="ab"))
-    fams = sorted(piv["family"].to_list())
+    fams = sorted(piv["family"].to_list(), key=famkey)
     M = np.array([[piv.filter(pl.col("family") == f)[h][0] for h in FLAB]
                   for f in fams], float)
-    a = ax[0, 0]
+    a = axA
     im = a.imshow(M, cmap="YlGnBu", aspect="auto", vmin=0,
-                  vmax=np.nanpercentile(M, 98))
-    a.set_xticks(range(len(FLAB)), FLAB)
-    a.set_yticks(range(len(fams)), [f[:22] for f in fams], fontsize=6.5)
+                  vmax=float(np.nanmax(M)))
+    a.set_xticks(range(len(FLAB)), FLAB, fontsize=8)
+    a.set_yticks(range(len(fams)), [f[:26] for f in fams], fontsize=6.2)
     a.set_title("(a) 分類ごとの到達点 — その分類で最大の |順位相関|", loc="left")
     a.grid(False)
-    fig.colorbar(im, ax=a, fraction=0.03)
+    fig.colorbar(im, ax=a, fraction=0.032, pad=0.02)
     for i in range(len(fams)):
         j = int(np.nanargmax(M[i]))
-        a.text(j, i, f"{M[i, j]:.3f}", ha="center", va="center", fontsize=5.6,
-               color="white" if M[i, j] > np.nanpercentile(M, 80) else INK)
+        a.text(j, i, f"{M[i, j]:.3f}", ha="center", va="center", fontsize=5.4,
+               color="white" if M[i, j] > np.nanmax(M) * 0.55 else INK)
 
     # (b) 10 秒での上位 18 本
     t10 = (p.filter(pl.col("h") == "10s").sort("ab", descending=True).head(18))
-    a = ax[0, 1]
+    a = ax[(0, 1)]
     y = np.arange(t10.height)[::-1]
     a.barh(y, t10["r_fwd"].to_numpy(), color=BLUE, height=0.66,
            label="実測(前向き 10 秒)")
@@ -93,42 +117,30 @@ def fig_overview(pred: pl.DataFrame, tag: str, coin: str):
     a.legend(fontsize=7, frameon=False)
     a.set_title("(b) 10 秒先のマイクロプライスとの相関 — 上位 18 本", loc="left")
 
-    # (c) 前向き vs 後ろ向き
-    a = ax[1, 0]
+    # (c) 実測と帰無対照の分布
+    a = ax[(1, 1)]
     q = p.filter(pl.col("h") == "10s")
-    a.scatter(q["r_bwd"], q["r_fwd"], s=7, color=BLUE, alpha=0.45, lw=0)
-    lim = float(np.nanmax(np.abs(np.concatenate(
-        [q["r_bwd"].to_numpy(), q["r_fwd"].to_numpy()])))) * 1.05
-    a.plot([-lim, lim], [-lim, lim], color=MUTED, lw=0.8, ls="--")
-    a.axhline(0, color=INK, lw=0.7)
-    a.axvline(0, color=INK, lw=0.7)
-    a.set_xlabel("後ろ向き 10 秒(= 同時性)")
-    a.set_ylabel("前向き 10 秒(= 予測)")
-    n_more = int((q["r_fwd"].abs() > q["r_bwd"].abs()).sum())
-    a.set_title(f"(c) 予測か同時性か — 予測のほうが強い特徴量は "
-                f"{n_more}/{q.height} 本", loc="left")
-
-    # (d) 実測と帰無対照の分布
-    a = ax[1, 1]
-    b = np.linspace(0, float(np.nanpercentile(p["ab"].to_numpy(), 99.5)), 45)
-    a.hist(p.filter(pl.col("h") == "10s")["ab"], bins=b, color=BLUE,
-           alpha=0.85, label="実測 |r|")
-    a.hist(p.filter(pl.col("h") == "10s")["r_plc"].abs(), bins=b,
-           histtype="step", color=INK, lw=1.2, label="帰無対照 |r|")
+    b = np.linspace(0, float(np.nanmax(q["ab"].to_numpy())) * 1.02, 45)
+    a.hist(q["ab"], bins=b, color=BLUE, alpha=0.85, label="実測 |r|")
+    a.hist(q["r_plc"].abs(), bins=b, histtype="step", color=INK, lw=1.2,
+           label="帰無対照(1 時間ずらし)|r|")
     a.set_yscale("log")
-    a.set_xlabel("|順位相関|(10 秒)")
-    a.set_ylabel("本数")
+    logfmt(a)
+    a.set_xlabel("|順位相関|(前向き 10 秒)")
+    a.set_ylabel("特徴量の本数")
     a.legend(fontsize=7, frameon=False)
-    mx = float(p.filter(pl.col("h") == "10s")["r_plc"].abs().max())
-    a.set_title(f"(d) 帰無対照の最大は |r| = {mx:.4f}", loc="left")
+    mx = float(q["r_plc"].abs().max())
+    n_over = int((q["ab"] > mx).sum())
+    a.set_title(f"(c) 帰無対照の最大は |r| = {mx:.4f}。"
+                f"それを超えるのは {n_over}/{q.height} 本", loc="left")
     fig.suptitle(f"{coin} 板と注文フローの特徴量 — 分類ごとの到達点と予測力",
-                 fontsize=12.5, y=0.995)
-    fig.tight_layout(rect=[0, 0, 1, 0.975])
+                 fontsize=12.5, y=0.985)
     save(fig, f"{tag}_l4feat.png")
 
 
-def fig_horizon(pred: pl.DataFrame, daily: pl.DataFrame | None, tag: str, coin: str):
-    fig, ax = plt.subplots(2, 2, figsize=(13.2, 8.4))
+def fig_horizon(pred: pl.DataFrame, daily: pl.DataFrame | None, tag: str,
+                coin: str, zero: dict | None = None):
+    fig, ax = plt.subplots(2, 3, figsize=(15.6, 8.6))
     p = pred.with_columns(ab=pl.col("r_fwd").abs())
     top = (p.filter(pl.col("h") == "10s").sort("ab", descending=True)
            .head(8)["col"].to_list())
@@ -155,16 +167,58 @@ def fig_horizon(pred: pl.DataFrame, daily: pl.DataFrame | None, tag: str, coin: 
     y = np.arange(g.height)[::-1]
     xi = [HSEC[FLAB.index(h)] for h in g["h"].to_list()]
     a.scatter(xi, y, s=42, color=BLUE, zorder=3)
-    for k, (xx, yy, v) in enumerate(zip(xi, y, g["ab"].to_list())):
+    for xx, yy, v in zip(xi, y, g["ab"].to_list()):
         a.text(xx * 1.35, yy, f"{v:.3f}", va="center", fontsize=6.3, color=INK2)
     a.set_xscale("log")
     a.set_xticks(HSEC, FLAB)
     a.set_yticks(y, [f[:24] for f in g["family"].to_list()], fontsize=6.5)
-    a.set_xlim(0.06, 200)
+    a.set_xlim(0.06, 260)
     a.set_title("(b) 分類ごとに最も効くホライズンと、そのときの |r|", loc="left")
 
-    # (c) 前半と後半
+    # (c) ホライズンごとの到達点と、目的変数が動かない割合
+    a = ax[0, 2]
+    mx = [float(p.filter(pl.col("h") == h)["ab"].max()) for h in FLAB]
+    pl_ = [float(p.filter(pl.col("h") == h)["r_plc"].abs().max()) for h in FLAB]
+    a.plot(HSEC, mx, marker="o", ms=4, lw=1.6, color=BLUE, label="実測の最大 |r|")
+    a.plot(HSEC, pl_, marker="s", ms=3.4, lw=1.2, color=INK, ls="--",
+           label="帰無対照の最大 |r|")
+    a.set_xscale("log")
+    a.set_xticks(HSEC, FLAB)
+    a.set_ylim(0, max(mx) * 1.15)
+    a.set_xlabel("予測ホライズン")
+    a.set_ylabel("|順位相関|")
+    if zero:
+        a2 = a.twinx()
+        a2.plot(HSEC, [zero[h] * 100 for h in FLAB], marker="^", ms=3.6,
+                lw=1.2, color=GREEN)
+        a2.set_ylabel("目的変数がちょうど 0 の割合(%)", color=GREEN)
+        a2.tick_params(axis="y", colors=GREEN)
+        a2.grid(False)
+    a.legend(fontsize=6.8, frameon=False, loc="lower center")
+    a.set_title("(c) 到達点はどのホライズンで最大か", loc="left")
+
+    # (d) 前向き vs 後ろ向き
     a = ax[1, 0]
+    q = p.filter((pl.col("h") == "10s") & (pl.col("r_bwd").abs() < 0.99))
+    a.scatter(q["r_bwd"], q["r_fwd"], s=7, color=BLUE, alpha=0.45, lw=0)
+    lim = float(np.nanmax(np.abs(np.concatenate(
+        [q["r_bwd"].to_numpy(), q["r_fwd"].to_numpy()])))) * 1.05
+    a.plot([-lim, lim], [-lim, lim], color=MUTED, lw=0.8, ls="--")
+    a.axhline(0, color=INK, lw=0.7)
+    a.axvline(0, color=INK, lw=0.7)
+    # 中心が潰れないよう軸を切る。切って見えなくなった点数は題に書く
+    zl = 0.45
+    out = int(((q["r_bwd"].abs() > zl) | (q["r_fwd"].abs() > zl)).sum())
+    a.set_xlim(-zl, zl)
+    a.set_ylim(-zl, zl)
+    a.set_xlabel("後ろ向き 10 秒(= 同時性)")
+    a.set_ylabel("前向き 10 秒(= 予測)")
+    n_more = int((q["r_fwd"].abs() > q["r_bwd"].abs()).sum())
+    a.set_title(f"(d) 予測か同時性か — 予測が強いのは {n_more}/{q.height} 本"
+                + (f"(枠外 {out} 本)" if out else ""), loc="left")
+
+    # (e) 前半と後半
+    a = ax[1, 1]
     q = p.filter(pl.col("h") == "10s")
     a.scatter(q["r_1st"], q["r_2nd"], s=7, color=GREEN, alpha=0.5, lw=0)
     lim = float(np.nanmax(np.abs(np.concatenate(
@@ -174,32 +228,53 @@ def fig_horizon(pred: pl.DataFrame, daily: pl.DataFrame | None, tag: str, coin: 
                     np.nan_to_num(q["r_2nd"].to_numpy()))[0, 1]
     a.set_xlabel("前半の日で測った r")
     a.set_ylabel("後半の日で測った r")
-    a.set_title(f"(c) 標本外(日で前半/後半に分割) — 両者の相関 {r:.3f}", loc="left")
+    a.set_title(f"(e) 標本外(日で前半/後半に分割) — 両者の相関 {r:.3f}",
+                loc="left")
 
-    # (d) 日ごとの符号
-    a = ax[1, 1]
+    # (f) 日ごとの符号
+    a = ax[1, 2]
     if daily is not None and daily.height:
-        d = daily.filter(pl.col("h") == "10s").sort("mean")
+        d = (daily.filter(pl.col("h") == "10s")
+             .with_columns(ab=pl.col("mean").abs())
+             .sort("ab", descending=True).head(18))
+        mu = d["mean"].to_numpy()
+        nd = d["nday"].to_numpy()
+        # ★「正だった日」ではなく「プールした符号と一致した日」を数える。
+        #   符号が負の特徴量は前者だと全部 0% になり、何も読めない
+        agree = np.where(mu > 0, d["pos"].to_numpy(), nd - d["pos"].to_numpy())
+        o = np.argsort(agree / nd)
         y = np.arange(d.height)
-        a.barh(y, d["pos"].to_numpy() / d["nday"].to_numpy() * 100,
-               color=np.where(d["mean"].to_numpy() > 0, BLUE, RED), height=0.7)
+        a.barh(y, (agree / nd * 100)[o], color=np.where(mu[o] > 0, BLUE, RED),
+               height=0.7)
         a.axvline(50, color=INK, lw=0.9, ls="--")
-        a.set_yticks(y, d["col"].to_list(), fontsize=6.2)
-        a.set_xlabel("r が正だった日の割合(%)")
-        a.set_title("(d) 日ごとの符号 — 上位特徴量、10 秒", loc="left")
+        a.set_yticks(y, [d["col"].to_list()[i] for i in o], fontsize=6.0)
+        a.set_xlim(0, 105)
+        a.set_xlabel("符号がプールした値と一致した日の割合(%)")
+        a.set_title(f"(f) 日ごとの符号 — 10 秒、{int(nd[0])} 日中"
+                    "(青 = 正、赤 = 負)", loc="left")
     else:
         a.axis("off")
     fig.suptitle(f"{coin} ホライズン依存と、標本外・日ごとの安定性",
                  fontsize=12.5, y=0.995)
-    fig.tight_layout(rect=[0, 0, 1, 0.975])
+    fig.tight_layout(rect=[0, 0, 1, 0.972])
     save(fig, f"{tag}_l4feat_h.png")
 
 
 def fig_dist(pred, tag, coin, days):
     """上位の用量反応と、板の主要量の分布。"""
     p = pred.with_columns(ab=pl.col("r_fwd").abs())
-    top = (p.filter(pl.col("h") == "10s").sort("ab", descending=True)
-           .head(3)["col"].to_list())
+    # ★上位をそのまま 3 本取ると delta_bp の変換ばかりになる。
+    #   同じ元の量から作った列(`名前__変換`)は 1 本に絞る
+    top, seen = [], set()
+    for c in (p.filter(pl.col("h") == "10s").sort("ab", descending=True)
+              ["col"].to_list()):
+        b = c.split("__")[0]
+        if b in seen:
+            continue
+        seen.add(b)
+        top.append(c)
+        if len(top) == 3:
+            break
     show = ["spread_bp", "cdtot10", "age_b1"]
     ttl = ["スプレッド(bp)", "最良から 10 水準の厚み(枚)", "最良の買い注文の年齢(秒)"]
     cols = list(dict.fromkeys(top + show))
@@ -247,6 +322,7 @@ def fig_dist(pred, tag, coin, days):
                                         np.quantile(x, 0.999), 60),
                    color=BLUE, alpha=0.85)
             a.set_xscale("log")
+            logfmt(a, "x")
             a.axvline(np.median(x), color=RED, lw=1.2,
                       label=f"中央値 {np.median(x):.3g}")
             a.legend(fontsize=6.8, frameon=False)
@@ -265,7 +341,8 @@ def fig_corr(tag, coin, fam):
         return
     C = np.load(fp)
     cols = (DATA / f"l4feat_corr_{tag}.cols").read_text(encoding="utf-8").split("\n")
-    order = np.argsort([fam.get(c, "zz") for c in cols], kind="stable")
+    key = [famkey(fam.get(c, "999")) for c in cols]
+    order = np.array(sorted(range(len(cols)), key=lambda i: key[i]))
     C = C[np.ix_(order, order)]
     f2 = [fam.get(cols[i], "?") for i in order]
     fig, ax = plt.subplots(1, 2, figsize=(13.2, 5.8),
@@ -287,11 +364,27 @@ def fig_corr(tag, coin, fam):
     v = np.abs(C[iu])
     a.hist(v, bins=60, color=BLUE, alpha=0.85)
     a.set_yscale("log")
+    logfmt(a)
     a.axvline(0.99, color=RED, lw=1.2)
     n99 = int((v > 0.99).sum())
+    # |r|>0.99 を辺とみなした単連結クラスタ数 = 実質的に独立な情報の数
+    n = C.shape[0]
+    par = list(range(n))
+
+    def find(i):
+        while par[i] != i:
+            par[i] = par[par[i]]
+            i = par[i]
+        return i
+    for i, j in zip(*np.where(np.triu(np.abs(C) > 0.99, 1))):
+        a_, b_ = find(int(i)), find(int(j))
+        if a_ != b_:
+            par[a_] = b_
+    ngrp = len({find(i) for i in range(n)})
     a.set_xlabel("|相関|")
     a.set_ylabel("ペア数")
-    a.set_title(f"(b) |r| > 0.99 のペアは {n99:,} 組 / {v.size:,} 組", loc="left")
+    a.set_title(f"(b) |r| > 0.99 のペアは {n99:,} 組 / {v.size:,} 組。"
+                f"束ねると {ngrp} 群", loc="left")
     fig.suptitle(f"{coin} 特徴量の冗長性", fontsize=12.5, y=0.995)
     fig.tight_layout(rect=[0, 0, 1, 0.975])
     save(fig, f"{tag}_l4feat_corr.png")
@@ -307,8 +400,17 @@ def main():
     dp = DATA / f"l4feat_daily_{tag}.csv"
     daily = pl.read_csv(dp) if dp.exists() else None
     days = day_list(tag)
+    # 目的変数がちょうど 0 の割合(60 秒おきの標本で数える)
+    pos, _ = positions()
+    lb = [f"label_micro_{h}" for h in FLAB]
+    Y, _ = read_block(tag, days, {str(SRC / tag): lb}, pos)
+    zero = {}
+    for h in FLAB:
+        v = Y["B"][f"label_micro_{h}"]
+        v = v[np.isfinite(v)]
+        zero[h] = float((v == 0).mean()) if v.size else np.nan
     fig_overview(pred, tag, a.coin)
-    fig_horizon(pred, daily, tag, a.coin)
+    fig_horizon(pred, daily, tag, a.coin, zero)
     fig_dist(pred, tag, a.coin, days)
     fig_corr(tag, a.coin, fam)
 

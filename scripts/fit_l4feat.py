@@ -62,9 +62,23 @@ BATCH = 60
 
 
 def rank(x: np.ndarray) -> np.ndarray:
+    """★同順位は平均順位にする(midrank)。これを省くと結果が壊れる。
+
+    最初は `argsort` の結果をそのまま順位にしていた。すると**同じ値の行に
+    元の並び順どおりの順位**が付く。100ms のリターンは同じ値(とくに 0)が
+    大量に並ぶので、順位が実質「その日の中の時刻」になり、ゆっくり動く
+    特徴量なら何でも r ≈ 0.65 が出た。**帰無対照(1 時間ずらし)まで
+    0.657 になって**初めて気づいた。同順位を平均にすれば消える。
+    """
     o = np.argsort(x, kind="stable")
+    xs = x[o]
+    b = np.empty(x.size + 1, bool)
+    b[0] = b[-1] = True
+    np.not_equal(xs[1:], xs[:-1], out=b[1:-1])
+    idx = np.flatnonzero(b)
+    avg = (idx[:-1] + idx[1:] - 1) / 2.0
     r = np.empty(x.size, np.float64)
-    r[o] = np.arange(x.size)
+    r[o] = np.repeat(avg, np.diff(idx))
     return r
 
 
@@ -249,15 +263,18 @@ def main() -> None:
         print("日ごとの符号一致を書き出した", flush=True)
 
     elif a.stage == "corr":
-        M = np.empty((len(cols), pos["B"].size * nday), np.float32)
+        # 972 × 14 万行を倍精度で持つと 1.1GB になる。相関行列に要る精度は
+        # そこまで無いので、標本 B をさらに 5 分の 1 に間引く(2.9 万行)
+        thin = 5
+        n = pos["B"][::thin].size * nday
+        M = np.empty((len(cols), n), np.float64)
         for k0 in range(0, len(cols), BATCH):
             sub = cols[k0:k0 + BATCH]
             X, _ = read_block(tag, days, pick(got, sub), pos)
             for j, c in enumerate(sub):
-                M[k0 + j] = X["B"][c]
+                M[k0 + j] = X["B"][c].reshape(nday, -1)[:, ::thin].ravel()
             del X
             print(f"  {min(k0+BATCH, len(cols))}/{len(cols)}", flush=True)
-        M = M.astype(np.float64)
         M -= np.nanmean(M, axis=1, keepdims=True)
         M = np.nan_to_num(M)
         M /= np.maximum(np.sqrt((M ** 2).sum(1, keepdims=True)), 1e-12)
