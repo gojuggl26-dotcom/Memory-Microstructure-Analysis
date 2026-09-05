@@ -319,6 +319,13 @@ def main() -> None:
     if a.mode == "fixed":
         sfx += f"_fix{a.hold:g}"
     files = sorted((BULK / tag).glob("dt=*.parquet"))
+    if not files:
+        # 候補テーブルが無い銘柄は bbo から日付を取る(このシミュレータは
+        # bbo と fills だけで動くので、54 列の表は本来要らない)
+        days = (pl.scan_parquet(DATA / f"bbo_{tag}.parquet")
+                .select(pl.col("dt").unique()).collect()["dt"].sort().to_list())
+        files = [Path(f"dt={d}.parquet") for d in days]
+        print(f"候補テーブルが無いので bbo から {len(files)} 日を取得", flush=True)
     if a.skip:
         files = files[a.skip:]
         sfx += "_te"
