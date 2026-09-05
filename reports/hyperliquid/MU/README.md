@@ -46,6 +46,18 @@
 | [仮想成行 Q に対する板の応答と脆さ](mu_impact_fragility_report.md) | 板のラダー全体を 5 秒ごとに組み直し、仮想の成行 Q(0.5 / 5 / 50 契約)に対する sweep levels・price impact・slippage・marginal depth・marginal impact と、板の脆さ 5 種(fragility・その偏り・depth-at-risk・gap 調整)を出す。Impact ∝ Q^0.25、板は毎秒 10.5% 入れ替わる。**Impact の非対称は 5 秒先の向きに −0.070 で、マイクロプライス(+0.064)と OFI(+0.049)を上回り、しかも後ろ向き相関がほぼ 0**。ただし成行で取るには往復スプレッドに届かない。 |
 | [見せかけの板を疑う 18 指標](mu_manipulation_report.md) | spoofing / layering の教科書的な形 18 通りを注文 1 本ごとに測り、口座別に集計する。**母集団のベースラインが高すぎて、ほとんど何も選り分けない** — 最良気配に届いた注文の 87% は約定せず引かれ、取消率は 98.9%。fleeting liquidity は本数で 54% だが表示時間で数えると 1.3%(41 倍差)。決定的な検証(大口を出したあと自分が反対側で売り抜けたか)では**署名が出ないどころか符号が逆**で、反対側で売った層では値段がその注文と逆へ 3.50 bp 動いていた。口座は内部連番のみで扱う。 |
 | [複数の口座は同時に動くか — 同期の 8 指標](mu_sync_report.md) | 上位 60 口座(全注文の 87.7%)1,445 ペアについて、ブロック粒度の共起と秒粒度の相関を帰無との比で測る。**同時性は本物**(分層化した期待値の 1.43 倍、取消は 1.70 倍)だが、**向きは同期しない**(符号つき出し入れの超過相関は +0.0085 しかない)。さらに**同期の 9 割は「全員が同じ市場に反応している」で説明でき**、両者を除いた市場を統制すると超過は +0.137 → +0.014 へ落ちる。ただし 1,445 ペア中 **18〜19 ペアだけは残差相関が 0.5 を超える**(帰無では 0 件)。 |
+| [隠れ数量(iceberg)と注文分割の代理指標 8 つ](mu_iceberg_report.md) | 「削られたから足す」(約定の後)と「値段を付け直す」(取消の後)を分けて、隠れ数量の痕跡を 8 通りに測る。**市場全体では痕跡が出ない** — 1 秒以内の出し直しは約定後 12.99% 対 取消後 12.79% でほぼ同じ、約定のあった補充の 96.1% は見せた最大の数量以下しか約定していない。距離帯を揃えても 9 帯中 8 帯で約定後のほうが低く、唯一の例外がスプレッドの内側(比 1.18)。395 口座のうち 3 条件すべてを満たすのは **1 口座**(全注文の 0.034%)。 |
+| [OBI・OFI・攻撃的注文の五分位と予測ホライズン](mu_prediction_report.md) | 3 指標を前日の分布で五分位に切り、100ms〜60s の 8 ホライズンの前向きリターンを 1.41 億観測で測る。3 つとも t は 3.3〜20.9 で有意だが意味は別物 — **OBI の予測力はまるごと「mid が既知の microprice に追いつく」動きで、microprice で測ると全ホライズンで符号が負**(1 秒で t=−6.1)。OFI と攻撃的注文は microprice 自体を動かすので本物。攻撃的注文の**件数**は向きを当てず、絶対リターンを 100ms で 4.3 倍に分ける。ただし**板を叩くと 32 通りすべて −0.96〜−1.54 bp の赤字**。 |
+| [絞った標本の burstiness と自己相関](mu_burstiness_report.md) | Q1/Q5 の標本が時間的に固まっているかを測り、標準誤差の正しさを検証する。**特徴量は強く自己相関**(OBI のラグ 1 秒 0.460、分散の膨張率 100 倍)だが**リターンはほぼ白色**(0.040、膨張率 1.3 倍)。選ばれ方は明確に塊で、連は独立の想定より 1.9〜8.1 倍長く Fano 因子は 1 時間窓で 105〜393。**独立とみなした標準誤差は最大 15.8 倍過小**。さらに日どうしも独立でなく(ラグ 7 で +0.703 の週次の山)、**予測レポートの OBI の結論を 1 つ訂正した**。 |
+| [信号を検出した瞬間に BBO へメイカー注文を置いたら](mu_maker_report.md) | 6 通り(3 指標 × Q1/Q5)について、その瞬間に最良気配へ指値を置いた場合の約定率を待ち行列モデルで算出し、待ち行列がはける速さの十分位ごとに将来リターンを見る。10 秒の約定率は 11.9〜31.3%。**約定したときの損益は 8 ホライズンすべて負**で、受け取る半スプレッド 0.6〜0.9 bp を約定後の動き −2.2〜−3.9 bp が必ず上回る。**信号の向きに置くと逆選択は悪化する**(10 秒で OBI −3.24 対 対照 Q3 −2.21)。十分位では **mid と microprice でリターンの向きが逆**になり、OFI は microprice で見ると約定しやすい D1 が最も強い(+0.206)。 |
+| [信号 × 待ち行列時間の 2 次元ヒートマップ](mu_heatmap_report.md) | 信号の十分位(縦)× 待ち行列がはける時間の十分位(横)の 10×10 を特徴量ごとに。**2 軸はほぼ直交する** — 約定できるかは横軸だけ(OFI で横 46.9pp 対 縦 5.0pp)、情報があるかは縦軸だけ(microprice で縦 0.601bp 対 横 0.066bp)。ただし **mid で測ると横軸に偽の勾配が出る**(OFI の比 1.21 → microprice で 9.04)。**300 セルすべてで約定時の損益は負**、最良でも −1.20 bp。 |
+| [約定時刻から測った逆選択 AS と、クオートの期待値 EV](mu_ev_report.md) | **AS(S,D) = E[r(τ→τ+h) | Fill, S, D]** を実際の約定時刻 τ から測り、EV = P(Fill)×[Spread/2 − Fee ± AS] を全セルで作る。**クオートすべきセルは 1 つも無い**(日次 Newey-West で検査した 1,717 セル中 0 件)。理由は 1 行 — **自分を食った約定の即時の影響 −0.54 bp だけで、受け取る半スプレッド +0.58 bp がほぼ消える**。h=100ms まで縮めても負。測定の誤りを 2 つ修正(約定時刻ちょうどの板は約定後・区分累積和の桁落ち)。 |
+| [SelectionPenalty(S,D) — 約定という条件が alpha を壊す量](mu_penalty_report.md) | **E[r|Fill,S,D] − E[r|S,D]** を同じ窓で作る。**alpha は約定という条件だけで平均 16 倍(最大 58 倍)の大きさで消える**。誤差を付けた 1,717 セルすべてが負で、1,715 が Bonferroni を突破、正のセルは 0。最も破壊されるのは**自分がクオートしたい向きに信号が出ている状態**(OBI S10 で 無条件 +0.560 → 約定時 −4.135 = **−4.694 bp**)。mid でも microprice でも同じ値になる稀な指標。 |
+| [約定の 3 分解と toxic な約定の事前兆候](mu_markout_report.md) | SelectionPenalty(窓 T→T+h)と AS(窓 τ→τ+h)が**別物である**ことを恒等式で検算したうえで、**A = r(T→τ)** と **B = r(τ→τ+h)** に分ける。**A はクオートの寿命でほぼ決まり**(100ms で −0.007、10 秒で −1.618 bp)、**B は寿命に依らない**(−1.21〜−1.50)。実際の優位がゼロを切るのは寿命 2〜5 秒。toxic な約定を事前に見分けられるかは **AUC 最良 0.452** でほぼ不可能。 |
+| [約定 δ ms 前の標本外 AUC と実際に取り消せる速さ](mu_latency_report.md) | δ = 500/250/100/50/20/10 ms で各特徴量と 10 変数ロジットの**標本外** AUC を出し、実測の取り消し遅延と並べる。AUC は **50 ms で 0.590 に飽和**するが、**50 ms より内側は板が動いていない**(50→20ms で 99.6%、20→10ms で 100% 同一)。ブロックは **65 ms 周期**、次の板更新までの待ちは中央値 **185 ms**、**50 ms 以内に取り消せている注文は 0.01%**。使える δ=250ms の AUC 0.577 で上位半分を捨てても markout の改善は +0.267 bp、黒字化に必要な +1.031 bp に届かない。 |
+| [遅延を織り込んだ取り消しの backtest](mu_cancel_bt_report.md) | 板が更新されるたびにスコアを計算し、閾値超えで取り消しを出す。取り消しは **L ミリ秒後**に有効になり、約定がそれより早ければ間に合わない。**スコアは本物**(無作為対照との差は L=130ms で +0.231 bp)だが、**「何もしない」との差は +0.098 bp しかなく L=300ms で消える**。実測遅延で到達できる最良の markout は **−0.850**(基準 −1.001)で、−0.6 には届かない。1 発注あたりの期待値は取り消しを増やすほど**ゼロに近づくが超えない**(block bootstrap 95% 区間が 22 通りすべてで 0 を跨がない)。 |
+| [BBO から 10 ティック奥までの P(Fill) × PnL_fill](mu_depth_report.md) | 最良気配から k=0..10 ティック奥に置いた場合。**奥へ置いても実際の優位は増えない**(名目の k ティックは、そこまで価格が落ちないと約定しないので丸ごと消える)。h ≥ 1 秒はどの深さも負。88 通り中**正で有意なのは 1 通りだけ** — **最良気配・待ち行列の先頭・保有 100 ミリ秒**(EV +0.036 bp、t=4.15、前半後半とも正)。待ち行列の優先権の価値がここに出ている。 |
+| [仮想発注候補テーブル(Step 1)](mu_quotes_table_report.md) | 今後の分析の**基礎データ**。1 行 = 1 つの発注候補で、候補時点は BBO 更新ごと、1 時点につき買い/売りの 2 行。**98 日 7,034 万行 × 54 列**(説明変数 45 / ラベル 9)。規則は **X_t は t までに観測可能な値だけ**で、これを独立再計算(相対差 5×10⁻⁸ 以下)と板の時刻の検定(t 以前のセル開始時点と一致 77〜88% 対 t 時点 0.1〜1.2%)で確かめた。無条件に最良気配へ置くと **1 秒 net PnL 平均 −3.756 bp、98 日中 97 日が負**。期間内で標本の性質が変わる(候補数 1.65 倍・スプレッド 2.34→0.98 bp)ので**まとめて平均してはいけない**。NaN と null の混在で偽陽性を大量に出した経緯も記録。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
@@ -258,9 +270,97 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 共通成分と herding。自分を除いた市場合計への決定係数、相関行列の固有値、herding score の分布と規模との関係](../../../charts/xyz_MU_sync_common.png)
 
+**隠れ数量 — 補充の形** 削られたから足すのか、値段を付け直すのか。解説: [隠れ数量と注文分割の代理指標](mu_iceberg_report.md)
+
+![xyz:MU 補充の形。1 秒以内に同じ値段へ出し直した割合、出し直すまでの時間の累積分布、距離帯ごとの比較、子注文の数の分布、同じ数量だった割合](../../../charts/xyz_MU_ice_refill.png)
+
+**隠れ数量 — 代理指標と回転**。解説: [同上](mu_iceberg_report.md)
+
+![xyz:MU 隠れ数量の代理と回転。約定量を見せた最大の数量で割った累積分布、補充した数量の比、価格水準の回転、最頻数量の割合、口座ごとの回転、約定後と取消後の散布図](../../../charts/xyz_MU_ice_hidden.png)
+
 **口座ごとの約定のされ方** — 4 つの約定割合の重なり、出した量と約定量、待ち時間と約定の大きさ、約定時のキュー位置、約定後の逆選択。解説: [口座ごとの約定のされ方 11 指標](mu_wallet_fill_report.md)
 
 ![xyz:MU 口座ごとの約定のされ方 11 指標。約定割合 4 種の分布と相互相関、出した数量と約定した数量の散布、待ち時間と約定の大きさ、約定した瞬間に先頭だった割合、メイカー約定シェア上位 20 口座の約定後 10 秒の逆選択](../../../charts/xyz_MU_wallet_fill.png)
+
+**予測 — 五分位ごとの前向きリターン** 3 指標 × 8 ホライズン。解説: [OBI・OFI・攻撃的注文の五分位と予測ホライズン](mu_prediction_report.md)
+
+![xyz:MU OBI・OFI・攻撃的注文の符号つき数量・件数について、五分位ごとの前向きリターンを 100ms から 60s の 8 ホライズンで並べた 4 枚組](../../../charts/xyz_MU_pred_quintile.png)
+
+**予測 — 新しい情報か、費用を引くと残るか**。解説: [同上](mu_prediction_report.md)
+
+![xyz:MU mid で測った Q5−Q1 と microprice で測った Q5−Q1 の比較、往復スプレッドを引いた純益、帰無対照、符号つき t 値の 6 枚組](../../../charts/xyz_MU_pred_micro.png)
+
+**予測 — Q1 と Q5 のときのリターン分布 6 通り**。解説: [同上](mu_prediction_report.md)
+
+![xyz:MU OBI・OFI・攻撃的注文の符号つき数量について、Q1 と Q5 それぞれのリターン分布を 4 ホライズン重ねた 6 枚組](../../../charts/xyz_MU_pred_dist.png)
+
+**予測 — Q1 と Q5 の違いの大きさ**。解説: [同上](mu_prediction_report.md)
+
+![xyz:MU Q1 と Q5 の両側裾確率、効果量のホライズン依存、上がった割合、外れ値を丸めたときの頑健性の 6 枚組](../../../charts/xyz_MU_pred_dist_cmp.png)
+
+**標本は時間的に固まっているか** 自己相関・連の長さ・Fano 因子・ブロック頑健な標準誤差。解説: [burstiness と自己相関](mu_burstiness_report.md)
+
+![xyz:MU 特徴量とリターンの自己相関、Q5 の連の長さ、Fano 因子、ブロック幅ごとの標準誤差、日次系列の自己相関、補正前後の t 値の 6 枚組](../../../charts/xyz_MU_burst.png)
+
+**メイカー注文の反実仮想 — 約定率と逆選択**。解説: [信号を検出した瞬間に BBO へメイカー注文を置いたら](mu_maker_report.md)
+
+![xyz:MU 6 通りの約定率、対照との比、約定したときの損益、逆選択の分解、1 発注あたりの期待損益、約定率の上限下限の 6 枚組](../../../charts/xyz_MU_maker_fill.png)
+
+**メイカー注文の反実仮想 — 待ち行列の十分位**。解説: [同上](mu_maker_report.md)
+
+![xyz:MU 待ち行列がはける推定時間の十分位ごとの約定率と、mid と microprice で測った将来リターンの 6 枚組](../../../charts/xyz_MU_maker_decile.png)
+
+**信号 × 待ち行列時間の 2 次元** 特徴量ごとに 1 枚。解説: [信号 × 待ち行列時間の 2 次元ヒートマップ](mu_heatmap_report.md)
+
+![xyz:MU OBI の信号十分位 × 待ち行列十分位。約定率(買い・売り)、観測数、mid と microprice で測った将来リターン、約定時の損益の 6 枚組](../../../charts/xyz_MU_heat_obi.png)
+
+![xyz:MU OFI の信号十分位 × 待ち行列十分位。約定率は横軸だけ、microprice のリターンは縦軸だけに勾配が出る 6 枚組](../../../charts/xyz_MU_heat_ofi_10s.png)
+
+![xyz:MU 攻撃的注文の符号つき数量の信号十分位 × 待ち行列十分位の 6 枚組](../../../charts/xyz_MU_heat_ai_net_10s.png)
+
+**約定時刻から測った AS と EV** どのセルならクオートすべきか。解説: [約定時刻から測った逆選択 AS と EV](mu_ev_report.md)
+
+![xyz:MU OFI の信号十分位 × 待ち行列十分位。約定確率、約定時刻から測った逆選択 AS、約定 2ms 前の半スプレッド、EV_bid、EV_ask、1 約定あたりの中身の 6 枚組。EV は全セル負](../../../charts/xyz_MU_ev_ofi_10s.png)
+
+![xyz:MU OBI についての同じ 6 枚組](../../../charts/xyz_MU_ev_obi.png)
+
+![xyz:MU 攻撃的注文の符号つき数量についての同じ 6 枚組](../../../charts/xyz_MU_ev_ai_net_10s.png)
+
+**SelectionPenalty(S,D)** 約定条件で alpha がどれだけ壊れるか。解説: [SelectionPenalty](mu_penalty_report.md)
+
+![xyz:MU OBI の信号十分位 × 待ち行列十分位。無条件リターン、約定条件つきリターン、SelectionPenalty(買い・売り)、microprice 版、P(Fill) の 6 枚組。penalty は全セル負](../../../charts/xyz_MU_penalty_obi.png)
+
+![xyz:MU OFI についての同じ 6 枚組](../../../charts/xyz_MU_penalty_ofi_10s.png)
+
+![xyz:MU 攻撃的注文の符号つき数量についての同じ 6 枚組](../../../charts/xyz_MU_penalty_ai_net_10s.png)
+
+**BBO から 10 ティック奥までの P(Fill) × PnL_fill**。解説: [深い水準](mu_depth_report.md)
+
+![xyz:MU 最良気配から k ティック奥に置いた場合の約定率、約定時損益、EV、損益の内訳、待ち時間、信号十分位との組み合わせの 6 枚組](../../../charts/xyz_MU_depth.png)
+
+**約定の 3 分解と toxic の事前兆候**。解説: [3 分解と事前兆候](mu_markout_report.md)
+
+![xyz:MU クオートの寿命ごとの損益分解、A と B の寿命依存、toxic 五分位ごとの攻撃的流量と OFI の推移、群間の開き、事前に toxic を当てる AUC の 6 枚組](../../../charts/xyz_MU_markout.png)
+
+**標本外 AUC と取り消し遅延**。解説: [δ ms 前の AUC と取り消せる速さ](mu_latency_report.md)
+
+![xyz:MU 約定 500/250/100/50/20/10 ms 前の標本外 AUC、ブロック間隔の分布、参加者が実際に取り消せている速さの 3 枚組。取り消しが間に合わない領域を赤帯で示す](../../../charts/xyz_MU_latency.png)
+
+**遅延を織り込んだ取り消しの backtest**。解説: [cancel backtest](mu_cancel_bt_report.md)
+
+![xyz:MU 発火率ごとの markout、遅延による効果の減衰、無作為対照との差、約定率、1 約定あたり損益、1 発注あたり期待値の 6 枚組](../../../charts/xyz_MU_cancel_bt.png)
+
+**取り消し backtest の block bootstrap 95% 区間**。解説: [同上](mu_cancel_bt_report.md)
+
+![xyz:MU 標本外日次 EV 系列の巡回移動ブロック bootstrap による 95% 区間。EV・何もしないとの差・無作為との差の 3 枚組](../../../charts/xyz_MU_cancel_ci.png)
+
+**仮想発注候補テーブルの日次推移**。解説: [Step 1 候補テーブル](mu_quotes_table_report.md)
+
+![xyz:MU 仮想発注候補テーブルの日次推移。候補行数・60 秒約定率・スプレッド中央値・1 秒 net PnL 平均の 4 面](../../../charts/xyz_MU_quotes_daily.png)
+
+**候補テーブルの説明変数とラベルの分布**。解説: [同上](mu_quotes_table_report.md)
+
+![xyz:MU 候補テーブルの分布。上段は t 時点で観測可能な説明変数 4 つ、下段は未来を使うラベル 4 つ](../../../charts/xyz_MU_quotes_dist.png)
 
 ### B. 板の状態と将来の値動き
 
@@ -429,6 +529,49 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | sync_raw_xyz_MU.npz | 日 × 口座 × 口座 の十分統計(版管理外) | `build_sync.py` |
 | [wallet_clusters_xyz_MU.csv](../../../data/wallet_clusters_xyz_MU.csv) | ウォレット × クラスタ ID・埋め込み座標・平均類似度(380 行) | `build_wallet_clusters.py` |
 
+| [ice_daily_xyz_MU.csv](../../../data/ice_daily_xyz_MU.csv) | 隠れ数量の代理指標の市場全体の日次(98 行) | `build_iceberg.py` |
+| [ice_band_xyz_MU.csv](../../../data/ice_band_xyz_MU.csv) | 距離帯 × 日 の補充率と回転(882 行) | `build_iceberg.py` |
+| [ice_hist_xyz_MU.csv](../../../data/ice_hist_xyz_MU.csv) | 子注文数・出し直しまでの時間・隠れ倍率の分布 | `build_iceberg.py` |
+| [ice_wallet_summary_xyz_MU.csv](../../../data/ice_wallet_summary_xyz_MU.csv) | 口座ごとの 8 指標(395 行) | `plot_iceberg.py` |
+| [ice_meta_xyz_MU.csv](../../../data/ice_meta_xyz_MU.csv) | 隠れ数量の日ごとの検算(98 行) | `build_iceberg.py` |
+| ice_wallet_xyz_MU.parquet | 口座 × 日 の集計(版管理外) | `build_iceberg.py` |
+
+| pred_cells_xyz_MU.parquet | 日 × 指標 × ホライズン × 五分位 の十分統計量(17,720 セル・版管理外) | `build_pred.py` |
+| [pred_edges_xyz_MU.csv](../../../data/pred_edges_xyz_MU.csv) | 日ごとの五分位の境目(686 行) | `build_pred.py` |
+| [pred_summary_xyz_MU.csv](../../../data/pred_summary_xyz_MU.csv) | 指標 × ホライズンの要約(32 行) | `plot_pred.py` |
+| pred_hist_xyz_MU.parquet | リターン分布のヒストグラム(対数等比 243 ビン・33,437 行・版管理外) | `build_pred.py` |
+| [pred_dist_stats_xyz_MU.csv](../../../data/pred_dist_stats_xyz_MU.csv) | 6 分布 × 8 ホライズンの要約統計(48 行) | `plot_pred_dist.py` |
+| [burst_acf_xyz_MU.csv](../../../data/burst_acf_xyz_MU.csv) | 自己相関 5 系列 × ラグ 1〜1800 秒 | `build_burst.py` |
+| [burst_summary_xyz_MU.csv](../../../data/burst_summary_xyz_MU.csv) | burstiness・記憶・Fano・Gini(6 行) | `build_burst.py` |
+| [burst_block_xyz_MU.csv](../../../data/burst_block_xyz_MU.csv) | ブロック幅ごとの標準誤差(60 行) | `build_burst.py` |
+| [burst_run_xyz_MU.csv](../../../data/burst_run_xyz_MU.csv) | Q1/Q5 に入り続けた連の長さの分布 | `build_burst.py` |
+| [burst_tvalues_xyz_MU.csv](../../../data/burst_tvalues_xyz_MU.csv) | 日次と Newey-West の t 値(64 行・ラグ 5/10/14/21) | `plot_burst.py` |
+| maker_cells_xyz_MU.parquet | 日 × 指標 × 分位 × 側 × ホライズン × 十分位(133,664 セル・版管理外) | `build_maker.py` |
+| [maker_summary_xyz_MU.csv](../../../data/maker_summary_xyz_MU.csv) | 約定率・損益・逆選択の要約 | `plot_maker.py` |
+| [maker_decile_xyz_MU.csv](../../../data/maker_decile_xyz_MU.csv) | 十分位ごとの約定率・リターン・損益 | `plot_maker.py` |
+| [maker_edges_xyz_MU.csv](../../../data/maker_edges_xyz_MU.csv) | 日ごとの十分位の境目(196 行) | `build_maker.py` |
+| [heat_pooled_xyz_MU.csv](../../../data/heat_pooled_xyz_MU.csv) | 信号 × 待ち行列の 10×10(4,800 セル) | `build_heat.py` |
+| heat_daily_xyz_MU.parquet | 同・日ごと(103,144 行・h=1s/10s・版管理外) | `build_heat.py` |
+| [heat_summary_xyz_MU.csv](../../../data/heat_summary_xyz_MU.csv) | 軸ごとの勾配の大きさ | `plot_heat.py` |
+| [ev_pooled_xyz_MU.csv](../../../data/ev_pooled_xyz_MU.csv) | AS と EV の材料(4,800 セル) | `build_ev.py` |
+| ev_daily_xyz_MU.parquet | 同・日ごと(154,716 行・版管理外) | `build_ev.py` |
+| [ev_summary_xyz_MU.csv](../../../data/ev_summary_xyz_MU.csv) | EV と日次 Newey-West 誤差 | `plot_ev.py` |
+| [ev_positive_xyz_MU.csv](../../../data/ev_positive_xyz_MU.csv) | 判定を通ったセル(0 件) | `plot_ev.py` |
+| [penalty_summary_xyz_MU.csv](../../../data/penalty_summary_xyz_MU.csv) | SelectionPenalty と日次 Newey-West 誤差 | `plot_penalty.py` |
+| [depth_pooled_xyz_MU.csv](../../../data/depth_pooled_xyz_MU.csv) | 水準 × 側 × ホライズン(176 行) | `build_depth.py` |
+| [depth_signal_xyz_MU.csv](../../../data/depth_signal_xyz_MU.csv) | 同・信号十分位つき(5,280 行) | `build_depth.py` |
+| depth_daily_xyz_MU.parquet | 同・日ごと(8,624 行・版管理外) | `build_depth.py` |
+| [markout_decomp_xyz_MU.csv](../../../data/markout_decomp_xyz_MU.csv) | 日 × 側 × クオート寿命の 3 分解 | `build_markout.py` |
+| [markout_toxic_xyz_MU.csv](../../../data/markout_toxic_xyz_MU.csv) | toxic 五分位 × 事前時点の状態(3,920 行) | `build_markout.py` |
+| [markout_auc_xyz_MU.csv](../../../data/markout_auc_xyz_MU.csv) | 事前指標の判別力(3,528 行) | `build_markout.py` |
+| [markout_summary_xyz_MU.csv](../../../data/markout_summary_xyz_MU.csv) | 寿命ごとの A・B と誤差 | `plot_markout.py` |
+| latency_features_xyz_MU.parquet | 約定 δ ms 前の特徴量(352.8 万行・版管理外) | `build_latency.py` |
+| [latency_auc_xyz_MU.csv](../../../data/latency_auc_xyz_MU.csv) | 11 モデル × 6 時点の標本外 AUC | `plot_latency.py` |
+| cancel_bt_xyz_MU.parquet | 取り消し backtest の日次結果(12,740 行・版管理外) | `build_cancel_bt.py` |
+| cancel_bt_xyz_MU_hq2.parquet | 同・クオート寿命 2 秒(版管理外) | `build_cancel_bt.py` |
+| [cancel_bt_summary_xyz_MU.csv](../../../data/cancel_bt_summary_xyz_MU.csv) | 発火率 × 遅延の要約 | `plot_cancel_bt.py` |
+| [cancel_ci_xyz_MU.csv](../../../data/cancel_ci_xyz_MU.csv) | block bootstrap 95% 区間(ブロック長 4 通り) | `plot_cancel_ci.py` |
+
 ## 再現手順
 
 上から順に実行すると、このページの図と数値がすべて再現できます。
@@ -509,6 +652,35 @@ uv run python scripts/fit_wallet_fill.py --coin xyz:MU
 uv run python scripts/plot_wallet_fill.py --coin xyz:MU
 uv run python scripts/build_sync.py --coin xyz:MU
 uv run python scripts/plot_sync.py --coin xyz:MU
+uv run python scripts/build_iceberg.py --coin xyz:MU
+uv run python scripts/plot_iceberg.py --coin xyz:MU
+uv run python scripts/build_pred.py --coin xyz:MU
+uv run python scripts/plot_pred.py --coin xyz:MU
+uv run python scripts/plot_pred_dist.py --coin xyz:MU
+uv run python scripts/build_burst.py --coin xyz:MU
+uv run python scripts/plot_burst.py --coin xyz:MU
+uv run python scripts/build_maker.py --coin xyz:MU
+uv run python scripts/plot_maker.py --coin xyz:MU
+uv run python scripts/build_heat.py --coin xyz:MU
+uv run python scripts/plot_heat.py --coin xyz:MU
+uv run python scripts/build_ev.py --coin xyz:MU
+uv run python scripts/plot_ev.py --coin xyz:MU
+uv run python scripts/plot_penalty.py --coin xyz:MU
+uv run python scripts/build_depth.py --coin xyz:MU
+uv run python scripts/plot_depth.py --coin xyz:MU
+uv run python scripts/build_markout.py --coin xyz:MU
+uv run python scripts/plot_markout.py --coin xyz:MU
+uv run python scripts/build_latency.py --coin xyz:MU
+uv run python scripts/plot_latency.py --coin xyz:MU
+uv run python scripts/build_cancel_bt.py --coin xyz:MU
+uv run python scripts/build_cancel_bt.py --coin xyz:MU --hq 2.0
+uv run python scripts/plot_cancel_bt.py --coin xyz:MU
+uv run python scripts/plot_cancel_ci.py --coin xyz:MU
+uv run python scripts/build_quotes.py --coin xyz:MU
+uv run python scripts/fix_quotes_nan.py --coin xyz:MU
+uv run python scripts/check_quotes.py --coin xyz:MU
+uv run python scripts/audit_quotes.py --coin xyz:MU
+uv run python scripts/plot_quotes.py --coin xyz:MU
 ```
 
 ---

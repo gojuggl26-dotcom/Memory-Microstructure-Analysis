@@ -195,8 +195,14 @@ def chunk_bounds(bbi, bai, good, ng):
     return np.array(out, dtype=np.int64)
 
 
-def day_features(fp: Path, bb_day: pl.DataFrame, carry: pl.DataFrame):
-    """1 日分の x(2 定義 × 10 水準)と mid を作り、次の日へ渡す carry を返す。"""
+def day_features(fp: Path, bb_day: pl.DataFrame, carry: pl.DataFrame,
+                 keep: dict | None = None):
+    """1 日分の x(2 定義 × 10 水準)と mid を作り、次の日へ渡す carry を返す。
+
+    keep を渡すと、水準ごとの**数量そのもの** Qb / Qa を keep["step"] 個おきの
+    格子点で keep["gi"] / keep["qb"] / keep["qa"] に貯める(特徴量ライブラリ用)。
+    既定の keep=None では一切何もしないので、既存の呼び出しは影響を受けない。
+    """
     d = pl.read_parquet(fp)
     n_raw = d.height
     t0 = (int(d["ts"].cast(pl.Int64).min()) // DAY_NS) * DAY_NS      # その日の 00:00 UTC
@@ -372,6 +378,14 @@ def day_features(fp: Path, bb_day: pl.DataFrame, carry: pl.DataFrame):
                 ka = np.cumsum(Qa, axis=1)
                 sc = kb + ka
                 X[1, :, g0:g1] = np.where(sc > 0, (kb - ka) / sc, np.nan).T
+            if keep is not None:
+                st = keep["step"]
+                loc = np.arange(-(-g0 // st) * st, g1, st) - g0
+                if loc.size:
+                    keep["gi"].append((g0 + loc).astype(np.int32))
+                    keep["qb"].append(Qb[loc].astype(np.float32))
+                    keep["qa"].append(Qa[loc].astype(np.float32))
+                    keep["ok"].append(okc[loc])
             del Db, Da, Qb, Qa, s, kb, ka, sc
         if s1 > s0:
             np.add.at(dep_b, cp[cb] - p_min, cd[cb])
