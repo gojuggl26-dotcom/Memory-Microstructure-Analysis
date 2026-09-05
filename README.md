@@ -23,7 +23,7 @@
 
 | 取引所 | 対象 | 記録の粒度 | 状態 | 入口 |
 |---|---|---|---|---|
-| **[Hyperliquid](https://hyperliquid.xyz/)** | [Trade.xyz](https://trade.xyz/) が配備したメモリ半導体 perp 6 銘柄 | L4(注文 1 本ごと) | 進行中 | **[Hyperliquid の分析](reports/hyperliquid/README.md)** |
+| **[Hyperliquid](https://hyperliquid.xyz/)** | [Trade.xyz](https://trade.xyz/) が配備したメモリ半導体 perp 6 銘柄 + 対照 1 銘柄 | L4(注文 1 本ごと) | 進行中 | **[Hyperliquid の分析](reports/hyperliquid/README.md)** |
 | **[Pendle Boros](https://boros.pendle.finance/)** | 各取引所の perp ファンディングレートを implied APR 建てで取引する板・全 188 市場 | 注文イベント(Arbitrum オンチェーンログ) | 進行中 | **[Pendle Boros の分析](reports/pendle/README.md)** |
 | その他の DEX | 未定 | — | 未着手 | — |
 
@@ -36,7 +36,7 @@
 |---|---|
 | Hyperliquid の結論だけ知りたい | [Hyperliquid の分析 — 何が判ったか](reports/hyperliquid/README.md#何が判ったか) |
 | Pendle Boros の結論だけ知りたい | [Pendle Boros の分析 — 主な結果](reports/pendle/README.md#主な結果) |
-| 銘柄ごとの分析を読みたい | [`xyz:MU` 分析索引](reports/hyperliquid/MU/README.md) / [`xyz:DRAM` 分析索引](reports/hyperliquid/DRAM/README.md) |
+| 銘柄ごとの分析を読みたい | [`xyz:MU` 分析索引](reports/hyperliquid/MU/README.md) / [`xyz:DRAM` 分析索引](reports/hyperliquid/DRAM/README.md) / [`xyz:INTC` 分析索引](reports/hyperliquid/INTC/README.md) |
 | 用語の意味を調べたい | [用語辞書](GLOSSARY.md) |
 | 「予測できた」の定義を知りたい | [予測の定義](reports/predicting_definition.md) |
 | 数字を読むときの前提を知りたい | 次節 [結果を読むときの前提](#結果を読むときの前提) |
