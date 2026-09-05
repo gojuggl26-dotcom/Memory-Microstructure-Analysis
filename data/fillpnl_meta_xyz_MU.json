@@ -2,6 +2,9 @@
  "train_days": 59,
  "test_days": 39,
  "h": 0.25,
+ "lag": 0.0,
+ "target": "mid",
+ "simple": false,
  "n_test": 35523622,
  "coef_fill": {
   "const": -4.681483216984,
