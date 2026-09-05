@@ -571,6 +571,11 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | cancel_bt_xyz_MU_hq2.parquet | 同・クオート寿命 2 秒(版管理外) | `build_cancel_bt.py` |
 | [cancel_bt_summary_xyz_MU.csv](../../../data/cancel_bt_summary_xyz_MU.csv) | 発火率 × 遅延の要約 | `plot_cancel_bt.py` |
 | [cancel_ci_xyz_MU.csv](../../../data/cancel_ci_xyz_MU.csv) | block bootstrap 95% 区間(ブロック長 4 通り) | `plot_cancel_ci.py` |
+| quotes_sub_xyz_MU/ | 仮想発注候補テーブルの 1/20 間引き版(351.7 万行 × 54 列・版管理外) | `build_quotes.py` |
+| [quotes_day_xyz_MU.csv](../../../data/quotes_day_xyz_MU.csv) | 候補テーブルの日次集計(98 日) | `check_quotes.py` |
+| [quotes_stats_xyz_MU.csv](../../../data/quotes_stats_xyz_MU.csv) | 列ごとの欠損率と分位(dt/ts/sec/side を除く 41 列) | `check_quotes.py` |
+| [quotes_check_xyz_MU.json](../../../data/quotes_check_xyz_MU.json) | 整合性検査 8 項目の結果 | `check_quotes.py` |
+| [quotes_audit_xyz_MU.csv](../../../data/quotes_audit_xyz_MU.csv) | ルックアヘッド監査(3 日 × A/B/C) | `audit_quotes.py` |
 
 ## 再現手順
 
