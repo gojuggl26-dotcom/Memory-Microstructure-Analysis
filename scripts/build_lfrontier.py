@@ -78,8 +78,15 @@ def main() -> None:
         g = np.diff(t)
         gaps.append(g[g > 0] / 1e6)
     G = np.concatenate(gaps)
-    blk = float(np.median(G[(G > 50) & (G < 80)]))
-    print(f"ブロック間隔の実測 {blk:.2f} ms(板更新の間隔 {G.size:,} 件から)")
+    one = G[(G > 40) & (G < 95)]              # 1 ブロックとみなせる山
+    blk = float(np.median(one))
+    print(f"ブロック間隔の実測 {blk:.2f} ms(1 ブロックの山 {one.size:,} 件)"
+          f"  p10 {np.quantile(one,0.1):.1f} / p90 {np.quantile(one,0.9):.1f} "
+          f"/ 標準偏差 {one.std():.2f} ms")
+    kk = np.round(G / blk).astype(int)
+    print("  板が動いたブロックどうしの間隔(何ブロック空いたか):",
+          " ".join(f"{v}:{100*np.mean(kk == v):.1f}%" for v in (1, 2, 3, 4)),
+          f" 5 以上:{100*np.mean(kk >= 5):.1f}%")
     out = []
     for d in range(0, 61, 5):
         p1 = max(0.0, min(1.0, (be - d) / blk)) if be == be else np.nan

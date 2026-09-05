@@ -6,7 +6,7 @@
 【読み方】
 横軸は「発注を決めてから注文が板で約定可能になるまで」の遅延。
 50 ms を超えると戦略の EV が負に落ちる。50 ms より内側では板が動いていないので
-シグナルも EV もほとんど変わらない。境目はブロック周期(66.9 ms)にある。
+シグナルも EV もほとんど変わらない。境目はブロック周期(67.3 ms)にある。
 """
 from __future__ import annotations
 
@@ -59,8 +59,8 @@ def main() -> None:
     xd = D["lag_ms"].to_numpy().astype(float)
     b.plot(xd, 100 * D["surv"].to_numpy(), color=C_C, lw=2.2, marker="o", ms=5,
            label="EV>0 の条件が残る割合")
-    b.axvline(66.9, color=MUTED, lw=1.2, ls=":")
-    b.text(68, 40, "1 ブロック 66.9 ms", color=INK2, fontsize=8.5)
+    b.axvline(67.30, color=MUTED, lw=1.2, ls=":")
+    b.text(68, 40, "1 ブロック 67.3 ms", color=INK2, fontsize=8.5)
     b.axvline(BE, color=C_B, lw=1.4, ls="--")
     style(b, "決めてから板に載るまでの遅延 (ms)", "条件の生存率 (%)", logx=True)
     b2 = b.twinx()
@@ -79,7 +79,7 @@ def main() -> None:
     b.axhline(0, color=BASELINE, lw=1.0)
     b.plot(xd, D["dmid"].to_numpy(), color=C_D, lw=2.2, marker="o", ms=5,
            label="自分が取ろうとした側への mid の動き (bp)")
-    b.axvline(66.9, color=MUTED, lw=1.2, ls=":")
+    b.axvline(67.30, color=MUTED, lw=1.2, ls=":")
     b.axvline(BE, color=C_B, lw=1.4, ls="--")
     style(b, "決めてから板に載るまでの遅延 (ms)", "Δmid (bp)", logx=True)
     b2 = b.twinx()
@@ -96,10 +96,10 @@ def main() -> None:
     h, e = np.histogram(G[G < 340], bins=np.arange(0, 340, 2))
     b.bar(e[:-1], h / h.sum(), width=2, color=MUTED, lw=0, align="edge")
     for k in (1, 2, 3, 4):
-        b.axvline(66.86 * k, color=C_A, lw=1.2, ls=":")
-        b.text(66.86 * k + 3, 0.09, f"{k}", color=C_A, fontsize=8)
+        b.axvline(67.30 * k, color=C_A, lw=1.2, ls=":")
+        b.text(67.30 * k + 3, 0.09, f"{k}", color=C_A, fontsize=8)
     style(b, "板更新の間隔 (ms)", "割合")
-    b.set_title("(D) ブロックは 66.9 ms 周期(実測・板更新 192 万件)",
+    b.set_title("(D) ブロックは中央 67.3 ms・標準偏差 8.3 ms(周期格子ではない)",
                 color=INK, fontsize=9.5, loc="left")
 
     b = ax[1, 1]

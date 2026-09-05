@@ -51,7 +51,26 @@ L ≈ 65 − phi + ε、2 ブロック必要なら L ≈ 130 − phi + ε とい
 
 出力
 ----
-`data/probe_latency_<tag>.csv`(1 注文 1 行)。列は指示された 24 項目。
+`data/probe_latency_<tag>.csv`(1 注文 1 行)。生の 24 項目に加えて、
+取り違えを防ぐため**派生量もその場で確定させて**保存する:
+
+    L_decision_ms, L_ack_ms, L_visible_ms, L_effective_ms,
+    block_phase_ms, next_block_included, blocks_waited,
+    blocks_waited_obs, gate_survived_at_visible
+
+`blocks_waited` は **L_visible ÷ 局所推定した 1 ブロック間隔**の四捨五入である。
+ブロックは剛体的な周期格子ではなく、間隔が中央 67.30 ms・標準偏差 8.29 ms
+(p10 60.5 / p90 81.2)で揺らぐことを実データで確認した(固定格子で位相を
+復元しようとすると、格子からのずれが中央 15 ms 出て使いものにならない)。
+そのため `blocks_waited_obs`(実際に板に現れたブロック数・下限)と
+`block_delta_ms`(そのとき使った間隔)も並べて残し、後から突き合わせられるようにした。
+`block_phase_ms` は**直前に観測できた**ブロックからの経過なので、
+そのブロックが静かで見えていなければ過大評価になる。
+
+`ev_decision` / `ev_visible` は `entrygate_live_model_*.json`(公開フィードだけで
+作れる変数に絞った門)で計算する。完全版の門は L4 の注文イベントを要するので
+実時間では作れない。live 版の標本外成績は完全版とほぼ同じ
+(−0.063 ± 0.113 対 −0.049 ± 0.093 bp)。
 """
 from __future__ import annotations
 
@@ -63,14 +82,77 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
-FIELDS = ["probe_id", "decision_ns", "send_ns", "ack_ns",
-          "first_private_seen_ns", "first_public_book_seen_ns",
-          "previous_block_ns", "next_block_ns", "side", "price", "size",
-          "bbo_at_decision", "bbo_at_visible", "obi_at_decision",
-          "obi_at_visible", "ofi_at_decision", "ofi_at_visible",
-          "pred_ev_at_decision", "pred_ev_at_visible",
-          "filled_before_cancel", "cancel_send_ns", "cancel_effective_ns",
-          "regime", "note"]
+# 生の時刻(すべて同じ monotonic clock: time.perf_counter_ns)
+RAW = ["probe_id", "decision_ns", "send_ns", "ack_ns",
+       "first_private_seen_ns", "first_public_book_seen_ns",
+       "previous_block_ns", "next_block_ns", "side", "price", "size",
+       "bbo_at_decision", "bbo_at_visible", "obi_at_decision",
+       "obi_at_visible", "ofi_at_decision", "ofi_at_visible",
+       "ev_decision", "ev_visible",
+       "filled_before_cancel", "cancel_send_ns", "cancel_effective_ns",
+       "regime", "note"]
+# ★ 後から計算し直せるが、取り違えを防ぐため 1 行のうちに確定させて保存する
+DERIVED = ["L_decision_ms", "L_ack_ms", "L_visible_ms", "L_effective_ms",
+           "block_phase_ms", "next_block_included", "blocks_waited",
+           "blocks_waited_obs", "block_delta_ms", "gate_survived_at_visible"]
+FIELDS = RAW + DERIVED
+# 旧称との対応: pred_ev_at_decision = ev_decision、pred_ev_at_visible = ev_visible
+# (同じ数を 2 列に持たない)
+
+
+class BlockRate:
+    """ブロックの間隔を局所的に推定する。
+
+    ★ 最初は「ブロックは剛体的な周期格子」と仮定して位相を復元しようとしたが、
+      実データで検証すると**格子からのずれが中央 15 ms**あり、間隔そのものが
+      中央 67.30 ms・標準偏差 8.29 ms(p10 60.5 / p90 81.2)と揺らいでいた。
+      整数倍の関係は保たれる(実測/理論の中央が 1.001 / 1.978 / 2.990)ものの、
+      固定格子で位相を出すことはできない。そこで**観測できたブロック時刻を
+      そのまま使い、間隔だけ局所中央値で推定する**方式にした。
+
+    公開板に現れるのは「板が変化したブロック」だけである。静かなブロックは
+    見えないので、観測数で数えた待ちブロック数は下限にしかならない。
+    自分の注文は板を変化させるので、**載ったブロックは必ず観測できる**。
+    """
+
+    def __init__(self, seed_ms: float = 67.30, keep: int = 4000):
+        self.seed = seed_ms * 1e6
+        self.keep = keep
+        self.t: list[int] = []
+
+    def feed(self, t: int) -> None:
+        if self.t and t <= self.t[-1]:
+            return                       # 同じブロック内の複数更新は 1 つに畳む
+        self.t.append(int(t))
+        if len(self.t) > self.keep:
+            self.t = self.t[-self.keep:]
+
+    def delta(self) -> float:
+        """1 ブロックの間隔(ns)。近傍の山だけから中央値を取る。"""
+        if len(self.t) < 30:
+            return self.seed
+        g = [b - a for a, b in zip(self.t[:-1], self.t[1:])]
+        near = sorted(x for x in g if 0.6 * self.seed < x < 1.4 * self.seed)
+        return float(near[len(near) // 2]) if len(near) >= 15 else self.seed
+
+    def prev(self, t: int) -> int:
+        """t 以前で最後に観測できたブロック時刻(静かなブロックは見えない)。"""
+        p = 0
+        for x in self.t:
+            if x <= t:
+                p = x
+            else:
+                break
+        return p
+
+    def blocks_between(self, a: int, b: int) -> int:
+        """a から b までに跨いだブロック数の推定(静かなブロックを含む)。"""
+        d = self.delta()
+        return max(0, int(round((b - a) / d)))
+
+    def blocks_observed(self, a: int, b: int) -> int:
+        """そのうち実際に板に現れたブロックの数(下限)。"""
+        return sum(1 for x in self.t if a < x <= b)
 
 
 @dataclass
@@ -92,8 +174,8 @@ class Probe:
     obi_at_visible: float = 0.0
     ofi_at_decision: float = 0.0
     ofi_at_visible: float = 0.0
-    pred_ev_at_decision: float = 0.0
-    pred_ev_at_visible: float = 0.0
+    ev_decision: float = float("nan")
+    ev_visible: float = float("nan")
     filled_before_cancel: int = 0
     cancel_send_ns: int = 0
     cancel_effective_ns: int = 0
@@ -145,7 +227,7 @@ class DryRun(Exchange):
 
 
 def block_bounds(book_times, t):
-    """t の直前・直後のブロック時刻。公開板の受信時刻の列から取る。"""
+    """t の直前・直後の、実際に観測できたブロック時刻。"""
     prev = nxt = 0
     for b in book_times:
         if b <= t:
@@ -154,6 +236,34 @@ def block_bounds(book_times, t):
             nxt = b
             break
     return prev, nxt
+
+
+def derive(p: "Probe", clock: "BlockRate") -> dict:
+    """1 行ぶんの派生量を確定させる。時刻が取れていない項目は空にする。"""
+    ms = 1e6
+    d = {k: "" for k in DERIVED}
+    if p.send_ns and p.decision_ns:
+        d["L_decision_ms"] = (p.send_ns - p.decision_ns) / ms
+    if p.ack_ns and p.send_ns:
+        d["L_ack_ms"] = (p.ack_ns - p.send_ns) / ms
+    t3 = p.first_public_book_seen_ns
+    if t3 and p.send_ns:
+        d["L_visible_ms"] = (t3 - p.send_ns) / ms
+    if t3 and p.decision_ns:
+        d["L_effective_ms"] = (t3 - p.decision_ns) / ms      # ★ 本命
+    if p.send_ns and p.previous_block_ns:
+        # 直前に**観測できた**ブロックからの経過。そのブロックが静かで
+        # 見えていなければ過大評価になるので、その旨を note に残すこと
+        d["block_phase_ms"] = (p.send_ns - p.previous_block_ns) / ms
+    if t3 and p.send_ns:
+        nb = clock.blocks_between(p.send_ns, t3)
+        d["blocks_waited"] = nb
+        d["next_block_included"] = int(nb <= 1)
+        d["blocks_waited_obs"] = clock.blocks_observed(p.send_ns, t3)
+        d["block_delta_ms"] = clock.delta() / ms
+    if p.ev_visible == p.ev_visible:
+        d["gate_survived_at_visible"] = int(p.ev_visible > 0)
+    return d
 
 
 def main() -> None:
@@ -189,6 +299,7 @@ def main() -> None:
     tag = a.coin.replace(":", "_")
     out = DATA / f"probe_latency_{tag}.csv"
     book_times: list[int] = []
+    clock = BlockRate()
     rows = []
     print(f"dry-run: {a.n} 件ぶんの時刻計測だけ回す(注文は 1 件も出さない)")
     for i in range(a.n):
@@ -200,9 +311,13 @@ def main() -> None:
         p.send_ns = t1
         p.ack_ns = ex.place(1, 0.0, a.size, f"probe-{i}")
         book_times.append(b0["recv_ns"])
+        clock.feed(b0["recv_ns"])
         p.previous_block_ns, p.next_block_ns = block_bounds(book_times, t1)
+        p.previous_block_ns = clock.prev(t1) or p.previous_block_ns
         p.note = "dry-run: 注文なし。t2/t3 は取得していない"
-        rows.append(asdict(p))
+        row = asdict(p)
+        row.update(derive(p, clock))
+        rows.append(row)
         time.sleep(min(a.gap, 0.01))                      # dry では詰めて回す
     with open(out, "w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=FIELDS)
