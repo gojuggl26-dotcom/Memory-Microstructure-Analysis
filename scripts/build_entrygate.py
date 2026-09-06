@@ -77,16 +77,42 @@ def impact_feats(tag, dt, ts, sd):
     return np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
 
 
-EXTRA = ""          # "impact" で候補 2 の変数を足す
+I100_NAMES = ["A100_q5"]
+
+
+def impact100_feats(tag, dt, ts, sd):
+    """**100 ms 格子**の A を、発注時刻・側に合わせて返す(候補 2 の新鮮な信号)。
+
+    5 秒格子だと発注時点での信号の古さが中央 2.49 秒になり、実測した半減期
+    (約 250 ms)から見て強度が 3% しか残らない。100 ms 格子なら古さは中央
+    50 ms になる。符号の規約は `impact_feats` と同じ(自分の側に揃えた −side·A)。
+    時間契約: ラダーは格子セルの開始時刻の状態なので、後ろ向き asof で先読みは無い。
+    """
+    f = DATA / f"impact100_{tag}.parquet"
+    if not f.exists():
+        return np.zeros((ts.size, 1))
+    I = (pl.scan_parquet(f).filter(pl.col("dt") == dt)
+         .select("ts", "imp_b_q5", "imp_a_q5").collect().sort("ts"))
+    if not I.height:
+        return np.zeros((ts.size, 1))
+    it = I["ts"].cast(pl.Int64).to_numpy()
+    j = np.clip(np.searchsorted(it, ts, side="right") - 1, 0, it.size - 1)
+    A = (np.nan_to_num(I["imp_b_q5"].to_numpy().astype(np.float64))[j]
+         - np.nan_to_num(I["imp_a_q5"].to_numpy().astype(np.float64))[j])
+    return np.nan_to_num((-sd * A)[:, None], nan=0.0, posinf=0.0, neginf=0.0)
+
+
+EXTRA = ""          # "impact" で候補 2 の変数を足す / "impact100" で新鮮な A
 
 
 def feats(f, G):
     """その日の候補テーブルから、発注時刻・側に対応する行の説明変数を取る。"""
     T = pl.read_parquet(f, columns=COLS)
     X = design(T)
-    if EXTRA == "impact":
+    if EXTRA in ("impact", "impact100"):
         tag = f.parent.name
-        X = np.column_stack([X, impact_feats(
+        fn = impact_feats if EXTRA == "impact" else impact100_feats
+        X = np.column_stack([X, fn(
             tag, f.stem.split("=")[1], T["ts"].cast(pl.Int64).to_numpy(),
             T["side"].to_numpy().astype(np.float64))])
     ts = T["ts"].cast(pl.Int64).to_numpy()
@@ -157,8 +183,9 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
     ap.add_argument("--sfx", default="_q1")
-    ap.add_argument("--extra", choices=["", "impact"], default="",
-                    help="impact で候補 2(sweep 非対称・補充)の変数を足す")
+    ap.add_argument("--extra", choices=["", "impact", "impact100"], default="",
+                    help="impact で候補 2 の 8 変数(5 秒格子)、"
+                         "impact100 で新鮮な A のみ(100 ms 格子)を足す")
     a = ap.parse_args()
     global EXTRA
     EXTRA = a.extra

@@ -32,6 +32,29 @@
 気配を動かすため)。有効期限の判定は `tau <= exp` にする。`<` にすると
 1 日 3,742 件の約定を取りこぼし、約定率が 6.61% → 1.75% に落ちる。
 
+条件つきの出し直し(--requote)
+------------------------------
+`follow` は自分側の気配が動くたびに無条件で取り消して並び直す。これは
+**待ち行列の順番を毎回捨てている**。順番に +1.15 bp の価値があると分かった
+以上、捨てるかどうかは条件で決めるべきである。
+
+    always : 既定。毎回取り消して最良気配に出し直す(従来の挙動)
+    cond   : 自分側の最良が **mid 側へ動いた**ときだけ維持する。
+             このとき自分の指値は最良より不利な位置に隠れ、最良は他人が作る。
+             幽霊注文(自分の注文が板に影響しない)の仮定が壊れない場面だけを選ぶ
+    keep   : 向きを問わず維持する。mid から遠ざかる向きでも維持するので、
+             **自分が唯一の最良気配になってしまう**。幽霊注文の仮定が効くため
+             上界としてのみ読むこと
+
+★ 維持する場合、**約定しない注文も板を占有させる**。占有させないと
+「その注文が約定するかどうか」を見てから持ち続けるか捨てるかを決めることに
+なり、各時点で判定できない規則になる。実際、占有させずに試した最初の実装は
++11.2 bp/組(半スプレッドの 27 倍)という明らかに過大な値を出した。
+
+`--keepmax` で維持の上限秒数を入れる(既定 60 秒)。維持中に在庫が動いて
+上限を破る側になった注文は取り消す(always では従来どおり判定しない。
+公表済みの結果では |q| の最大が 1 で、上限を破る事象は起きていない)。
+
 在庫の評価
 ----------
 相殺できなかった在庫を捨てないため、
@@ -97,7 +120,8 @@ def day_arrays(dt, bpath, fpath):
 
 
 def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
-             gate=None, exitk=0, lad=None, improve=0, front=False):
+             gate=None, exitk=0, lad=None, improve=0, front=False,
+             requote="always", keepmax_ns=0, keepdt=0):
     (ts, pb, pa, qb, qa, mid, d0, btg, atg,
      ft, fpx, fsz, fbuy) = day_arrays(dt, bpath, fpath)
     nb = ts.size
@@ -152,6 +176,10 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
                              ft, fpx, fsz, msk, d0)
             good = (tau >= 0) & (tau <= exp)
             P[sgn][f"tau{k}"] = np.where(good, tau, np.iinfo(np.int64).max)
+            # 維持する場合は「次に気配が動くまで」で打ち切らない。値段は
+            # 動かないので fill_times の物理はそのまま使える(自分の値段以下の
+            # 約定だけが待ち行列を進める)。
+            P[sgn][f"raw{k}"] = np.where(tau >= 0, tau, np.iinfo(np.int64).max)
             P[sgn][f"px{k}"] = pk
     for sgn in (1, -1):
         P[sgn]["tau"] = P[sgn]["tau0"]
@@ -180,6 +208,7 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
     lot_row = []                      # 建玉ごとに、それを建てた発注の行番号
     n_fill = {1: 0, -1: 0}
     n_post = {1: 0, -1: 0}
+    n_keep = {1: 0, -1: 0}       # 気配が動いたが取り消さなかった回数
     qs = []
 
     def do_fill(s, tau, price, row=-1):
@@ -248,8 +277,26 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
             po_f[live[s][2]] = 1
             do_fill(s, tau, live[s][1], live[s][2])
             live[s] = None
+            if requote != "always":
+                # 在庫が動いた。上限を破る側の注文は取り消す。
+                for s2 in (1, -1):
+                    if live[s2] is not None and abs(q + s2) > qmax:
+                        live[s2] = None
         s = int(es[k])
         idx = int(ek[k])
+        cur = live[s]
+        if cur is not None and requote != "always":
+            # 自分側の最良が mid 側へ動いたか(= 自分の指値が最良より不利に
+            # なったか)。買いなら最良買気配が上がった場合。
+            gap = (float(P[s]["px0"][idx]) - cur[1]) * s
+            tick = 0.1 if cur[1] >= 1000.0 else 0.01
+            toward = gap > 1e-12
+            # 最良から離れすぎた注文は維持しない(η の代わりの 1 つの閾値)
+            near = (not keepdt) or (gap <= keepdt * tick + 1e-12)
+            fresh = ((not keepmax_ns) or (T - cur[3] <= keepmax_ns)) and near
+            if fresh and (requote == "keep" or toward):
+                n_keep[s] += 1
+                continue                  # 維持する(取り消さない)
         live[s] = None                    # 気配が動いたので出し直し(取り消し)
         allow = abs(q + s) <= qmax        # 在庫が増える側は上限で止める
         if allow and gate is not None and abs(q + s) > abs(q):
@@ -270,11 +317,21 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
                 kk = -improve
             else:
                 kk = 0
-            tau = int(P[s][f"tau{kk}"][idx])
-            live[s] = ((tau, float(P[s][f"px{kk}"][idx]), row) if tau != INF
-                       else None)
+            if requote == "always":
+                tau = int(P[s][f"tau{kk}"][idx])
+                live[s] = ((tau, float(P[s][f"px{kk}"][idx]), row)
+                           if tau != INF else None)
+            else:
+                # ★ 約定しない注文も live に載せる。載せないと「60 秒以内に
+                #   約定する注文だけを持ち続ける」ことになり、**将来を知って
+                #   いないと判定できない規則**になる(自己精査 D16)。
+                #   置いた注文はその側を占有し、次の判定まで動かない。
+                tau = int(P[s][f"raw{kk}"][idx])
+                if keepmax_ns and tau != INF and tau - int(et[k]) > keepmax_ns:
+                    tau = INF
+                live[s] = (tau, float(P[s][f"px{kk}"][idx]), row, int(et[k]))
     for s in (1, -1):                     # 日の終わりまでに残った約定
-        if live[s] is not None and live[s][0] < INF:
+        if live[s] is not None and live[s][0] < INF:  # INF = 約定しない注文
             po_f[live[s][2]] = 1
             do_fill(s, live[s][0], live[s][1], live[s][2])
 
@@ -296,7 +353,8 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
     pd_ = np.array(pair_dt)
     pp_ = np.array(pair_pnl)
     qa_ = np.array(qs) if qs else np.zeros(1)
-    out = {"dt": dt, "n_post_bid": n_post[1], "n_post_ask": n_post[-1],
+    out = {"dt": dt, "n_keep": n_keep[1] + n_keep[-1],
+           "n_post_bid": n_post[1], "n_post_ask": n_post[-1],
            "n_fill_bid": n_fill[1], "n_fill_ask": n_fill[-1],
            "n_fill": n_fill[1] + n_fill[-1], "n_pair": int(pd_.size),
            "realized_bp": realized, "forced_n": forced_n,
@@ -336,6 +394,15 @@ def main() -> None:
                          "(スプレッドが 2 倍以上あるときだけ改善する)")
     ap.add_argument("--exitk", type=int, default=0,
                     help="在庫を減らす注文を最良から何ティック外へ置くか")
+    ap.add_argument("--requote", choices=["always", "cond", "keep"],
+                    default="always",
+                    help="自分側の気配が動いたときの扱い。always=毎回出し直す"
+                         "(従来)、cond=mid 側へ動いたときだけ維持、"
+                         "keep=向きを問わず維持(幽霊注文の仮定が効くので上界)")
+    ap.add_argument("--keepmax", type=float, default=60.0,
+                    help="維持の上限(秒)。0 で無制限")
+    ap.add_argument("--keepdt", type=int, default=0,
+                    help="最良から何ティックまで離れても維持するか。0 で無制限")
     ap.add_argument("--posts", action="store_true",
                     help="発注 1 件ごとの記録を書く(項目 5 の学習用)")
     ap.add_argument("--gate", default="",
@@ -368,6 +435,13 @@ def main() -> None:
     lat_ns = int(round(a.lat * 1e9))
     hold_ns = int(round(a.hold * 1e9)) if a.mode == "fixed" else 0
     tmax_ns = int(round(a.tmax * 1e9))
+    keepmax_ns = int(round(a.keepmax * 1e9))
+    if a.requote != "always":
+        sfx += f"_rq{a.requote}"
+        if a.keepmax:
+            sfx += f"km{a.keepmax:g}"
+        if a.keepdt:
+            sfx += f"kd{a.keepdt}"
     if a.tmax:
         sfx += f"_tmax{a.tmax:g}"
     print(f"{len(files)} 日 / qmax {a.qmax} / 遅延 {1000*a.lat:.0f} ms / "
@@ -420,7 +494,8 @@ def main() -> None:
             del keep, bb
         r, pd_, pp_, qa_, lr, pr = simulate(dt, bpath, fpath, lat_ns, a.qmax,
                                             hold_ns, tmax_ns, gate, a.exitk,
-                                            lad, a.improve, a.front)
+                                            lad, a.improve, a.front,
+                                            a.requote, keepmax_ns, a.keepdt)
         if a.posts:
             posts.append(pl.DataFrame({"dt": [dt] * pr["t"].size, **pr}))
         rows.append(r)

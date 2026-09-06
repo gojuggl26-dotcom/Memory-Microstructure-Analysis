@@ -29,7 +29,8 @@ import numpy as np
 import polars as pl
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_entrygate import impact_feats  # noqa: E402
+from build_entrygate import (impact100_feats,  # noqa: E402
+                             impact_feats)
 from build_obi_levels import clean_bbo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,16 +40,31 @@ H = 5.0        # 元の信号と同じ 5 秒
 NQ = 5
 
 
+def sig_age(tag, dt, ts, src):
+    """発注時点で使う信号が、何秒前の格子点のものか。"""
+    f = DATA / (f"impact_{tag}.parquet" if src == "impact"
+                else f"impact100_{tag}.parquet")
+    I = (pl.scan_parquet(f).filter(pl.col("dt") == dt).select("ts")
+         .collect().sort("ts"))
+    if not I.height:
+        return np.full(ts.size, np.nan)
+    it = I["ts"].cast(pl.Int64).to_numpy()
+    j = np.clip(np.searchsorted(it, ts, side="right") - 1, 0, it.size - 1)
+    return (ts - it[j]) / 1e9
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
     ap.add_argument("--sfx", default="_q1_imp1")
+    ap.add_argument("--src", choices=["impact", "impact100"], default="impact",
+                    help="信号の格子。impact=5 秒(既報)、impact100=100 ms(新鮮)")
     a = ap.parse_args()
     tag = a.coin.replace(":", "_")
     te = [f.stem.split("=")[1] for f in sorted((BULK / tag).glob("dt=*.parquet"))[59:]]
     P = pl.read_parquet(DATA / f"inv_posts_{tag}{a.sfx}.parquet")
     L = pl.read_parquet(DATA / f"inv_lots_{tag}{a.sfx}.parquet")
-    rows = []
+    rows, age = [], []
     for dt in te:
         G = P.filter(pl.col("dt") == dt)
         if not G.height:
@@ -59,7 +75,9 @@ def main() -> None:
         mid = 0.5 * (d["best_bid"].to_numpy() + d["best_ask"].to_numpy())
         t = G["t"].to_numpy()
         s = G["side"].to_numpy().astype(np.float64)
-        A = impact_feats(tag, dt, t, s)[:, 1]        # −s·A(自分の側に揃えた)
+        A = (impact_feats(tag, dt, t, s)[:, 1] if a.src == "impact"
+             else impact100_feats(tag, dt, t, s)[:, 0])   # −s·A(自分の側)
+        age.append(sig_age(tag, dt, t, a.src))
         j0 = np.clip(np.searchsorted(bt, t, "right") - 1, 0, bt.size - 1)
         jh = np.clip(np.searchsorted(bt, t + int(H * 1e9), "right") - 1,
                      0, bt.size - 1)
@@ -73,9 +91,10 @@ def main() -> None:
                      0, bt.size - 1)
         Uf = sin * np.log(mid[jf] / mid[ji]) * 1e4
         # 建玉を発注記録へ戻す(t_in は約定時刻なので、発注時刻ではない)
+        Af_ = (impact_feats(tag, dt, tin, sin)[:, 1] if a.src == "impact"
+               else impact100_feats(tag, dt, tin, sin)[:, 0])
         rows.append((A, U, G["filled"].to_numpy(), G["rt_pnl"].to_numpy(),
-                     impact_feats(tag, dt, tin, sin)[:, 1], Uf,
-                     Ld["pnl"].to_numpy().astype(np.float64)))
+                     Af_, Uf, Ld["pnl"].to_numpy().astype(np.float64)))
     A = np.concatenate([r[0] for r in rows])
     U = np.concatenate([r[1] for r in rows])
     fl = np.concatenate([r[2] for r in rows])
@@ -109,7 +128,13 @@ def main() -> None:
     line("4 約定時刻からの markout(5s)", v4)
     v5 = [float(pnl[kf == i].mean()) for i in range(NQ)]
     line("5 往復損益 E[Π|Fill]", v5)
-    pl.DataFrame(out).write_csv(DATA / f"cand2_stages_{tag}.csv")
+    tail = "" if a.src == "impact" else "_100"
+    pl.DataFrame(out).write_csv(DATA / f"cand2_stages_{tag}{tail}.csv")
+    ag = np.concatenate(age)
+    ag = ag[np.isfinite(ag)]
+    print()
+    print(f"信号の古さ({a.src}): 中央 {np.median(ag):.3f}s / "
+          f"p90 {np.quantile(ag, 0.9):.3f}s / 平均 {ag.mean():.3f}s")
     print(f"\n相関(同じ向きの信号 −s·A で):")
     print(f"  全候補 U(5s)          {np.corrcoef(A, U)[0,1]:+.4f}  n={A.size:,}")
     print(f"  約定候補 U(5s)        {np.corrcoef(A[m], U[m])[0,1]:+.4f}  n={int(m.sum()):,}")

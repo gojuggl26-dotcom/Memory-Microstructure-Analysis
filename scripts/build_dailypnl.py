@@ -15,6 +15,7 @@ from pathlib import Path
 
 import numpy as np
 import polars as pl
+from scipy.stats import norm
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_obi_levels import clean_bbo  # noqa: E402
@@ -45,6 +46,19 @@ PAIRS = [("置き方だけ変更(門 G0)", "q1_imp1_gatedby_q1", "q1_gated"),
           "q1_lat65_imp1_gated")]
 
 
+# --- 条件つきの出し直し(候補 1 手順②)---
+# 格子は 13 通り。全件を報告し、Bonferroni の閾値も併記する。
+B_ALW = "q1_imp1_gatedby_q1_imp1"
+RQ = ([("★ always(従来・毎回出し直す)", B_ALW)]
+      + [(f"cond km={km:g}s kd={kd if kd else '∞'}",
+          f"q1_te_rqcondkm{km:g}kd{kd}_imp1_gatedby_q1_imp1"
+          if kd else f"q1_te_rqcondkm{km:g}_imp1_gatedby_q1_imp1")
+         for km in (1, 5, 60) for kd in (1, 2, 5, 0)]
+      + [("keep km=60s(上界・幽霊注文)",
+          "q1_te_rqkeepkm60_imp1_gatedby_q1_imp1")])
+RQ_PAIRS = [(f"always − ({lab})", B_ALW, cfg) for lab, cfg in RQ[1:]]
+
+
 def nw(v):
     n = v.size
     e = v - v.mean()
@@ -69,7 +83,10 @@ def boot(v, seed=7):
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
+    ap.add_argument("--set", choices=["main", "requote"], default="main")
     a = ap.parse_args()
+    cfgs, pairs, out = ((CFG, PAIRS, "") if a.set == "main"
+                        else (RQ, RQ_PAIRS, "rq_"))
     tag = a.coin.replace(":", "_")
     te = [f.stem.split("=")[1] for f in sorted((BULK / tag).glob("dt=*.parquet"))[59:]]
 
@@ -82,7 +99,7 @@ def main() -> None:
                 float(D["n_pair"].sum()) / D.height)
 
     rows, S = [], {}
-    for lab, cfg in CFG:
+    for lab, cfg in cfgs:
         r = ser(cfg)
         if r is None:
             continue
@@ -92,7 +109,7 @@ def main() -> None:
         rows.append({"label": lab, "cfg": cfg, "pairs_day": r[2], "daily": m,
                      "se": se, "t": m / se, "lo": lo, "hi": hi,
                      "pos_days": int((r[1] > 0).sum()), "days": r[1].size})
-    pl.DataFrame(rows).write_csv(DATA / f"dailypnl_{tag}.csv")
+    pl.DataFrame(rows).write_csv(DATA / f"dailypnl_{out}{tag}.csv")
     print("★ 日次総額 bp(標本外 39 日・1 建玉 = 1 単位)")
     for r in rows:
         print(f"  {r['label']:26s} 組/日 {r['pairs_day']:>8,.0f}  "
@@ -101,7 +118,7 @@ def main() -> None:
 
     pr = []
     print("\n★ 同じ日で対にした差")
-    for lab, x, y in PAIRS:
+    for lab, x, y in pairs:
         if x not in S or y not in S:
             continue
         ks = sorted(set(S[x]) & set(S[y]))
@@ -112,8 +129,17 @@ def main() -> None:
                    "hi": hi, "pos": int((d > 0).sum()), "n": d.size})
         print(f"  {lab:30s} {m:>+9.2f} ± {se:>6.2f} (t={m/se:+5.2f})  "
               f"95% [{lo:+8.2f}, {hi:+8.2f}]  正 {int((d>0).sum())}/{d.size}")
-    pl.DataFrame(pr).write_csv(DATA / f"dailypnl_pairs_{tag}.csv")
+    pl.DataFrame(pr).write_csv(DATA / f"dailypnl_pairs_{out}{tag}.csv")
 
+    if a.set != "main":
+        # 格子探索なので Bonferroni の閾値を併記する(自己精査 C10)
+        k = len(pairs)
+        z = float(norm.ppf(0.025 / k))
+        print()
+        print(f"格子 {k} 通り。Bonferroni(両側 5%)の |t| 閾値 = "
+              f"{abs(z):.3f}")
+        print(f"書き出し {DATA}/dailypnl_{out}{tag}.csv ほか")
+        return
     # ---- ドル換算 ----
     mids, deps = [], []
     for dt in te[::5]:
