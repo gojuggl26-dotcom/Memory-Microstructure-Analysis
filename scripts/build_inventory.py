@@ -96,7 +96,7 @@ def day_arrays(dt, bpath, fpath):
 
 
 def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
-             gate=None, exitk=0, lad=None):
+             gate=None, exitk=0, lad=None, improve=0, front=False):
     (ts, pb, pa, qb, qa, mid, d0, btg, atg,
      ft, fpx, fsz, fbuy) = day_arrays(dt, bpath, fpath)
     nb = ts.size
@@ -111,11 +111,30 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
         P[sgn] = {"i": i, "t": ts[i], "exp": exp}
         # k=0 は最良気配(新規)、k=exitk は在庫を減らす注文の置き場所。
         # 在庫を減らす側は mid から**遠ざける**ので、売りなら高く、買いなら安く。
-        for k in (0, exitk) if exitk else (0,):
+        ks = [0]
+        if exitk:
+            ks.append(exitk)
+        if improve:
+            ks.append(-improve)                # 負の k = スプレッドの内側へ
+        for k in ks:
             tick = np.where(0.5 * (pb[i] + pa[i]) >= 1000.0, 0.1, 0.01)
             pk = px[i] - sgn * k * tick        # 買いは下へ、売りは上へ
+            # k<0 は価格改善(内側)。スプレッドが 2|k| ティック以上あるときだけ。
+            # 反対気配を跨がない post-only を保つ条件でもある。
+            if k < 0:
+                spt = (pa[i] - pb[i]) / tick
+                okk = spt >= 2 * (-k)
+                pk = np.where(okk, pk, px[i])  # 足りなければ最良気配のまま
             if k == 0:
-                q0 = qsz[i]
+                q0 = np.full(i.size, SZ_LOT) if front == "queue" else qsz[i]
+            elif k < 0:
+                # 内側の値段には誰も並んでいない(スプレッドの中は空)。
+                # ただし待ち行列 0 だと fill_times が値段を無視して埋まるので
+                # 1 ロットを下限にする。改善できなかった行は元の行列を使う。
+                q0 = np.where(okk, SZ_LOT, qsz[i])
+                if front == "price":
+                    # 値段だけ改善し、行列は元のまま(先頭に立つ利得を消す)
+                    q0 = qsz[i]
             else:
                 # その値段の待ち行列は再構成した板の第 k 階層の数量
                 g = np.clip((ts[i] - d0) // GRID_NS, 0, lad["gi"][-1])
@@ -242,8 +261,14 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
             row = len(po_t)
             po_t.append(int(et[k])); po_s.append(s); po_f.append(0)
             po_p.append(np.nan)
-            # 在庫を減らす発注なら exitk ティック外へ置く
-            kk = exitk if (exitk and abs(q + s) < abs(q)) else 0
+            # 在庫を減らす発注なら exitk ティック外へ、
+            # 在庫を増やす発注は improve ティック内へ(価格改善)
+            if exitk and abs(q + s) < abs(q):
+                kk = exitk
+            elif improve and abs(q + s) > abs(q):
+                kk = -improve
+            else:
+                kk = 0
             tau = int(P[s][f"tau{kk}"][idx])
             live[s] = ((tau, float(P[s][f"px{kk}"][idx]), row) if tau != INF
                        else None)
@@ -302,6 +327,12 @@ def main() -> None:
                     help="mode=fixed のときの値段固定の上限(秒)")
     ap.add_argument("--tmax", type=float, default=0.0,
                     help="保有の上限(秒)。超えたらテイカーで強制決済。0=無制限")
+    ap.add_argument("--front", choices=["", "price", "queue"], default="",
+                    help="価格改善の効果の分解。price=値段だけ改善(行列は元のまま)、"
+                         "queue=最良気配のまま行列の先頭に立つ")
+    ap.add_argument("--improve", type=int, default=0,
+                    help="在庫を増やす注文を最良より何ティック内側に置くか"
+                         "(スプレッドが 2 倍以上あるときだけ改善する)")
     ap.add_argument("--exitk", type=int, default=0,
                     help="在庫を減らす注文を最良から何ティック外へ置くか")
     ap.add_argument("--posts", action="store_true",
@@ -343,6 +374,10 @@ def main() -> None:
 
     if a.exitk:
         sfx += f"_k{a.exitk}"
+    if a.improve:
+        sfx += f"_imp{a.improve}"
+    if a.front:
+        sfx += f"_{a.front}"
     if a.gate:
         GA = pl.read_parquet(a.gate)
         gday = {k[0] if isinstance(k, tuple) else k: v
@@ -377,7 +412,7 @@ def main() -> None:
             del keep, bb
         r, pd_, pp_, qa_, lr, pr = simulate(dt, bpath, fpath, lat_ns, a.qmax,
                                             hold_ns, tmax_ns, gate, a.exitk,
-                                            lad)
+                                            lad, a.improve, a.front)
         if a.posts:
             posts.append(pl.DataFrame({"dt": [dt] * pr["t"].size, **pr}))
         rows.append(r)
