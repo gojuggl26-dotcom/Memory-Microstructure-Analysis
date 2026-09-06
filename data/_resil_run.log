@@ -1,0 +1,23 @@
+[analyze] 02:22:42 start
+[読み] ショチE�� 8,180,921 件 / 98 日
+shape: (4, 3)
+┌──────┬──────────┬─────────━E
+━Eside ━Eday_type ━Elen     ━E
+━E---  ━E---      ━E---     ━E
+━Estr  ━Estr      ━Eu32     ━E
+╞══════╪══════════╪═════════╡
+━E売めE━E立会日   ━E3675633 ━E
+━E売めE━E閉場日   ━E434948  ━E
+━E買ぁE━E立会日   ━E3657113 ━E
+━E買ぁE━E閉場日   ━E413227  ━E
+└──────┴──────────┴─────────━E
+[OLS] 2,880 衁E
+[遷移] 2,058 衁E
+[日次] 98 日  非対称の中央 -0.0039
+System.Management.Automation.RemoteException
+-> data/resil_ols_xyz_MU.csv / resil_trans_xyz_MU.csv / resil_daily_xyz_MU.csv
+[analyze] 02:30:21 end
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_MU_resilience_curve.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_MU_resilience_ols.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_MU_resilience_matrix.png
+[done] 02:30:36

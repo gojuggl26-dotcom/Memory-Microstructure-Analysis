@@ -1,0 +1,18 @@
+{
+ "train_days": 59,
+ "test_days": 39,
+ "h": 0.25,
+ "n_test": 35523622,
+ "coef_fill": {
+  "const": -4.178494267071661,
+  "log_spread_bp": 0.0853067292821351,
+  "log_spread_tick": -1.1065184221674558,
+  "log_bbo_age_s": -0.4514942978898818
+ },
+ "coef_pnl": {
+  "const": -1.0072694658803387,
+  "log_ratio_cancel_add": -0.5892153393776354,
+  "log_queue_ahead_qty": -0.27301591258144264,
+  "log_spread_bp": 0.6723834801255157
+ }
+}

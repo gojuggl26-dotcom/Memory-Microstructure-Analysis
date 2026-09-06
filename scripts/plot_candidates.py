@@ -88,7 +88,7 @@ def main() -> None:
     b.set_xticks([0, 1], ["5 秒先の価格\n(既報の物差し)",
                           "自分の往復損益\n(戦略の物差し)"], fontsize=8.5)
     style(b, "", "相関の絶対値")
-    b.set_title("★(c) 候補 2 の信号は約定条件を通ると 20 分の 1 になる",
+    b.set_title("(c) 候補 2 — 物差しが違う比較(訂正: 原因は約定条件でなく信号の古さ)",
                 color=INK, fontsize=9.5, loc="left")
 
     # (d) 候補 2 の五分位
@@ -111,7 +111,7 @@ def main() -> None:
                fontsize=7.5, color=INK2)
     b.set_xticks(x3, C3["bin"].to_list(), fontsize=7.5, rotation=20, ha="right")
     style(b, "発注した時点で自分の前にあった数量", "約定 10 秒後の逆選択 (bp)")
-    b.set_title("★(e) 候補 3 — 実参加者でも先頭は逆選択が 37% 少ない",
+    b.set_title("★(e) 候補 3 — 約定した注文だけの条件付き比較(自分の EV ではない)",
                 color=INK, fontsize=9.5, loc="left")
 
     # (f) 遅延に対する候補 1

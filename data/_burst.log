@@ -1,0 +1,29 @@
+﻿uv.exe : [譌･] 98
+発生場所 C:\Users\ii562\AppData\Local\Temp\claude\C--Users-ii562\7e72052f-7323-422e-a1e8-8e45bc2b708c\scratchpad\run_burst.
+ps1:4 文字:1
++ & uv run python scripts/build_burstiness.py --coin xyz:MU *>&1 | Out- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([譌･] 98:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  2026-05-13  (10/98 譌･)
+  2026-05-23  (20/98 譌･)
+  2026-06-02  (30/98 譌･)
+  2026-06-12  (40/98 譌･)
+  2026-06-22  (50/98 譌･)
+  2026-07-02  (60/98 譌･)
+  2026-07-12  (70/98 譌･)
+  2026-07-23  (80/98 譌･)
+  2026-08-02  (90/98 譌･)
+  2026-08-10  (98/98 譌･)
+
+[髮・ｨ・ 譌･ ﾃ・邉ｻ蛻・587 陦・/ 繧ｦ繧ｩ繝ｬ繝・ヨ 591 閠・
+   series      B  B_uniq  A_n_uniq  B_null  zero_share  rate_per_s  rate_uniq_per_s
+0     BBO  0.285   0.285     0.286    -0.0       0.000         4.2              4.2
+1     NEW  0.567   0.066     0.066     0.0       0.839        47.8              7.6
+2  REMOVE  0.571   0.054     0.054    -0.0       0.852        48.3              7.3
+3  UPDATE  0.640  -0.009    -0.009    -0.0       0.909        96.2              8.7
+4     ask  0.601   0.141     0.141     0.0       0.849        47.5              7.1
+5     bid  0.601   0.115     0.115    -0.0       0.850        48.7              7.1
+
+-> data/burst_daily_xyz_MU.csv / burst_wallet_xyz_MU.csv

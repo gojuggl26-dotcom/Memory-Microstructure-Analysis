@@ -1,0 +1,51 @@
+[fetch] 14:53:49 start
+[fetch] 未取征E96 日 / ローカル l1 99 日
+  10/96  展開征E2.89 GB
+  20/96  展開征E7.49 GB
+  30/96  展開征E13.68 GB
+  40/96  展開征E20.09 GB
+  50/96  展開征E26.16 GB
+  60/96  展開征E31.95 GB
+memory allocation of 563418608 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+[fetch] 15:18:42 end
+[retry 1] 15:46:55 l1u=74
+[fetch] 未取征E25 日 / ローカル l1 99 日
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\fetch_l1_user.py", line 87, in <module>
+    print(f"[fetch] -> {outdir}", file=sys.stderr)
+    ^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\fetch_l1_user.py", line 77, in main
+    return day, None, t.nbytes
+                            ^^
+  File "C:\Users\ii562\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 625, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\ii562\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 318, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\ii562\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 453, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ii562\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\_base.py", line 402, in __get_result
+    raise self._exception
+  File "C:\Users\ii562\AppData\Local\Programs\Python\Python313\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "C:\Users\ii562\Downloads\Memory\scripts\fetch_l1_user.py", line 65, in one
+    t = pq.ParquetFile(fs.open_input_file(f"{bucket}/{keys[day]}")).read(columns=COLS)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\pyarrow\parquet\core.py", line 642, in read
+    return self.reader.read_all(column_indices=column_indices,
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                use_threads=use_threads)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow/_parquet.pyx", line 1883, in pyarrow._parquet.ParquetReader.read_all
+  File "pyarrow/error.pxi", line 155, in pyarrow.lib.pyarrow_internal_check_status
+  File "pyarrow/error.pxi", line 92, in pyarrow.lib.check_status
+    raise convert_status(status)
+pyarrow.lib.ArrowMemoryError: realloc of size 2147483648 failed
+[retry 2] 16:02:31 l1u=81
+[fetch] 未取征E18 日 / ローカル l1 99 日
+  10/18  展開征E16.71 GB
+  18/18  展開征E30.96 GB
+[fetch] -> C:\Users\ii562\Downloads\Memory\data\l1u_xyz_MU
+[fetch] 16:29:01 done

@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_l4feat.py", line 972, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_l4feat.py", line 951, in main
+    F, nxt, mid_g, micro_g, meta = build_day(fp, bb, fdt, carry, None)
+                                   ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_l4feat.py", line 559, in build_day
+    Z, n_neg = ladder(ev, D, carry, bbi, bai, good, oidx, t0)
+               ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_l4feat.py", line 291, in ladder
+    M[:, :, k] += base[s, lo - pmin: hi - pmin + 1, k]
+ValueError: operands could not be broadcast together with shapes (500,4057) (2557,) (500,4057) 

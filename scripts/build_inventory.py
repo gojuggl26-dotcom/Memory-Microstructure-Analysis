@@ -387,9 +387,10 @@ def main() -> None:
         #   別の門で回すと前の結果を黙って上書きしていた。
         stem = pathlib.Path(a.gate).stem
         tail = stem.split(f"entrygate_{tag}", 1)[-1].lstrip("_")
-        have = set(sfx.strip("_").split("_"))
-        extra = "_".join(t for t in tail.split("_") if t not in have)
-        sfx += "_gated" + (f"_{extra}" if extra else "")
+        # ★ 門の識別子は**必ず全部**付ける。重複するトークンを省く実装にしたら、
+        #   別の門で回した結果が同じ名前になり、2 度も静かに上書きした。
+        #   冗長でも一意であることを優先する。
+        sfx += "_gatedby_" + tail
     rows, alld, allp, lots, posts = [], [], [], [], []
     carry = pl.DataFrame()
     hq = np.zeros(2 * QCAP + 1, np.int64)
