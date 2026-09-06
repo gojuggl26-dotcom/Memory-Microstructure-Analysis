@@ -36,11 +36,59 @@ from plot_latency import fit_logit  # noqa: E402
 # NEED には既に "side" が入っているので重複させない
 COLS = NEED + [c for c in ("ts", "side") if c not in NEED]
 
+# ★ 候補 2 の説明変数(sweep インパクトの非対称と、観測済みの補充)。
+#   別セッションが作った 5 秒格子の impact 表から後ろ向き asof で貼る。
+#   現行 36 変数には Q=5 の非対称そのものが無く、resilience 列は過去 10 秒の
+#   追加量 ÷ 板厚なので、これらは新しい情報である。
+IMP_COLS = ["ts", "imp_b_q05", "imp_a_q05", "imp_b_q5", "imp_a_q5",
+            "imp_b_q50", "imp_a_q50", "frag_b", "frag_a",
+            "gfr_b_q5", "gfr_a_q5", "frag_imb"]
+IMP_NAMES = ["A_q05", "A_q5", "A_q50", "frag_own", "frag_opp",
+             "gfr_own", "gfr_opp", "frag_imb_inv"]
+
+
+def impact_feats(tag, dt, ts, sd):
+    """5 秒格子の impact 表から、発注時刻・側に合わせた説明変数を作る。
+
+    A = I_sell(Q) − I_buy(Q)。売りは bid を削るので I_sell = imp_b、
+    買いは ask を削るので I_buy = imp_a。つまり **A = imp_b − imp_a** である
+    (最初 imp_a − imp_b と取り違えた。5 秒先リターンとの相関が既報の −0.070 に対し
+    +0.089 と符号が逆に出たことで気づいた)。
+    仮説は「A が負なら買い、正なら売り」なので、自分の側に揃えた量は **−side·A**。
+    値は t 以前の最後の格子点から取る(後ろ向き asof)。
+    """
+    I = (pl.scan_parquet(DATA / f"impact_{tag}.parquet")
+         .filter(pl.col("dt") == dt).select(IMP_COLS).collect().sort("ts"))
+    if not I.height:
+        return np.zeros((ts.size, len(IMP_NAMES)))
+    it = I["ts"].cast(pl.Int64).to_numpy()
+    j = np.clip(np.searchsorted(it, ts, side="right") - 1, 0, it.size - 1)
+    g = {c: np.nan_to_num(I[c].to_numpy().astype(np.float64))[j]
+         for c in IMP_COLS if c != "ts"}
+    out = []
+    for q in ("q05", "q5", "q50"):
+        out.append(-sd * (g[f"imp_b_{q}"] - g[f"imp_a_{q}"]))
+    out.append(np.where(sd > 0, g["frag_b"], g["frag_a"]))
+    out.append(np.where(sd > 0, g["frag_a"], g["frag_b"]))
+    out.append(np.where(sd > 0, g["gfr_b_q5"], g["gfr_a_q5"]))
+    out.append(np.where(sd > 0, g["gfr_a_q5"], g["gfr_b_q5"]))
+    out.append(sd * g["frag_imb"])
+    X = np.column_stack(out)
+    return np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
+
+
+EXTRA = ""          # "impact" で候補 2 の変数を足す
+
 
 def feats(f, G):
     """その日の候補テーブルから、発注時刻・側に対応する行の説明変数を取る。"""
     T = pl.read_parquet(f, columns=COLS)
     X = design(T)
+    if EXTRA == "impact":
+        tag = f.parent.name
+        X = np.column_stack([X, impact_feats(
+            tag, f.stem.split("=")[1], T["ts"].cast(pl.Int64).to_numpy(),
+            T["side"].to_numpy().astype(np.float64))])
     ts = T["ts"].cast(pl.Int64).to_numpy()
     sd = T["side"].to_numpy()
     out_x, out_i = [], []
@@ -109,9 +157,16 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
     ap.add_argument("--sfx", default="_q1")
+    ap.add_argument("--extra", choices=["", "impact"], default="",
+                    help="impact で候補 2(sweep 非対称・補充)の変数を足す")
     a = ap.parse_args()
+    global EXTRA
+    EXTRA = a.extra
+    if a.extra:
+        a.sfx = a.sfx + "_" + a.extra
     tag = a.coin.replace(":", "_")
-    P = pl.read_parquet(DATA / f"inv_posts_{tag}{a.sfx}.parquet")
+    base_sfx = a.sfx[:-len("_" + a.extra)] if a.extra else a.sfx
+    P = pl.read_parquet(DATA / f"inv_posts_{tag}{base_sfx}.parquet")
     files = sorted((BULK / tag).glob("dt=*.parquet"))
     ntr = int(round(len(files) * TRAIN_FRAC))
     tr_days = {f.stem.split("=")[1] for f in files[:ntr]}
@@ -131,6 +186,10 @@ def main() -> None:
             continue
         T = pl.read_parquet(f, columns=COLS)
         X = design(T)
+        if EXTRA == "impact":
+            X = np.column_stack([X, impact_feats(
+                tag, dt, T["ts"].cast(pl.Int64).to_numpy(),
+                T["side"].to_numpy().astype(np.float64))])
         ts = T["ts"].cast(pl.Int64).to_numpy()
         sdv = T["side"].to_numpy()
         for sg in (1, -1):

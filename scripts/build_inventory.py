@@ -43,6 +43,7 @@
 from __future__ import annotations
 
 import argparse
+import pathlib
 import sys
 from pathlib import Path
 
@@ -382,7 +383,13 @@ def main() -> None:
         GA = pl.read_parquet(a.gate)
         gday = {k[0] if isinstance(k, tuple) else k: v
                 for k, v in GA.partition_by("dt", as_dict=True).items()}
-        sfx += "_gated"
+        # ★ 門ごとに出力名を分ける。以前は常に "_gated" だったので、
+        #   別の門で回すと前の結果を黙って上書きしていた。
+        stem = pathlib.Path(a.gate).stem
+        tail = stem.split(f"entrygate_{tag}", 1)[-1].lstrip("_")
+        have = set(sfx.strip("_").split("_"))
+        extra = "_".join(t for t in tail.split("_") if t not in have)
+        sfx += "_gated" + (f"_{extra}" if extra else "")
     rows, alld, allp, lots, posts = [], [], [], [], []
     carry = pl.DataFrame()
     hq = np.zeros(2 * QCAP + 1, np.int64)

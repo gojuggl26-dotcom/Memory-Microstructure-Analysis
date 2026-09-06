@@ -64,6 +64,7 @@
 | [新規発注の実効遅延はどこまで許されるか](mu_latency_frontier_report.md) | 実効遅延そのものは probe を出さないと測れないので、**「いくつなら成立するか」を先に確定**した。**損益分岐は ≈ 50 ms**(遅延ごとに在庫シミュレータを回した標本外 39 日)。**50 ms より内側では板が動かないので条件の 97.3% がそのまま残り**、**1 ブロック(67.3 ms)で 92.9%、100 ms で 76.5% まで崩れる**。壊れる順序は**まず OBI が消え、あとから mid が追いかける**。ブロック周期の実測は 67.30 ms(標準偏差 8.3・周期格子ではない)で、50 ms を切るには**次のブロックに入り、かつ送信遅延 30 ms 未満**が要る(2 ブロックかかると確率 0)。probe の器(`probe_latency.py`・既定で 1 件も送らない)を用意したが、**取引用の鍵が無く実行していない**。 |
 | [市場の状態で Entry EV を説明できるか(MU + INTC)](mu_market_conditions_report.md) | 仮説 **EV ≈ f((Spread/2−1tick)/σ, Depth/TradeSize, OBI の IC)** を **銘柄 2 × 日 99 × 時刻 = 3,845 窓**で検定。**3 つのうち支持されたのは 1 つで、2 つは符号が逆**。★ **Depth/TradeSize は厚いほど EV が低い**(最後尾に並ぶ以上、厚い板は保護ではなく待ち時間)。しかも効いているのは Depth だけで TradeSize は無関係。★ **OBI が microprice を当てる市場ほど EV は低い**(偏りが情報を持つ = 情報のあるフローに食われる)。x1 は向きは合うが**比の形が強すぎる** — スプレッドと σ を分けると R² が 0.083→0.180 に上がり、**σ の効きがスプレッドの 2.5 倍**。3 変数の R² は 0.129 で、**どの層でも EV は負**(最良 −0.894 bp)。 |
 | [1 ティック内側への価格改善(候補 1)](mu_price_improvement_report.md) | 既報 `mu_depth_report.md` は**外側**への配置しか見ていなかったので、**内側への価格改善**を埋めた。門なしで −1.692 → **−1.364 bp**、往復数 +21%。**改善 + 往復損益で学習した門で +0.0285 ± 0.0460 bp、1,064 組/日、+157.7 bp/日** — 門だけの版に対し**回数 8.2 倍・総額 13 倍**、誤差は半分。★ **利得の出所を分解すると、すべて行列の優先順位から**だった: 値段だけ譲る版は基準より**悪く**(−1.792)、最良気配のまま行列の先頭に立つ版が **−0.544(+1.15 bp)**。1 ティック(0.113 bp)払って先頭を買っても、+1.15 のうち手元に残るのは +0.33 だけ。遅延の分岐は 50 ms 台のままで、**95% 区間の下限は依然として負**([−0.062, +0.119])。 |
+| [三候補のまとめ(往復損益という同じ物差しに載せる)](mu_candidates_report.md) | 三候補は測る単位が違う(往復損益 / 5 秒先の価格 / 口座別逆選択)ので、可能な限り**往復損益へ寄せて**並べた。★ **候補 2 の信号は約定条件を通ると消える** — A と 5 秒先リターンの相関は −0.0888(既報 −0.070 を再現)なのに、**自分の往復損益との相関は +0.0045 と 20 分の 1**。門に足すと +0.0285 → +0.0043 と悪化する。★ **候補 3 は独立戦略ではなく候補 1 の傍証**になった — 実参加者の約定 414 万件で、**発注時に前が空だった約定(全体の 55.2%)は逆選択 +0.524 bp、それ以外は +0.826 bp(37% 少ない)**。三候補は結局**待ち行列の順番**という 1 点に収束する。 |
 | [指値注文の生存率・取消率・約定率(ハザード)](mu_hazard_report.md) | 板に置かれた指値 5.5 億本を「寿命」を持つ個体として扱い、生存率・原因別ハザード(取消/約定)・累積発生確率を出す。発注時に判る 6 条件(前に並んだ数量・自分の数量・最良からの距離・口座の累計本数・ボラティリティ・OFI)で層別。最終的に約定するのは 0.915% だけで、最も効くのは口座(81 倍)。OFI は最終約定率では効かないように見えて、0.1 秒後の約定ハザードでは 3.6 倍開く。**全 98 日**。 |
 | [束の間の注文(fleeting order)は板の何割を占めるか](mu_fleeting_report.md) | 板に置かれてすぐ約定せずに取り消される指値を、8 つの閾値・側・最良からの距離・注文数量・口座で数える。2 秒以内に消えるのは数量の 66.4%、最良気配のそばに限れば 90.0%。大口(上位 1%)だけは 36.1% と半分近く、200ms 以内に消えるのは 1.7% しかない。口座ごとの FLR のばらつきは二項の帰無対照の 47 倍で、**全体 71.8% と口座の中央値 22.5% が分母の違いだけで 3 倍ずれる**ことも示す。**全 98 日**。 |
 | [板の数量は何者の口座に集まっているか](mu_wallet_conc_report.md) | 1 秒ごとに板を復元し、数量を置いている口座のシェアから 14 の集中度指標を出す。板全体には 313 者が居るのに **最良気配を持つのは常に 3.17 者**で、そこにある数量は板の 0.14% しかない。touch の HHI 0.644 に対し deep は 0.081。再構成した板が壊れていても指標は整合して見えるため、**2 度にわたり板が単調に膨らんだ**経緯(繰越注文の口座欠落 / 終端が来ない注文)と、bbo との突合で気づいた顛末も記録。**全 98 日**。 |
@@ -404,6 +405,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 価格改善の分解、遅延フロンティア、損益分布、往復数、日次合計、改善の深さの 6 枚組](../../../charts/xyz_MU_improve.png)
 
+**三候補のまとめ**。解説: [三候補](mu_candidates_report.md)
+
+![xyz:MU 三候補のまとめ。共通の物差し、候補 1 の分解、候補 2 の信号の消え方、候補 2 の五分位、候補 3 の実参加者による照合、候補 1 の遅延フロンティアの 6 枚組](../../../charts/xyz_MU_candidates.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -633,6 +638,9 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [decay_xyz_MU.csv](../../../data/decay_xyz_MU.csv) | 決めてから載るまでのシグナル減衰 | `build_decay.py` |
 | [mktpanel.csv](../../../data/mktpanel.csv) | 銘柄×日×時刻の市場状態と EV(3,845 窓) | `build_mktpanel.py` |
 | [mktreg.csv](../../../data/mktreg.csv) | 市場状態の回帰(同時 / 1 期先) | `build_mktreg.py` |
+| [candidates_summary.csv](../../../data/candidates_summary.csv) | 三候補を往復損益で並べた表 | `build_candidates.py` |
+| [cand2_signal.csv](../../../data/cand2_signal.csv) | 候補 2 の信号を 2 つの物差しで | `build_candidates.py` |
+| [cand3_queue.csv](../../../data/cand3_queue.csv) | 実参加者の発注時の順番と逆選択 | `build_candidates.py` |
 | [lfrontier_block_xyz_MU.csv](../../../data/lfrontier_block_xyz_MU.csv) | ブロック算術(送信遅延 → P(L<50ms)) | `build_lfrontier.py` |
 | [gate_live_days_xyz_MU.csv](../../../data/gate_live_days_xyz_MU.csv) | 公開フィードだけで作れる門との比較 | `build_gate_live.py` |
 | [entrygate_live_model_xyz_MU_q1.json](../../../data/entrygate_live_model_xyz_MU_q1.json) | live 版の門の係数(probe が読む) | `build_gate_live.py` |
@@ -779,6 +787,9 @@ uv run python scripts/build_inventory.py --coin xyz:MU --qmax 1 --improve 1 --po
 uv run python scripts/build_entrygate.py --coin xyz:MU --sfx _q1_imp1
 uv run python scripts/build_inventory.py --coin xyz:MU --qmax 1 --improve 1 --gate data/entrygate_xyz_MU_q1_imp1.parquet
 uv run python scripts/plot_improve.py --coin xyz:MU
+uv run python scripts/build_entrygate.py --coin xyz:MU --sfx _q1_imp1 --extra impact
+uv run python scripts/build_candidates.py --coin xyz:MU
+uv run python scripts/plot_candidates.py --coin xyz:MU
 uv run python scripts/probe_latency.py --coin xyz:MU --n 20   # 送信しない
 ```
 
