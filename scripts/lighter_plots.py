@@ -85,7 +85,7 @@ def fig_mktpanel():
             "spr_med": float(np.nanmedian(spr)),
             "depth_usd": float(np.nanmedian((d["W10_b"].to_numpy()
                                              + d["W10_a"].to_numpy()) * mid)),
-            "bbo_s": float(d["n_bbo"].mean()),
+            "bbo_s": float(np.nanmean(d["n_bbo"].to_numpy())),
             "trades_day": float((d["tb_cnt"].sum() + d["ts_cnt"].sum())
                                 / max(days, 1e-9)),
             "cover": float(d.height / (days * 86400)),
@@ -181,17 +181,22 @@ def fig_rank(S, h):
     ax.set_title("③ 上位・下位のホライズン依存", fontsize=11, loc="left")
     ax.legend(fontsize=6.4, frameon=False, ncol=1)
 
-    ax = fig.add_subplot(gs[1, 2]); ax.axis("off")
-    txt = [f"【ρ 上位 14(h={h:.0f}s)】"]
-    for r in S.head(14).iter_rows(named=True):
-        txt.append(f"  {r['rho']:+.4f}  {r['pos']:>2}/{r['n']:<2} {r['feature'][:30]}")
-    txt.append("")
-    txt.append("【ρ 下位 10】")
-    for r in S.sort("rho").head(10).iter_rows(named=True):
-        txt.append(f"  {r['rho']:+.4f}  {r['pos']:>2}/{r['n']:<2} {r['feature'][:30]}")
-    ax.text(0, 1, "\n".join(txt), va="top", ha="left", fontsize=7.4,
-            family="monospace", transform=ax.transAxes, linespacing=1.45)
-    ax.set_title("④ 順位表(値 / 予測どおりの銘柄数)", fontsize=11, loc="left")
+    ax = fig.add_subplot(gs[1, 2])
+    top = S.head(12)
+    bot = S.sort("rho").head(8).sort("rho", descending=True)
+    rows_ = list(top.iter_rows(named=True)) + list(bot.iter_rows(named=True))
+    vals = [r["rho"] for r in rows_]
+    labs = [f"{r['feature'][:24]}  {r['pos']}/{r['n']}" for r in rows_]
+    cols_ = [COLORS[r["family"]] for r in rows_]
+    ax.barh(range(len(rows_)), vals, 0.7, color=cols_, alpha=0.9)
+    ax.set_yticks(range(len(rows_)))
+    ax.set_yticklabels(labs, fontsize=6.6)
+    ax.invert_yaxis()
+    ax.axvline(0, color="#111827", lw=1.0)
+    ax.axvspan(-plab, plab, color="#9ca3af", alpha=0.28, zorder=0)
+    ax.set_xlabel("ρ(銘柄中央値)")
+    ax.set_title("④ 上位 12 と下位 8(右の数字 = 予測どおりの銘柄数)",
+                 fontsize=11, loc="left")
     fig.suptitle(f"Lighter — 特徴量 {S.height} 個の予測力総覧"
                  f"(h={h:.0f}s、銘柄中央値、13 銘柄)", fontsize=14, y=0.965)
     out = CHARTS / "lighter_rank.png"
@@ -301,6 +306,11 @@ def fig_family(S, K):
                 ys.append(np.median(v))
                 lo.append(np.percentile(v, 25)); hi.append(np.percentile(v, 75))
         xs = np.arange(1, 11)
+        if not np.isfinite(ys).any():
+            # 十分位境界が縮退(ゼロ度が高い)した銘柄が多く、8 銘柄に満たない
+            ax.text(0.5, 0.5, "十分位の境界が縮退\n(ゼロが多い列)", ha="center",
+                    va="center", fontsize=7.5, transform=ax.transAxes,
+                    color="#6b7280")
         ax.fill_between(xs, lo, hi, color=col, alpha=0.18)
         ax.plot(xs, ys, "o-", color=col, lw=1.7, ms=3.2)
         ax.axhline(0, color="#111827", lw=0.9)
