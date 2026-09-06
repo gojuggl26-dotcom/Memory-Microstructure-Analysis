@@ -140,7 +140,8 @@ def main() -> None:
     print(f"  約定候補 U(5s)        {np.corrcoef(A[m], U[m])[0,1]:+.4f}  n={int(m.sum()):,}")
     print(f"  約定時刻からの markout {np.corrcoef(Af, Uf)[0,1]:+.4f}  n={Af.size:,}")
     print(f"  往復損益              {np.corrcoef(Af, pnl)[0,1]:+.4f}  n={pnl.size:,}")
-    print(f"\n書き出し {DATA}/cand2_stages_{tag}.csv")
+    print()
+    print(f"書き出し {DATA}/cand2_stages_{tag}{tail}.csv")
 
 
 if __name__ == "__main__":

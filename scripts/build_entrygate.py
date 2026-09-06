@@ -78,6 +78,7 @@ def impact_feats(tag, dt, ts, sd):
 
 
 I100_NAMES = ["A100_q5"]
+I100_LAG_NS = 0     # >0 でさらに寝かせる(セル内先読みが無いことの検査用)
 
 
 def impact100_feats(tag, dt, ts, sd):
@@ -90,31 +91,46 @@ def impact100_feats(tag, dt, ts, sd):
     """
     f = DATA / f"impact100_{tag}.parquet"
     if not f.exists():
-        return np.zeros((ts.size, 1))
+        return np.zeros((ts.size, len(I100_NAMES)))
     I = (pl.scan_parquet(f).filter(pl.col("dt") == dt)
          .select("ts", "imp_b_q5", "imp_a_q5").collect().sort("ts"))
     if not I.height:
-        return np.zeros((ts.size, 1))
+        return np.zeros((ts.size, len(I100_NAMES)))
     it = I["ts"].cast(pl.Int64).to_numpy()
-    j = np.clip(np.searchsorted(it, ts, side="right") - 1, 0, it.size - 1)
+    j = np.clip(np.searchsorted(it, ts - I100_LAG_NS, side="right") - 1,
+                0, it.size - 1)
     A = (np.nan_to_num(I["imp_b_q5"].to_numpy().astype(np.float64))[j]
          - np.nan_to_num(I["imp_a_q5"].to_numpy().astype(np.float64))[j])
     return np.nan_to_num((-sd * A)[:, None], nan=0.0, posinf=0.0, neginf=0.0)
 
 
 EXTRA = ""          # "impact" で候補 2 の変数を足す / "impact100" で新鮮な A
+NX = {"": 0, "impact": len(IMP_NAMES), "impact100": len(I100_NAMES)}
+
+
+def extra_feats(tag, dt, ts, sd):
+    """EXTRA に応じた追加説明変数。**学習側と適用側で必ずこれを使う。**
+
+    以前は同じ分岐を 2 箇所に書いていて、片方だけ impact100 を足したため、
+    39 列で学習したモデルに 38 列を渡して落ちた。分岐は 1 つにする。
+    """
+    if not EXTRA:
+        return None
+    fn = impact_feats if EXTRA == "impact" else impact100_feats
+    X = fn(tag, dt, ts, sd)
+    assert X.shape[1] == NX[EXTRA], f"{EXTRA} の列数が {X.shape[1]}"
+    return X
 
 
 def feats(f, G):
     """その日の候補テーブルから、発注時刻・側に対応する行の説明変数を取る。"""
     T = pl.read_parquet(f, columns=COLS)
     X = design(T)
-    if EXTRA in ("impact", "impact100"):
-        tag = f.parent.name
-        fn = impact_feats if EXTRA == "impact" else impact100_feats
-        X = np.column_stack([X, fn(
-            tag, f.stem.split("=")[1], T["ts"].cast(pl.Int64).to_numpy(),
-            T["side"].to_numpy().astype(np.float64))])
+    E = extra_feats(f.parent.name, f.stem.split("=")[1],
+                    T["ts"].cast(pl.Int64).to_numpy(),
+                    T["side"].to_numpy().astype(np.float64))
+    if E is not None:
+        X = np.column_stack([X, E])
     ts = T["ts"].cast(pl.Int64).to_numpy()
     sd = T["side"].to_numpy()
     out_x, out_i = [], []
@@ -183,16 +199,21 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
     ap.add_argument("--sfx", default="_q1")
+    ap.add_argument("--i100lag", type=int, default=0,
+                    help="新鮮な A をさらに何 ms 寝かせるか(先読み検査用)")
     ap.add_argument("--extra", choices=["", "impact", "impact100"], default="",
                     help="impact で候補 2 の 8 変数(5 秒格子)、"
                          "impact100 で新鮮な A のみ(100 ms 格子)を足す")
     a = ap.parse_args()
-    global EXTRA
+    global EXTRA, I100_LAG_NS
     EXTRA = a.extra
+    I100_LAG_NS = int(a.i100lag) * 1_000_000
+    base_sfx = a.sfx            # ★ inv_posts を読む名前は素のまま保つ
     if a.extra:
         a.sfx = a.sfx + "_" + a.extra
+    if a.i100lag:
+        a.sfx = a.sfx + f"lag{a.i100lag}"
     tag = a.coin.replace(":", "_")
-    base_sfx = a.sfx[:-len("_" + a.extra)] if a.extra else a.sfx
     P = pl.read_parquet(DATA / f"inv_posts_{tag}{base_sfx}.parquet")
     files = sorted((BULK / tag).glob("dt=*.parquet"))
     ntr = int(round(len(files) * TRAIN_FRAC))
@@ -202,6 +223,10 @@ def main() -> None:
     mu, sd_, w_fill, w_pnl = fit_models(files, ntr, P, tag, a.sfx)
 
     def ev(X):
+        # ★ 列数の不一致は「学習と適用で特徴量の作り方が違う」ことを意味する。
+        #   numpy の broadcast エラーでは原因が読めないので、ここで止める。
+        assert X.shape[1] == mu.size, (
+            f"学習 {mu.size} 列 / 適用 {X.shape[1]} 列 — extra={EXTRA!r}")
         return ev_of(X, mu, sd_, w_fill, w_pnl), None, None
 
     rows = []
@@ -213,10 +238,10 @@ def main() -> None:
             continue
         T = pl.read_parquet(f, columns=COLS)
         X = design(T)
-        if EXTRA == "impact":
-            X = np.column_stack([X, impact_feats(
-                tag, dt, T["ts"].cast(pl.Int64).to_numpy(),
-                T["side"].to_numpy().astype(np.float64))])
+        E = extra_feats(tag, dt, T["ts"].cast(pl.Int64).to_numpy(),
+                        T["side"].to_numpy().astype(np.float64))
+        if E is not None:
+            X = np.column_stack([X, E])
         ts = T["ts"].cast(pl.Int64).to_numpy()
         sdv = T["side"].to_numpy()
         for sg in (1, -1):

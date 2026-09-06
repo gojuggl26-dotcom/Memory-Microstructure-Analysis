@@ -32,6 +32,10 @@ CFG = [
     ("改善 × G0", "q1_imp1_gatedby_q1"),
     ("★ 候補 1 = 改善 × G1", "q1_imp1_gatedby_q1_imp1"),
     ("候補 1 + 候補 2 の変数", "q1_imp1_gated_impact"),
+    ("★ 候補 2 の新鮮な A を門に足す", "q1_imp1_gatedby_q1_imp1_impact100"),
+    ("候補 2 の新鮮な A + 遅延 65ms", "q1_lat65_imp1_gatedby_q1_imp1_impact100"),
+    ("新鮮な A をさらに 100ms 寝かせる(先読み検査)",
+     "q1_imp1_gatedby_q1_imp1_impact100lag100"),
     ("候補 1 + 遅延 65ms", "q1_lat65_imp1_gated"),
     ("候補 1 + 遅延 130ms", "q1_lat130_imp1_gated"),
 ]
@@ -43,7 +47,13 @@ PAIRS = [("置き方だけ変更(門 G0)", "q1_imp1_gatedby_q1", "q1_gated"),
          ("候補 1 − (候補 1+候補 2)", "q1_imp1_gatedby_q1_imp1",
           "q1_imp1_gated_impact"),
          ("遅延 0 − 遅延 65ms", "q1_imp1_gatedby_q1_imp1",
-          "q1_lat65_imp1_gated")]
+          "q1_lat65_imp1_gated"),
+         ("★ 新鮮な A − 候補 1", "q1_imp1_gatedby_q1_imp1_impact100",
+          "q1_imp1_gatedby_q1_imp1"),
+         ("★ 新鮮な A(遅延 65ms)− 候補 1(遅延 65ms)",
+          "q1_lat65_imp1_gatedby_q1_imp1_impact100", "q1_lat65_imp1_gated"),
+         ("100ms 寝かせた A を足す(先読み検査)",
+          "q1_imp1_gatedby_q1_imp1_impact100lag100", "q1_imp1_gatedby_q1_imp1")]
 
 
 # --- 条件つきの出し直し(候補 1 手順②)---
