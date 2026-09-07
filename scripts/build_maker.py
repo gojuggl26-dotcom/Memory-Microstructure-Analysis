@@ -338,8 +338,15 @@ def day_fill_times(D, fd, max_s: int = 60):
                                  cmp_ok(fp[fi], thr[k][g]), True)
                 w = np.where(msk[fi] & px_ok, fs[fi], 0.0)
                 cs = np.cumsum(w)
-                cs -= np.repeat(cs[np.cumsum(cnt) - cnt] - w[np.cumsum(cnt) - cnt],
-                                cnt)
+                # ★cnt==0 の群(その窓に fill が 1 件も無い)が**末尾**にあると、
+                #   群の先頭位置 cumsum(cnt)-cnt が tot に一致して範囲外になる
+                #   (xyz:INTC で実際に落ちた)。cnt>0 の群だけ差し引きを作る。
+                #   値は従来と同一なので、公表済みの xyz:MU の数値は変わらない。
+                st_i = np.cumsum(cnt) - cnt
+                base = np.zeros(cnt.size)
+                nz = cnt > 0
+                base[nz] = cs[st_i[nz]] - w[st_i[nz]]
+                cs -= np.repeat(base, cnt)
                 need = np.repeat(Q[k] - cprev[k], cnt)
                 # 区分累積和は「全体の cumsum から群の直前を引く」形なので
                 # 桁落ちが出る。1.193 が 1.1929999... になって比較に落ちると、

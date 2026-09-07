@@ -1,0 +1,184 @@
+col,family
+best_bid,1.1 最良気配
+best_ask,1.1 最良気配
+bid_sz,1.1 最良気配
+ask_sz,1.1 最良気配
+mid,1.2 中値
+log_mid,1.2 中値
+spread_abs,1.3 スプレッド
+spread_tick,1.3 スプレッド
+spread_bp,1.3 スプレッド
+spread_rel,1.3 スプレッド
+is_1tick,1.3 スプレッド
+ret_100ms,1.2 中値
+mret_100ms,2.1 マイクロプライス
+ret_500ms,1.2 中値
+mret_500ms,2.1 マイクロプライス
+ret_1s,1.2 中値
+mret_1s,2.1 マイクロプライス
+ret_5s,1.2 中値
+mret_5s,2.1 マイクロプライス
+ret_10s,1.2 中値
+mret_10s,2.1 マイクロプライス
+ret_30s,1.2 中値
+mret_30s,2.1 マイクロプライス
+ret_60s,1.2 中値
+mret_60s,2.1 マイクロプライス
+d_mid,1.2 中値
+abs_d_mid,1.2 中値
+sgn_d_mid,1.2 中値
+micro,2.1 マイクロプライス
+delta_bp,2.1 マイクロプライス
+delta_norm,2.1 マイクロプライス
+micro_bid,2.1 マイクロプライス
+ask_micro,2.1 マイクロプライス
+mp_mom,2.1 マイクロプライス
+obi1,4 板の偏り OBI
+obi_abs,4 板の偏り OBI
+obi_sign,4 板の偏り OBI
+obi_not1,4 板の偏り OBI
+log_depth_ratio,4 板の偏り OBI
+d_obi,4 板の偏り OBI
+obi_streak,62 慣性
+ofi_100ms,10 注文フローの偏り OFI
+ofi_norm_100ms,10 注文フローの偏り OFI
+ofi_500ms,10 注文フローの偏り OFI
+ofi_norm_500ms,10 注文フローの偏り OFI
+ofi_1s,10 注文フローの偏り OFI
+ofi_norm_1s,10 注文フローの偏り OFI
+ofi_5s,10 注文フローの偏り OFI
+ofi_norm_5s,10 注文フローの偏り OFI
+ofi_10s,10 注文フローの偏り OFI
+ofi_norm_10s,10 注文フローの偏り OFI
+ofi_30s,10 注文フローの偏り OFI
+ofi_norm_30s,10 注文フローの偏り OFI
+ofi_60s,10 注文フローの偏り OFI
+ofi_norm_60s,10 注文フローの偏り OFI
+ofi_fast_slow,67 多尺度
+bbo_chg_100ms,39 最良気配の入れ替わり
+bbo_chg_500ms,39 最良気配の入れ替わり
+bbo_chg_1s,39 最良気配の入れ替わり
+bbo_chg_5s,39 最良気配の入れ替わり
+bbo_chg_10s,39 最良気配の入れ替わり
+bbo_chg_30s,39 最良気配の入れ替わり
+bbo_chg_60s,39 最良気配の入れ替わり
+t_since_bbo,43 経過時間
+t_since_mid,43 経過時間
+t_since_sp,43 経過時間
+msg_rate_10s,28 メッセージの流量
+fano_10s,44 群発性
+msg_rate_60s,28 メッセージの流量
+fano_60s,44 群発性
+rv_1s,47 ボラティリティ
+bpv_1s,47 ボラティリティ
+rsv_up_1s,47 ボラティリティ
+rsv_dn_1s,47 ボラティリティ
+jump_1s,47 ボラティリティ
+rv_5s,47 ボラティリティ
+bpv_5s,47 ボラティリティ
+rsv_up_5s,47 ボラティリティ
+rsv_dn_5s,47 ボラティリティ
+jump_5s,47 ボラティリティ
+rv_10s,47 ボラティリティ
+bpv_10s,47 ボラティリティ
+rsv_up_10s,47 ボラティリティ
+rsv_dn_10s,47 ボラティリティ
+jump_10s,47 ボラティリティ
+rv_30s,47 ボラティリティ
+bpv_30s,47 ボラティリティ
+rsv_up_30s,47 ボラティリティ
+rsv_dn_30s,47 ボラティリティ
+jump_30s,47 ボラティリティ
+rv_60s,47 ボラティリティ
+bpv_60s,47 ボラティリティ
+rsv_up_60s,47 ボラティリティ
+rsv_dn_60s,47 ボラティリティ
+jump_60s,47 ボラティリティ
+rv_micro_10s,47 ボラティリティ
+rv_spread_10s,47 ボラティリティ
+rv_micro_60s,47 ボラティリティ
+rv_spread_60s,47 ボラティリティ
+trd_rate_1s,51 約定の符号
+trd_imb_1s,51 約定の符号
+vol_imb_1s,51 約定の符号
+sgn_vol_1s,51 約定の符号
+vol_1s,51 約定の符号
+vpin_1s,49 毒性の代理
+trd_sz_1s,51 約定の符号
+trd_rate_5s,51 約定の符号
+trd_imb_5s,51 約定の符号
+vol_imb_5s,51 約定の符号
+sgn_vol_5s,51 約定の符号
+vol_5s,51 約定の符号
+vpin_5s,49 毒性の代理
+trd_sz_5s,51 約定の符号
+trd_rate_10s,51 約定の符号
+trd_imb_10s,51 約定の符号
+vol_imb_10s,51 約定の符号
+sgn_vol_10s,51 約定の符号
+vol_10s,51 約定の符号
+vpin_10s,49 毒性の代理
+trd_sz_10s,51 約定の符号
+trd_rate_30s,51 約定の符号
+trd_imb_30s,51 約定の符号
+vol_imb_30s,51 約定の符号
+sgn_vol_30s,51 約定の符号
+vol_30s,51 約定の符号
+vpin_30s,49 毒性の代理
+trd_sz_30s,51 約定の符号
+trd_rate_60s,51 約定の符号
+trd_imb_60s,51 約定の符号
+vol_imb_60s,51 約定の符号
+sgn_vol_60s,51 約定の符号
+vol_60s,51 約定の符号
+vpin_60s,49 毒性の代理
+trd_sz_60s,51 約定の符号
+cvd_60s,51 約定の符号
+vol_over_depth_1s,52 板と約定
+vol_over_depth_10s,52 板と約定
+vol_over_depth_60s,52 板と約定
+obi1__d,61 加速と高次の動き
+obi1__dd,61 加速と高次の動き
+obi1__z,60 衝撃(z 得点)
+obi1__dev,63 平均回帰
+delta_bp__d,61 加速と高次の動き
+delta_bp__dd,61 加速と高次の動き
+delta_bp__z,60 衝撃(z 得点)
+delta_bp__dev,63 平均回帰
+spread_bp__d,61 加速と高次の動き
+spread_bp__dd,61 加速と高次の動き
+spread_bp__z,60 衝撃(z 得点)
+spread_bp__dev,63 平均回帰
+ofi_1s__d,61 加速と高次の動き
+ofi_1s__dd,61 加速と高次の動き
+ofi_1s__z,60 衝撃(z 得点)
+ofi_1s__dev,63 平均回帰
+ofi_10s__d,61 加速と高次の動き
+ofi_10s__dd,61 加速と高次の動き
+ofi_10s__z,60 衝撃(z 得点)
+ofi_10s__dev,63 平均回帰
+rv_10s__d,61 加速と高次の動き
+rv_10s__dd,61 加速と高次の動き
+rv_10s__z,60 衝撃(z 得点)
+rv_10s__dev,63 平均回帰
+vol_imb_10s__d,61 加速と高次の動き
+vol_imb_10s__dd,61 加速と高次の動き
+vol_imb_10s__z,60 衝撃(z 得点)
+vol_imb_10s__dev,63 平均回帰
+bbo_chg_10s__d,61 加速と高次の動き
+bbo_chg_10s__dd,61 加速と高次の動き
+bbo_chg_10s__z,60 衝撃(z 得点)
+bbo_chg_10s__dev,63 平均回帰
+micro_bid__d,61 加速と高次の動き
+micro_bid__dd,61 加速と高次の動き
+micro_bid__z,60 衝撃(z 得点)
+micro_bid__dev,63 平均回帰
+trd_imb_10s__d,61 加速と高次の動き
+trd_imb_10s__dd,61 加速と高次の動き
+trd_imb_10s__z,60 衝撃(z 得点)
+trd_imb_10s__dev,63 平均回帰
+obi1__x__spread_bp,70 交互作用
+ofi_10s__x__rv_10s,70 交互作用
+delta_bp__x__spread_bp,70 交互作用
+obi1__x__rv_10s,70 交互作用
+vol_imb_10s__x__rv_10s,70 交互作用

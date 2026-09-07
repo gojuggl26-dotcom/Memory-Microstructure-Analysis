@@ -161,9 +161,12 @@ def main() -> None:
     ax.text(0.055, 0.10, "動作確認に使った先頭 3 日\n(上場直後で代表性が無い)",
             transform=ax.transAxes, fontsize=8.3, color=INK2, va="bottom",
             linespacing=1.5)
-    ax.set_xticks([0, 20, 40, 60, 80, 97])
-    ax.set_xticklabels([days[i][5:] for i in (0, 20, 40, 60, 80, 97)], fontsize=8.5,
-                       color=MUTED)
+    # ★日数の決め打ち(98 日想定の 0..97)だと 47 日の KIOXIA で落ちる。
+    #   実際の日数から等間隔に 6 点を取る
+    tick_i = sorted({int(round(x)) for x in
+                     np.linspace(0, len(days) - 1, min(6, len(days)))})
+    ax.set_xticks(tick_i)
+    ax.set_xticklabels([days[i][5:] for i in tick_i], fontsize=8.5, color=MUTED)
     ax.set_xlabel(f"日({days[0]} 〜 {days[-1]})", color=INK2, fontsize=9.5)
     ax.set_ylabel("OFI の 1 ラグ(200ms)自己相関", color=INK2, fontsize=9.5)
     ax.set_title("D  OFI は日によって符号が変わる", loc="left", color=INK,

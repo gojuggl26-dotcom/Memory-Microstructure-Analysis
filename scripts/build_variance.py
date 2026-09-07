@@ -192,7 +192,10 @@ def main() -> None:
         turn_5d=pl.col("vol").rolling_sum(WIN_DAYS)
         / pl.col("oi_mean").rolling_mean(WIN_DAYS) / WIN_DAYS,
     )
-    assert day.height == 99, day.height
+    # ★完全性の検査は「99 日」の決め打ちではなく、入力に実在する日数と比べる。
+    #   KIOXIA は板の稼働が 2026-06-25 からで 47 日しか無い(実測)。
+    n_days = g.select(pl.col("t").dt.truncate("1d").n_unique()).item()
+    assert day.height == n_days, (day.height, n_days)
 
     # --- 1 時間 -------------------------------------------------------------
     hour = (

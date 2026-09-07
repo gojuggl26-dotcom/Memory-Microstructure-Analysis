@@ -204,6 +204,13 @@ def main() -> None:
     D = pl.DataFrame(rows)
     D.write_parquet(ROOT / "data" / f"acf_200ms_daily_{tag}.parquet")
     EM = pl.DataFrame(empties)
+    # ★plot_acf_200ms が読む日次 lag1 の表。以前は別セッションのワンオフ生成で、
+    #   他銘柄に回したときここが無くて図が落ちた。builder が責任を持って書く。
+    L1 = (D.filter(pl.col("lag") == 1)
+          .pivot(on="var", index="dt", values="rho")
+          .join(EM.select("dt", empty=pl.col("empty_share")), on="dt")
+          .sort("dt"))
+    L1.write_csv(ROOT / "data" / f"acf_200ms_daily_lag1_{tag}.csv")
     print(f"[格子] 空の格子点の割合 中央値 {EM['empty_share'].median():.1%} / "
           f"最小 {EM['empty_share'].min():.1%} / 最大 {EM['empty_share'].max():.1%}",
           file=sys.stderr)

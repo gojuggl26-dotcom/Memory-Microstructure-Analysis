@@ -311,6 +311,11 @@ def fig_matrix(tag, coin, T):
         M = np.full((nb, len(hor)), np.nan)
         SG = np.zeros((nb, len(hor)), bool)
         for r in q.to_dicts():
+            # ★銘柄によっては表に無いホライズン(10ms 等)が入っている。
+            #   図の格子に無いものは黙って落とすのではなく数えて注記したいが、
+            #   ここは表示層なので単に飛ばす(データは resil_*.csv に全て残る)
+            if r["hor"] not in hor:
+                continue
             j = hor.index(r["hor"])
             M[r["bin_i"], j] = r["diff"] * 100
             SG[r["bin_i"], j] = not (r["lo"] <= 0 <= r["hi"])

@@ -78,21 +78,22 @@ def one(coin: str) -> dict:
             b = d.sort("edge", descending=True).row(0, named=True)
             out["micro_edge_max"] = f2(b["edge"])
             out["micro_edge_cell"] = f"{b['day_type']}/{b['bin']}/k={b['k']}"
-            out["micro_edge_placebo"] = f2(abs(b.get("p_up_placebo", np.nan)
-                                               - b.get("base_up_move", np.nan))
-                                           if b.get("p_up_placebo") is not None else None)
+            # ★帰無対照は条件付き p_up(同値込み)の系なので、比べる相手は
+            #   base_up_move ではなく base_up。_move と混ぜると偽陽性に見える
+            if b.get("p_up_placebo") is not None and b.get("base_up") is not None:
+                out["micro_edge_placebo"] = f2(abs(b["p_up_placebo"] - b["base_up"]))
 
     # ── OBI / OFI の端 ─────────────────────────────────────────────
     f = DATA / f"obi_ofi_cells_{tag}.parquet"
     if f.exists():
         d = pl.read_parquet(f).filter(pl.col("n") >= 300)
-        for feat in ("obi", "ofi"):
+        for feat, key in (("OBI", "obi"), ("OFI_z", "ofi")):
             s = d.filter(pl.col("feat") == feat)
             if s.height:
                 s = s.with_columns(e=(pl.col("p_up_move") - pl.col("base_up_move")).abs())
                 b = s.sort("e", descending=True).row(0, named=True)
-                out[f"{feat}_edge_max"] = f2(b["e"])
-                out[f"{feat}_edge_cell"] = f"{b['day_type']}/{b['bin']}/k={b['k']}"
+                out[f"{key}_edge_max"] = f2(b["e"])
+                out[f"{key}_edge_cell"] = f"{b['day_type']}/{b['bin']}/k={b['k']}"
 
     # ── book slope(1 イベント先の HAC t)───────────────────────────
     f = DATA / f"book_slope_fits_{tag}.csv"
