@@ -5,7 +5,7 @@
 | 項目 | 内容 |
 |---|---|
 | 取引所 | [Lighter](https://lighter.xyz/)(zk ロールアップ上の PerpDEX。板は 50ms バッチの L2 差分で公開) |
-| 対象銘柄 | **13 銘柄**: メモリ半導体 5(DRAM / MU / SNDK / SKHYNIXUSD / SAMSUNGUSD)+ 米国株 5(AAPL / AMZN / MSFT / NVDA / TSLA)+ 金属 2(XAU / XAG)+ H100 |
+| 対象銘柄 | **記録は 21 銘柄**(2026-09-08 に商品 8 銘柄を追加)。既存分析の対象は追加前の **13 銘柄**: メモリ半導体 5(DRAM / MU / SNDK / SKHYNIXUSD / SAMSUNGUSD)+ 米国株 5(AAPL / AMZN / MSFT / NVDA / TSLA)+ 貴金属 2(XAU / XAG)+ H100。★2026-09-08 追加分(WTI / BRENTOIL / NATGAS / XCU / XPD / XPT / WHEAT / PAXG)は記録開始が新しいため本ページの分析には**まだ入っていない** |
 | データの出所 | `E:\Lighter　データ` の常駐 WS 記録(order_book / trade / ticker)。**過去データは公式に存在せず、記録開始 2026-08-18 以前は永久に無い** |
 | 標本期間 | 探索 **2026-08-18 〜 09-05**(19 日。追加 8 銘柄は 08-22 〜の 15 日) / ★未見期間 **09-06・09-07**([ウォークフォワード検証](lighter_walkforward_report.md)専用) |
 | 規模 | 1 秒グリッド 16,852,314 行 / ticker BBO 115,816,537 行 / 特徴量 222 個 |
