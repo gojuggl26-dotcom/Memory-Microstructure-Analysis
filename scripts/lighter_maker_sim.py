@@ -196,7 +196,12 @@ def fill_scan(side: int, p: float, q: float, t0: int, t1: int, Q0: float,
     brec = bo["recv"][blo:bhi]
     bpx = bo["bid"][blo:bhi] if side > 0 else bo["ask"][blo:bhi]
     bsz = bo["bsz"][blo:bhi] if side > 0 else bo["asz"][blo:bhi]
-    vis = np.where(np.abs(bpx - p) < eps, bsz, np.nan)
+    # ★自分の指値が最良である行だけ残す。残さないと、指値が最良でない構成
+    #   (内側/外側 1 ティック)で「全部 NaN の行」を Python ループが舐めて
+    #   3 倍遅くなる(実測 16s -> 44s)。
+    okv = np.abs(bpx - p) < eps
+    brec = brec[okv]
+    vis = bsz[okv]
 
     out = {}
     for mdl in ("Q1", "Q2", "Q3"):
@@ -258,7 +263,7 @@ def blank(sym, day, t0, side, p, q, stale=0, reject=0):
 def run_symbol(sym: str, cfg: dict, acc: str, arm: str, size_usd: float,
                lifetime: float, exit_s: float, qmult: float, dpos: int,
                rtt_ms: float, mk_lat_over=None, pos: int = 0,
-               sizepct: float = 0.0) -> pl.DataFrame:
+               sizepct: float = 0.0, noe2: bool = False) -> pl.DataFrame:
     ts_s, sig, mid, spr, bad, W, bo, tr = load_sym(sym)
     meta = json.loads((MK / "market_meta.json").read_text(encoding="utf-8"))
     mm = meta["markets"][sym]
@@ -375,11 +380,13 @@ def run_symbol(sym: str, cfg: dict, acc: str, arm: str, size_usd: float,
         return pl.DataFrame()
     L = pl.DataFrame(rows)
     return finish(L, sym, bo, tr, W, ts_s, a, eff_mk, eff_cx, eff_tk,
-                  exit_s, eps)
+                  exit_s, eps, tmo=() if noe2 else (1.0, 5.0, 30.0, 300.0))
 
 
 def finish(L, sym, bo, tr, W, ts_s, a, eff_mk, eff_cx, eff_tk, exit_s, eps,
            tmo=(1.0, 5.0, 30.0, 300.0)):
+    # ★探索格子では E2 を回さない(tmo=())。1 約定あたり 12 回の約定再走査が
+    #   要り、格子 21 構成では 5 時間かかる。格子の主指標は E1 の純 EV である。
     """約定した quote に markout と往復損益(E1 / E2)を付ける。
 
     ★1 銘柄 1 ポジションの制約は **待ち行列モデルごとに** 事後で適用する。
@@ -447,7 +454,7 @@ def finish(L, sym, bo, tr, W, ts_s, a, eff_mk, eff_cx, eff_tk, exit_s, eps,
         out[f"xhour_{mdl}"] = np.where(
             fil, (txe // (3600 * NS)) != (tf // (3600 * NS)), False)
         # ---- E2: maker entry -> 反対側 BBO へ maker exit -> timeout で taker ----
-        for T in tmo:
+        for T in (tmo or ()):
             pe = np.full(n, np.nan)
             hp = np.zeros(n, np.int8)      # 1 = maker で出られた
             pn = np.full(n, np.nan)
@@ -520,6 +527,8 @@ def main():
     ap.add_argument("--cadence", type=int, default=60)
     ap.add_argument("--rtt", type=float, default=-1.0)
     ap.add_argument("--mklat", type=float, default=-1.0)
+    ap.add_argument("--noe2", action="store_true",
+                    help="E2 Hybrid を計算しない(探索格子の高速化)")
     ap.add_argument("--sizepct", type=float, default=0.0,
                     help=">0 なら 到着時 BBO 表示数量のこの割合を数量にする")
     ap.add_argument("--pos", type=int, default=0,
@@ -535,7 +544,7 @@ def main():
     for sym in syms:
         t0 = time.time()
         L = run_symbol(sym, cfg, a.acc, a.arm, a.size, a.life, a.exit,
-                       a.qmult, a.cadence, rtt, mkl, a.pos, a.sizepct)
+                       a.qmult, a.cadence, rtt, mkl, a.pos, a.sizepct, a.noe2)
         if not L.height:
             print(f"{sym}: quote なし", flush=True)
             continue
