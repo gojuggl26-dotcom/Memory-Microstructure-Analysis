@@ -1,0 +1,183 @@
+{
+ "name": "lighter_maker_frozen_v1",
+ "created_utc": "2026-09-08T13:20:00Z",
+ "git_commit": "d20a656ee6e772a89ae6c8edd239b8e4040f6d11",
+ "purpose": "Lighter の rare selective one-sided maker 戦略の主構成。maker シミュレーションの結果を一切見ていない時点で凍結した。以後この主構成は変更しない。探索的な感応度は別枠で行い、主判定には混ぜない。",
+ "data": {
+  "raw_source": "E:/Lighter データ/data/raw/ws/{order_book,trade,ticker}",
+  "intermediate": "E:/Memory-lighter/{wf,mk}",
+  "last_exchange_ts_utc": "2026-09-08T00:00:00Z",
+  "explore_period": [
+   "2026-08-18",
+   "2026-09-07"
+  ],
+  "explore_note": "この期間は既に内容を見ている。2026-09-06・09-07 はテイカー版の標本外検定で 1 回だけ見た日で、完全未見ではない。",
+  "confirm_period_rule": "本 JSON の凍結時刻より後に完結した UTC 日のみを確認期間とする。凍結時点で該当日は 0 日。"
+ },
+ "symbols": [
+  "MU",
+  "SNDK",
+  "SKHYNIXUSD",
+  "SAMSUNGUSD",
+  "DRAM",
+  "XAU",
+  "XAG",
+  "NVDA",
+  "TSLA",
+  "AAPL",
+  "AMZN",
+  "MSFT"
+ ],
+ "symbols_excluded": {
+  "H100": "板の被覆 14.7%。結果を見る前にデータ品質だけを理由に除外"
+ },
+ "signal": {
+  "name": "gap_12_asym",
+  "definition": "gap12_bp_b - gap12_bp_a(最良と第2水準の価格差の bp、買い側 − 売り側)",
+  "source": "config/lighter_frozen.json で凍結済みのテイカー版と同一の信号",
+  "direction_rule": "テスト日の直前 7 完全日で corr(signal, 60 秒先リターン) を取り、その符号を使う",
+  "threshold_rule": "テスト日の直前 7 完全日の |signal| の 0.99 分位",
+  "calibration_window_days": 7,
+  "note": "閾値も符号も較正窓はテスト日より厳密に前。当日の分位は使わない"
+ },
+ "quote": {
+  "trigger": "sign*signal > +thr なら買い、< -thr なら売り(片側のみ)",
+  "price": "BBO(買いは最良買い気配、売りは最良売り気配)",
+  "type": "post-only",
+  "lifetime_s": 1.0,
+  "lifetime_start": "注文が live になったことを確認した時刻",
+  "max_position_per_symbol": 1,
+  "size_usd": 100.0,
+  "size_rule": "min_base_amount と size_decimals に丸めた上で、名目 100 USD 相当。板の数量が足りない場合は実際の VWAP を使う",
+  "post_only_reject": "到着時に指値が marketable なら約定扱いにせず reject として計上する"
+ },
+ "exit": {
+  "primary": "E1: entry 約定から 300 秒後に taker",
+  "seconds": 300.0
+ },
+ "fill_model": {
+  "primary": "Q1 strict-trade",
+  "Q1": "live 時点の同価格表示数量を全て前方数量とする。live 後に同価格へ追加された数量は自分より後ろ。約定ストリームで確認できた自分の注文に対する aggressive trade だけが前方数量を消費する。取消・原因不明の板減少は前方数量を減らさない。価格が指値に触れただけでは約定にしない",
+  "Q2": "proportional-cancel。trade で説明できない同価格の減少を、観測表示数量に占める前方 queue 比率だけ前方数量から減らす。同一 50ms バッチでは trade を先に割り当てる",
+  "Q3": "front-cancel。trade で説明できない減少を可能な範囲で前方 queue から先に減らす。楽観的感応度としてのみ使い、Q3 単独の黒字を経済的有意性の証拠にしない",
+  "queue_multiplier_sensitivity": [
+   1.0,
+   1.5,
+   2.0
+  ],
+  "touch_fill_note": "単純な touch fill は参考診断としてのみ出し、主結果に使わない"
+ },
+ "clock": {
+  "timeline": "すべて recv_ns(このマシンの受信時計)で組む。取引所の last_updated_at は監査と照合にだけ使い、発注時刻には使わない",
+  "effective_delay_formula": "eff = compute + 2*oneway_net + institutional_latency",
+  "formula_reason": "受信時計の上では、自分の注文が有効になるのは (送信の片道) + (その結果が feed で見えるまでの片道) の後である。受信 r の約定は取引所時刻 r-oneway に起きているため。",
+  "compute_ms": 5.0,
+  "net_rtt_ms": 90.0,
+  "net_rtt_source": "このマシンから mainnet.zklighter.elliot.ai への実測 HTTPS 往復(2026-09-08)。単発接続 中央 115.6ms / 最小 87.0ms、持続接続 中央 178.2ms / 最小 166.8ms(全市場を返す重い問い合わせ)。主仮定は観測最小に近い 90ms を取り、0〜400ms を感応度で振る",
+  "feed_oneway_identified": false,
+  "feed_oneway_note": "ticker の受信 − 取引所時刻は全銘柄 −65ms で、既報の時計オフセット −62.3ms(lighter_leadlag_report.md)を足すと約 0 になる。片道遅延と時計ずれは一方向の観測だけでは分離できないので、片道は実測往復の半分として扱う"
+ },
+ "accounts": {
+  "primary": "Standard",
+  "spec_source_url": "https://docs.lighter.xyz/trading/trading-fees.md",
+  "spec_fetched_utc": "2026-09-08",
+  "Standard": {
+   "maker_fee_bp": 0.0,
+   "taker_fee_bp": 0.0,
+   "maker_latency_ms": 200.0,
+   "cancel_latency_ms": 300.0,
+   "taker_latency_ms": 300.0,
+   "quote": "0 maker / 0 taker, Taker latency: 300ms, Maker latency: 200ms, Cancel latency: 300ms",
+   "maker_latency_alt_ms": 0.0,
+   "maker_latency_alt_note": "公式表は Standard の maker latency を 200ms と書いている。0ms とする記述は公式資料に見つからなかったが、指示に従い 0ms も感応度として計算する",
+   "rate_limit": "Standard の sendTx/分 は公式資料に明記が無い"
+  },
+  "Premium": {
+   "maker_fee_bp": 0.4,
+   "taker_fee_bp": 2.8,
+   "maker_latency_ms": 0.0,
+   "cancel_latency_ms": 0.0,
+   "taker_latency_ms": 140.0,
+   "quote": "0.0040% maker / 0.0280% taker, Taker Latency 140 ms, all order cancelations & Post Only order placements not subject to any additional latency",
+   "staking_tiers_bp": [
+    {
+     "staked_lit": 1000,
+     "maker": 0.39,
+     "taker": 2.73
+    },
+    {
+     "staked_lit": 3000,
+     "maker": 0.38,
+     "taker": 2.66
+    },
+    {
+     "staked_lit": 10000,
+     "maker": 0.36,
+     "taker": 2.52
+    },
+    {
+     "staked_lit": 30000,
+     "maker": 0.34,
+     "taker": 2.52
+    },
+    {
+     "staked_lit": 100000,
+     "maker": 0.32,
+     "taker": 2.24
+    },
+    {
+     "staked_lit": 300000,
+     "maker": 0.3,
+     "taker": 2.1
+    },
+    {
+     "staked_lit": 500000,
+     "maker": 0.28,
+     "taker": 1.96
+    }
+   ],
+   "rate_limit": "Premium の sendTx/分 は公式資料に明記が無い"
+  },
+  "Plus": {
+   "maker_fee_bp": 0.5,
+   "taker_fee_bp": 0.5,
+   "maker_latency_ms": 200.0,
+   "cancel_latency_ms": 200.0,
+   "taker_latency_ms": 300.0,
+   "rate_limit_sendtx_per_min": 8000,
+   "rate_limit_read_weighted_per_min": 120000,
+   "note": "主比較には使わないが、公式に数値のある唯一の rate limit なので action rate の比較対象に使う"
+  },
+  "account_fee_probe": "orderBookDetails の maker_fee / taker_fee はいずれも 0.0000(未認証の既定 = Standard)で、口座種別による差はこの API では判らない"
+ },
+ "funding": {
+  "handling": "保有 300 秒に対する funding は、資金調達の付与間隔より十分短いので主結果では 0 とする。実際に付与間隔をまたいだ建玉は件数を報告する"
+ },
+ "market_meta_source": "https://mainnet.zklighter.elliot.ai/api/v1/orderBookDetails(2026-09-08 取得)。min_quote_amount は全銘柄 10 USD、price_decimals / size_decimals は銘柄ごと",
+ "time_contract": {
+  "max_feature_lookback_s": 300,
+  "purge_s": 300,
+  "rules": [
+   "signal は時刻 t までに受信済みのデータだけで計算する",
+   "1 秒特徴量はその秒が完全に終了したと観測できてから発注可能とする(次の秒の刻印を持つ受信を見た時点)",
+   "発注判断・送信・live・cancel 要求・cancel 有効・fill・exit 要求・exit を別々の時刻として持つ",
+   "maker 注文は live 時刻より前には約定しない",
+   "cancel 要求後も cancel 有効時刻までは約定可能",
+   "保有時間は signal 時刻ではなく実際の fill 時刻から測る",
+   "閾値・符号・標準化は評価日より前のデータだけで推定する",
+   "分割の末尾は最大保有時間 + 最大取消遅延だけパージする"
+  ]
+ },
+ "data_quality_policy": {
+  "pre_entry": "entry 前に品質不良(suspect / nonce 切れ / 60 秒沈黙)がある quote は提出しない",
+  "disconnect_with_position": "主結果では、再接続後に観測した最初の不利側気配で清算する。欠損取引を除外した結果も感応度として併記する",
+  "snapshot": "snapshot で再開したら古い queue を引き継がない"
+ },
+ "hypothesis": {
+  "H0": "E[daily net PnL] <= 0",
+  "H1": "E[daily net PnL] > 0",
+  "unit": "日(同じ日の全銘柄をまとめて 1 標本)",
+  "test": "日単位 cluster bootstrap 95% 区間 と 日単位の符号検定"
+ },
+ "sha256_of_this_file_before_stamping": "66144a378b9c7a64c7948931072349d04322f53c8099ec3c9755cd19dfc2ffec"
+}
