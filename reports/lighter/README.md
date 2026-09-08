@@ -7,7 +7,7 @@
 | 取引所 | [Lighter](https://lighter.xyz/)(zk ロールアップ上の PerpDEX。板は 50ms バッチの L2 差分で公開) |
 | 対象銘柄 | **13 銘柄**: メモリ半導体 5(DRAM / MU / SNDK / SKHYNIXUSD / SAMSUNGUSD)+ 米国株 5(AAPL / AMZN / MSFT / NVDA / TSLA)+ 金属 2(XAU / XAG)+ H100 |
 | データの出所 | `E:\Lighter　データ` の常駐 WS 記録(order_book / trade / ticker)。**過去データは公式に存在せず、記録開始 2026-08-18 以前は永久に無い** |
-| 標本期間 | 2026-08-18 〜 09-05(19 日。追加 8 銘柄は 08-22 〜の 15 日) |
+| 標本期間 | 探索 **2026-08-18 〜 09-05**(19 日。追加 8 銘柄は 08-22 〜の 15 日) / ★未見期間 **09-06・09-07**([ウォークフォワード検証](lighter_walkforward_report.md)専用) |
 | 規模 | 1 秒グリッド 16,852,314 行 / ticker BBO 115,816,537 行 / 特徴量 222 個 |
 | 比較相手 | Binance USD-M 先物の同名 12 銘柄(`E:\Binance-perp-data` のライブ bookTicker) |
 
@@ -37,6 +37,7 @@
    Binance 側イベント後に Lighter は +1.6〜3.9bp 追随、逆方向は +0.6bp 以下で
    薄い銘柄は Lighter 自身が逆戻りする(SAMSUNG −5.2bp)
 6. δ = microprice − mid は Lighter でも **(spread/2)×OBI の恒等式**(Boros と同じ)
+7. **★ウォークフォワードで凍結し未見期間(09-06・09-07)で検定した結果、信号は本物だがテイカーでは成立しない** — 粗利は 11/12 銘柄で正(p=0.0063)、しかし損益分岐スプレッド 0.985bp に対し実費用 1.440bp で 1.5 倍足りない。費用が損益分岐を下回る 4 銘柄(XAG/XAU/SKHYNIX/SNDK)だけは黒字
 
 ---
 
@@ -60,6 +61,12 @@
 | レポート | 内容 |
 |---|---|
 | [★Binance とのリードラグ徹底測定](lighter_leadlag_report.md) | 12 ペア × 408 銘柄日。時計診断(両取引所のサーバ時計差 ±2ms 以内、マシン時計が −62ms)→ CCF(±30s・±3s)→ 偏相関(自分の過去を統制、両方向とも全日正)→ 米国立会の層別(Lighter 先行は立会外)→ ホライズン→ イベントスタディ(追随の非対称)。帰無 = 日ずらし。 |
+
+### C-2. 凍結して未見期間で検定する
+
+| レポート | 内容 |
+|---|---|
+| [★ウォークフォワード検証](lighter_walkforward_report.md) | 学習 7 日 → 検証 2 日 → テスト 1 日 を日単位で前進。境界をまたぐ保有は最大決済 300 秒でパージ。日単位(同日の全銘柄をまとめて)ブートストラップ。試した 63 構成を全件台帳化し、閾値・モデル・数量・決済を凍結して**未見の 2 日で 1 回だけ**検定。主判定は「何もしない」に負け(−0.455bp/取引)だが、**粗利は 11/12 銘柄で正**(p=0.0063)で過学習の兆候も無い。ρ の順位と損益の順位は一致せず、効くのは「どれだけ取引しないか」。 |
 
 ### D. 特徴量どうしはどう結びついているか
 
@@ -122,6 +129,12 @@
 
 ![イベントスタディ](../../charts/lighter_ll_events.png)
 
+### C-2. ウォークフォワード検証
+
+**ウォークフォワードの全体** — 分割の設計・63 構成の台帳・探索期間の累積・日単位ブートストラップ・未見期間の確定的検定・損益分岐スプレッド。解説: [ウォークフォワード検証](lighter_walkforward_report.md)
+
+![ウォークフォワード検証](../../charts/lighter_wf.png)
+
 ### D. 特徴量どうしの関係
 
 **全ペア相関行列** — 222 列 × 13 銘柄中央値と \|ρ\| 分布。解説: [相関の報告](lighter_corr_report.md)
@@ -145,6 +158,10 @@
 | `ana/reg_perf_*.parquet` | リッジの標本外性能(実測・帰無) | `lighter_reg.py` |
 | `ll/ccf・partial・hcurve・clock.parquet` | リードラグ一式 | `lighter_leadlag.py` |
 | `ll/events_{SYM}.npz` | イベントスタディの経路 | `lighter_leadlag.py` |
+| `wf/ledger_{SYM}.parquet` | ウォークフォワード台帳(63 構成 × fold × 日) | `lighter_wf.py` |
+| `wf/wf_summary.parquet` | 63 構成のテスト日集計と日ブートストラップ | `lighter_wf_report.py` |
+| `wf/oos_{SYM}.parquet` | 凍結構成の未見期間の損益 | `lighter_oos.py` |
+| [config/lighter_frozen.json](../../config/lighter_frozen.json) | **凍結した構成**(版管理下) | `lighter_wf_report.py` |
 
 ## 再現手順
 
@@ -159,5 +176,11 @@ uv run python scripts/lighter_reg.py --symbols ...     # リッジ(2 分割)
 uv run python scripts/lighter_leadlag.py               # リードラグ一式
 uv run python scripts/lighter_plots.py                 # 概観・総覧・相関・十分位・散布図
 uv run python scripts/lighter_leadlag_plots.py         # リードラグの図 4 枚
+# --- ウォークフォワード(凍結 → 未見期間の検定)---
+uv run python scripts/lighter_wfparse.py               # 08-18〜09-07 を wf/ へ
+uv run python scripts/lighter_wf_runall.py             # 12 銘柄を直列で
+uv run python scripts/lighter_wf_report.py             # 集計・凍結
+uv run python scripts/lighter_oos_runall.py            # 未見期間で 1 回だけ
+uv run python scripts/lighter_wf_plot.py               # 図
 # 一括(切り離し実行用): scripts/lighter_runall.py
 ```

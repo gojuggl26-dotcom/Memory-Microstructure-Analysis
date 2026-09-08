@@ -461,7 +461,10 @@ def main() -> int:
     ap.add_argument("--symbols", default=",".join(SYMS))
     ap.add_argument("--start", default="2026-08-18")
     ap.add_argument("--end", default="2026-09-05")
+    ap.add_argument("--out", default="", help="出力先を変える(既存を壊さない)")
     a = ap.parse_args()
+    if a.out:
+        globals()["OUT"] = Path(a.out)
     OUT.mkdir(parents=True, exist_ok=True)
     for sym in a.symbols.split(","):
         run_symbol(sym, a.start, a.end)

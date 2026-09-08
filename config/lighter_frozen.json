@@ -1,0 +1,42 @@
+{
+  "created": "2026-09-08",
+  "purpose": "未見期間(2026-09-06 以降)での確定的検定に使う。以後変更しない。",
+  "model": "gap_12_asym",
+  "threshold_rule": {
+    "type": "trailing_quantile_of_abs_signal",
+    "q": 0.99,
+    "window_days": 7,
+    "note": "テスト日の直前 7 日で毎回引き直す。テスト日は一切見ない"
+  },
+  "sign_rule": "直前 7 日で signal と 60 秒後リターンの相関の符号を取る",
+  "size": {
+    "type": "fixed",
+    "unit": 1.0,
+    "note": "全取引で同じ。単価と総額の両方を報告する"
+  },
+  "exit": {
+    "type": "time",
+    "seconds": 300.0
+  },
+  "cost": {
+    "spread_bp": "その時点の実測スプレッドを往復で 1 回引く",
+    "fee_bp": 0.0,
+    "note": "Lighter の料率はデータから確定できないため 0。楽観側"
+  },
+  "position": "1 銘柄 1 ポジション(保有中は新規建てしない)",
+  "purge_seconds": 300,
+  "symbols": "H100 を除く 12 銘柄(板の被覆 14.7% のため事前除外)",
+  "n_configs_searched": 63,
+  "bonferroni_z": 3.355,
+  "selected_on": "検証期間の総額(探索期間 08-18〜09-05 の内側)。★注意: 全 63 構成が検証期間でも負だったので、これは『最も利益が大きい』ではなく 『最も損失が小さい』構成である。利益を期待して凍結したのではない。",
+  "search_space_note": "63 = 信号 7 × 閾値 3 × 決済 3。ただし信号 6 種は探索期間の ρ 順位表(222 特徴量)を見た後で選んでいるので、実効的な探索空間はこれより大きい。上限は 222 × 3 × 3 = 1,998。この選択過程は Bonferroni では補正できないので、未見期間での検定を最終判定に使う。",
+  "explore_result": {
+    "n_config": 63,
+    "net_positive": 0,
+    "gross_positive": 62,
+    "gross_bp_per_trade_median": 0.2019,
+    "cost_bp_per_trade_median": 1.7268,
+    "breakeven_spread_bp": 0.2019,
+    "note": "費用は粗利の約 9 倍。テイカーでは構造的に成立しない"
+  }
+}
