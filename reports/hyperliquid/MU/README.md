@@ -738,6 +738,7 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [pricedisc_reg_xyz_MU.csv](../../../data/pricedisc_reg_xyz_MU.csv) / [pricedisc_seg_xyz_MU.csv](../../../data/pricedisc_seg_xyz_MU.csv) | 入れ子回帰(時刻そろえ / 夜間の窓分解) | `build_pricedisc.py` |
 | [pricedisc_gap_xyz_MU.csv](../../../data/pricedisc_gap_xyz_MU.csv) / [pricedisc_open_xyz_MU.csv](../../../data/pricedisc_open_xyz_MU.csv) / [pricedisc_rv_xyz_MU.csv](../../../data/pricedisc_rv_xyz_MU.csv) | 寄り値との差への追随 / 寄り付き前後 1 秒刻み / 時刻別 RV | `build_pricedisc.py` |
 | cash_{005930_KS,000660_KS,2330_TW,285A_T,8035_T,ASML_AS,NKDF}_{1h,1d}.csv | アジア・欧州の同業と日経先物の時間足・日足 | `fetch_cash.py` |
+| [cash1m_MU.csv](../../../data/cash1m_MU.csv) | 原資産 MU の **1 分足**(時間外込み・19,624 本 / 21 営業日 / 2026-08-13 〜 09-11)。★Yahoo は 1 分足を直近 30 日しか保持しないので**作り直せない**。版管理下に置いてある | `fetch_cash_1m.py` |
 | [night_marks_xyz_MU.csv](../../../data/night_marks_xyz_MU.csv) | 1 日 48 個の 30 分刻みごとの跳ねと前後の非対称(48 行) | `build_nightdisc.py` |
 | [night_explain_xyz_MU.csv](../../../data/night_explain_xyz_MU.csv) / [night_lead_xyz_MU.csv](../../../data/night_lead_xyz_MU.csv) / [night_open_xyz_MU.csv](../../../data/night_open_xyz_MU.csv) | 夜の値動きの説明力 / 時間内リードラグ / 寄り値への増分寄与 | `build_nightdisc.py` |
 
@@ -902,6 +903,7 @@ uv run python scripts/fetch_hlcandle.py --coin xyz:MU --interval 1h
 uv run python scripts/build_pricedisc.py --coin xyz:MU
 uv run python scripts/plot_pricedisc.py --coin xyz:MU
 uv run python scripts/fetch_cash.py --symbols 005930.KS 000660.KS 2330.TW 285A.T 8035.T ASML.AS NKD=F
+uv run python scripts/fetch_cash_1m.py --symbols MU   # 直近 30 日だけ。期限切れ前に回す
 uv run python scripts/build_nightdisc.py --coin xyz:MU
 uv run python scripts/plot_nightdisc.py --coin xyz:MU
 ```
