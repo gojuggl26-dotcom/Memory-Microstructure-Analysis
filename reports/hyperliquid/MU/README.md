@@ -79,6 +79,8 @@
 | [最良気配の入れ替わり(BBO turnover)](mu_bbo_turnover_report.md) | 最良価格が保たれる時間は中央 343ms しかなく 1 秒格子では測れないので、格子を使わず区間の交差だけで ns 精度で測る。置換 1.32 回/秒、1 秒後も同じ価格である確率は 0.40。★**注文は毎秒 2.87 本入れ替わるのに数量は 0.15 回転/秒しか入れ替わらず、19 倍の開きがある**(入れ替わっているのは小さい注文で、厚みを作る注文は長く居座る)。口座が最良を保つ時間は 363ms で、1 本の注文が居る 335ms とほぼ変わらない。**全 98 日**。 |
 | [9 系列の長期記憶と自己相関](mu_longmem_report.md) | OFI・depth・spread・order arrivals・cancellations・order size・liquidity churn・queue size・wallet activity の 9 系列を 1 秒格子に載せ、ACF / PACF / Hurst / DFA / GPH / Local Whittle の 8 推定量で測る。★**系列を並べ替えた帰無対照で R/S の Hurst だけ +0.055 上振れする**(他 3 つは不偏)ので補正せずに読んではいけない。★**4 推定量から出した d は到着系で 1.5 倍食い違い、1 つの値に決まらない**。OFI は ρ(1)=0.03 とほぼ無相関なのに d=0.12 の記憶を持つ。日内周期を除いても d は平均 −0.010 しか動かない。**全 98 日**。 |
 
+| [実際に清算された建玉のヒートマップ](mu_liquidation_report.md) | 強制決済された建玉 **14,889 件 \$57.00M** を 1 件残らず取り出し、時刻 × 清算時マーク価格の格子に落とす。推定ではなく約定テープの `liquidatedUser` / `liquidationMarkPx` を読んでいる。★**清算エンジンは約 3 秒の刻みで動き**(清算の 80.4% は同じミリ秒・ラウンド間隔の最小は 2.558 秒)、次の刻みも続く確率は 28.9% で帰無 2.25% の **13 倍**。**2 ラウンド以上の連鎖 504 本は 100% が同じ向き**。★**清算された枚数の 35.8% しか OI は減らない**(相手方が新規に建てるので移るだけ)。清算が濃いのは米株の引け(66.0bp)と深夜で、出来高が最大の寄りは 9.5bp しかない。直前 5 分の動きを揃えると、清算の後 1 分にさらに **−5.40bp**[−7.32, −2.98] 押し 1 時間で反転する。`liquidation` 列の null が「清算ではない」ことを銘柄をまたいだ検査で決着させた。**全 99 日**。 |
+
 ### B. 板の状態は将来の値動きを教えてくれるか
 
 このリポジトリの中心的な問いです。板から作った説明変数で、将来の価格の向きを
@@ -426,6 +428,30 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 信号の劣化曲線、段階分解の 2 格子比較、五分位の往復損益、日次総額、足したときの効果、先読み検査の 6 枚組](../../../charts/xyz_MU_cand2_fresh.png)
 
+**実際に清算された建玉のヒートマップ** — 縦は清算時のマーク価格 10 USD 刻み、横は 6 時間刻み、色は 1 セルの清算額(対数)。上段がロングの清算、下段がショートの清算。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 実際に清算された建玉のヒートマップ。縦は清算時のマーク価格 10 USD 刻み、横は 6 時間刻み、色は 1 セルの清算額(対数)。上段がロングの清算、下段がショートの清算。右に価格帯ごとの合計](../../../charts/xyz_MU_liqheat.png)
+
+**清算の累積ヒートマップ** — 同じ格子で、その価格帯にそれまで積み上がった清算額。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 実際に清算された建玉の累積ヒートマップ。同じ格子で、その価格帯にそれまで積み上がった清算額](../../../charts/xyz_MU_liqheat_cum.png)
+
+**清算はいつ・どの値段で起きたか** — 日次の清算額と価格、値幅との関係、UTC 時刻帯ごとの強度、価格帯の滞在時間と清算額。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 実際に清算された建玉。A 日次の清算額と価格、B 値幅と出来高あたり清算、C UTC 時刻帯ごとの強度、D 価格帯の滞在時間と清算額](../../../charts/xyz_MU_liq_daily.png)
+
+**清算の時間構造** — ラウンド間隔の 3 秒の刻み、ラウンドの大きさ別の継続確率、連鎖の累積シェア、最大の連鎖の拡大。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 清算の時間構造。A ラウンド間隔のヒスト、B ラウンドの大きさ別の継続確率、C 連鎖の累積シェア、D 最大の連鎖の拡大](../../../charts/xyz_MU_liq_cascade.png)
+
+**誰が清算され、誰が引き受けたか** — ローレンツ曲線、1 件の大きさの分布、清算された回数、相手方の内訳。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 誰が清算され、誰が引き受けたか。A ローレンツ曲線、B 1 件の大きさの CCDF、C 清算された回数の分布、D 相手方の dir 別内訳](../../../charts/xyz_MU_liq_conc.png)
+
+**清算の前後で価格はどう動いたか** — イベントスタディ、直前の動きを揃えた超過リターン、大きさ別のスリッページ、訪問回数別の強度。解説: [実際に清算された建玉のヒートマップ](mu_liquidation_report.md)
+
+![xyz:MU 清算の前後の価格。A イベントスタディ、B 直前の動きを揃えた超過リターン、C 大きさ別のスリッページ、D 訪問回数別の強度](../../../charts/xyz_MU_liq_impact.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -674,6 +700,20 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | inv_lots / inv_posts / unwind / entrygate | 建玉・発注・在庫・門(版管理外) | 同上 |
 | quotes_mu_sub_xyz_MU/ | microprice ラベルの 1/20 間引き版(版管理外) | `build_mu_labels.py` |
 | quotes_rt_sub_xyz_MU/ | 往復損益の 1/20 間引き版(版管理外) | `build_roundtrip.py` |
+| [liq_summary_xyz_MU.csv](../../../data/liq_summary_xyz_MU.csv) | 清算の要約(全体・ロング・ショートの 3 行) | `build_liq.py` |
+| [liqday_xyz_MU.csv](../../../data/liqday_xyz_MU.csv) | 日次の清算額・件数・出来高比・OI 比(99 行) | `build_liq_extra.py` |
+| [liqhour_xyz_MU.csv](../../../data/liqhour_xyz_MU.csv) | UTC 時刻帯ごとの清算強度(24 行) | `build_liq_extra.py` |
+| [liqprof_xyz_MU.csv](../../../data/liqprof_xyz_MU.csv) | 価格帯ごとの清算額・滞在時間・出来高・強度(72 行) | `build_liq_extra.py` |
+| [liqcasc_xyz_MU.csv](../../../data/liqcasc_xyz_MU.csv) | 清算ラウンドどうしの間隔のヒスト(120 行) | `build_liq_extra.py` |
+| [liqburst_xyz_MU.csv](../../../data/liqburst_xyz_MU.csv) | 連鎖ごとのラウンド数・件数・金額・向き(2,075 行) | `build_liq_extra.py` |
+| [liqself_xyz_MU.csv](../../../data/liqself_xyz_MU.csv) | ラウンドの大きさ別の継続確率(4 行) | `build_liq_extra.py` |
+| [liqacct_xyz_MU.csv](../../../data/liqacct_xyz_MU.csv) | 口座ごとの清算額・回数・損益(3,765 行・通し番号のみ) | `build_liq_extra.py` |
+| [liqvisit_xyz_MU.csv](../../../data/liqvisit_xyz_MU.csv) | 価格帯への訪問ごとの滞在・出来高・清算(1,669 行) | `build_liq_extra.py` |
+| [liqimp_xyz_MU.csv](../../../data/liqimp_xyz_MU.csv) | 清算前後のリターンと 3 つの帰無対照 | `build_liq_impact.py` |
+| [liqimp_cond_xyz_MU.csv](../../../data/liqimp_cond_xyz_MU.csv) | 直前 5 分の動きの帯ごとの比較(17 行) | `build_liq_impact.py` |
+| [liqexcess_xyz_MU.csv](../../../data/liqexcess_xyz_MU.csv) | 超過リターンと日ブロック bootstrap の 95% 区間(12 行) | `build_liq_impact.py` |
+| [liqcol_xyz_MU.csv](../../../data/liqcol_xyz_MU.csv) | `liquidation` 列の有無の日次監査(99 行) | `fetch_liq.py` |
+| liq_xyz_MU / liqev_xyz_MU / liqheat_xyz_MU / liqpx_xyz_MU | 清算の生行・イベント表・格子・時間足(版管理外) | `fetch_liq.py` → `build_liq.py` |
 
 ## 再現手順
 
@@ -825,6 +865,12 @@ uv run python scripts/build_impact100.py --coin xyz:MU
 uv run python scripts/build_cand2_stages.py --coin xyz:MU --src impact100
 uv run python scripts/plot_cand2_fresh.py --coin xyz:MU
 uv run python scripts/probe_latency.py --coin xyz:MU --n 20   # 送信しない
+uv run python scripts/fetch_liq.py --coin xyz:MU
+uv run python scripts/build_liq.py --coin xyz:MU
+uv run python scripts/build_liq_extra.py --coin xyz:MU
+uv run python scripts/build_liq_impact.py --coin xyz:MU
+uv run python scripts/plot_liqheat.py --coin xyz:MU
+uv run python scripts/plot_liq.py --coin xyz:MU
 ```
 
 ---
