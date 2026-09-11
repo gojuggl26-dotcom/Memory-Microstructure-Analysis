@@ -83,6 +83,8 @@
 
 | [24 時間動く perp は米国市場の寄り付きを先に知っているか](mu_price_discovery_report.md) | 原資産 MU(NasdaqGS)の**寄り付き**と**寄り後 1 時間**に対して perp が先行するかを 7 通りに検定する。★**xyz:MU は「速い追随者」であって「発見者」ではない** — 13:29:59 の perp は寄り値を誤差 中央 11.6bp(夜間の値動きは 389.5bp)で当てるが、**同時刻のプレマーケットは 5.2bp で 2.2 倍正確**。プレマーケットを統制すると perp の増分 $`R^2`$ は **+0.0002**(p=0.094)で消え、逆にプレマーケットは perp に +0.0018(p=2×10⁻⁵)上乗せする。★**寄り付きの瞬間に perp が跳ねる** — 13:30:00 直後の 1 秒で 13.8bp 動き、非立会日の同時刻の **271 倍**、平常の 1 秒の 16 倍。寄り値との差の **70% を 1 分で埋めに行く**(t=6.2)。唯一勝つのは**現物が世界のどこでも動かない 00〜08 UTC の 8 時間**(1 日の分散の 24.7% を作る)だが、08:00 のプレマーケット開始までに追い越される。測る時刻を 13:00 でそろえると逆の結論が出る罠と、Yahoo の日足の寄り値が 15/95 日でレギュラーの値でない件を記録。**90 営業日**。 |
 
+| [米国が閉まっている夜、値段を動かしているのはどこか](mu_night_discovery_report.md) | 上の続き。現物が世界のどこでも取引されない **00:00〜08:00 UTC の 8 時間**(そのままアジアの取引時間)で、値段を作っているのはどこかを 4 通りに切り分ける。★**夜の値動きの 4 分の 3 は指数先物(マクロ)で説明でき**($`R^2`$=0.773)、アジアのメモリ現物を足すと 0.850(Δ+0.078、p=0.004)。アジアの中で t>2 なのは **SK ハイニックスだけ**。★**恣意的な対照時刻を選ばず 1 日 48 個の 30 分刻みすべてで測ると**、1 秒の跳ねは **米国の寄りが 1 位**(13.79bp、背景の最大 2.82bp の 4.9 倍)で、アジアの寄りは 18 位と背景と区別できない。ただし「直後 5 分 ÷ 直前 5 分」では **東京・ソウルの寄りが 1 位**(3.79)— 夜の価格発見は一撃ではなく数時間かけて連続的に起きる。1 時間粒度では perp とアジアは同時に動くだけで先行関係は決まらない(ラグ相関は全て \|·\| ≤ 0.064)。**48〜51 営業日**。 |
+
 ### B. 板の状態は将来の値動きを教えてくれるか
 
 このリポジトリの中心的な問いです。板から作った説明変数で、将来の価格の向きを
@@ -462,6 +464,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 現物が閉まっている時間の動き。A 時刻別の実現ボラ、B 夜間リターンの一致、C 代表日の 1 秒チャート、D 寄り前 perp の予測力](../../../charts/xyz_MU_pricedisc_rv.png)
 
+**夜、値段を動かしているのはどこか** — 1 日 48 個の 30 分刻みごとの 1 秒の跳ね、直後 5 分÷直前 5 分、夜の値動きの説明力、時間内リードラグ。解説: [米国が閉まっている夜、値段を動かしているのはどこか](mu_night_discovery_report.md)
+
+![xyz:MU 夜の価格発見。A 30 分刻みごとの 1 秒の跳ね、B 直後 5 分÷直前 5 分、C 夜の値動きの説明力、D 時間内リードラグ](../../../charts/xyz_MU_nightdisc.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -731,6 +737,9 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [pricedisc_err_xyz_MU.csv](../../../data/pricedisc_err_xyz_MU.csv) | 寄り値の予測誤差(情報源 6 通り) | `build_pricedisc.py` |
 | [pricedisc_reg_xyz_MU.csv](../../../data/pricedisc_reg_xyz_MU.csv) / [pricedisc_seg_xyz_MU.csv](../../../data/pricedisc_seg_xyz_MU.csv) | 入れ子回帰(時刻そろえ / 夜間の窓分解) | `build_pricedisc.py` |
 | [pricedisc_gap_xyz_MU.csv](../../../data/pricedisc_gap_xyz_MU.csv) / [pricedisc_open_xyz_MU.csv](../../../data/pricedisc_open_xyz_MU.csv) / [pricedisc_rv_xyz_MU.csv](../../../data/pricedisc_rv_xyz_MU.csv) | 寄り値との差への追随 / 寄り付き前後 1 秒刻み / 時刻別 RV | `build_pricedisc.py` |
+| cash_{005930_KS,000660_KS,2330_TW,285A_T,8035_T,ASML_AS,NKDF}_{1h,1d}.csv | アジア・欧州の同業と日経先物の時間足・日足 | `fetch_cash.py` |
+| [night_marks_xyz_MU.csv](../../../data/night_marks_xyz_MU.csv) | 1 日 48 個の 30 分刻みごとの跳ねと前後の非対称(48 行) | `build_nightdisc.py` |
+| [night_explain_xyz_MU.csv](../../../data/night_explain_xyz_MU.csv) / [night_lead_xyz_MU.csv](../../../data/night_lead_xyz_MU.csv) / [night_open_xyz_MU.csv](../../../data/night_open_xyz_MU.csv) | 夜の値動きの説明力 / 時間内リードラグ / 寄り値への増分寄与 | `build_nightdisc.py` |
 
 ## 再現手順
 
@@ -892,6 +901,9 @@ uv run python scripts/fetch_cash.py --symbols MU NQ=F SMH
 uv run python scripts/fetch_hlcandle.py --coin xyz:MU --interval 1h
 uv run python scripts/build_pricedisc.py --coin xyz:MU
 uv run python scripts/plot_pricedisc.py --coin xyz:MU
+uv run python scripts/fetch_cash.py --symbols 005930.KS 000660.KS 2330.TW 285A.T 8035.T ASML.AS NKD=F
+uv run python scripts/build_nightdisc.py --coin xyz:MU
+uv run python scripts/plot_nightdisc.py --coin xyz:MU
 ```
 
 ---

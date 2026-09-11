@@ -62,6 +62,9 @@ def fetch(sym: str, iv: str, p1: int, p2: int, pp: bool) -> pl.DataFrame:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--symbols", nargs="+", default=["MU", "NQ=F", "SMH"])
+    # アジアの同業: 005930.KS(サムスン電子)/ 000660.KS(SK ハイニックス)/
+    #               2330.TW(TSMC)/ 285A.T(キオクシア)/ 8035.T(東京エレクトロン)
+    # 欧州: ASML.AS  指数先物: NKD=F(日経・CME)
     ap.add_argument("--start", default="2026-04-25")
     ap.add_argument("--end", default="")
     a = ap.parse_args()
@@ -70,7 +73,7 @@ def main() -> None:
              ) if a.end else int(time.time())
 
     for sym in a.symbols:
-        tag = sym.replace("=", "").replace("^", "")
+        tag = sym.replace("=", "").replace("^", "").replace(".", "_")
         for iv, pp in (("1h", True), ("1d", False)):
             t = fetch(sym, iv, p1, p2, pp)
             out = ROOT / "data" / f"cash_{tag}_{iv}.csv"
