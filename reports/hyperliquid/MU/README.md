@@ -101,6 +101,7 @@
 | [板の弾力性 — 流動性ショックからの回復](mu_resilience_report.md) | 最良気配の数量が直前 1 秒の平均に対して 50% 以上失われた瞬間を「ショック」とし(818 万件)、D(t) = D0 + (D_shock − D0)e^{−κt} で回復を測る 12 指標。**指数模型が平均経路には当てはまらない**(戻る件と戻らない件の混合)こと、1 秒後の回復度 R が上昇確率に 20.6pp の単調な用量反応を持つこと、買い側と売り側で弾力性に差が無いことを示す。 |
 | [ティック水準別 OBI と将来 log リターンの回帰](mu_obi_levels_report.md) | 最良気配から 1〜10 ティックの各水準について OBI を作り、100ms〜50 秒の 9 ホライズンで log リターンへ回帰。板は l1 の注文イベントから組み直した。279 格子すべてが Bonferroni 後も有意だが、**生の傾きは水準 1 が最大でも 1σ で測ると水準 2 が最大**で、累積の傾きの伸びは情報の増加ではなく ばらつきの縮小である(4 ティックで頭打ち)。bbo の 53 行の壊れた記録が標準偏差を支配していた事故と、その掃除も記録。 |
 | [板と注文イベントのエントロピー 13 種](mu_entropy_report.md) | 板の散らばり具合を 13 通り(価格水準別の数量・本数、注文数量、口座、滞留時間、最良の待ち行列、イベントの種別・側・向き、Δエントロピー、エントロピー率、条件付き、遷移)測り、6 地平 × 2 目的変数の 156 セルへ当てる。**Bonferroni を通った 49 セルは全部がボラティリティで、向きは 0 セル**。さらに前向き < 後ろ向き・活動量の統制で大半が消え、**4 段の検査を全部通ったのは156 セル中 1 つ**(Δエントロピーの 1 秒)。順位相関では見えなかった **U 字**を十分位表で見つけて結論を訂正した経緯も記録。**全 98 日**。 |
+| [ボリンジャーバンドの三本線と板の特徴量](mu_bollinger_report.md) | BB(20, 2, SMA, 終値, オフセット 0, 確定待ち)を perp の 1 分足に載せ、提示された 3 つの仮説を検定する。★**接近すると OFI は変わる — が大半は同語反復**(OFI とその分のリターンの相関は +0.52)。**同じ 1 分リターンの層で帯の内側の足を引いた「超過 OFI」は、到達の 10 分前から +0.12 → +0.43 と積み上がる**ので、帯に固有の成分は確かに残る(中間線では +0.16 で 2.7 分の 1)。★**減衰は明確** — 到達した分の OFI 1.14 が次の 1 分で 0.12 まで落ち、OFI 自身の持続(ラグ 1 自己相関 +0.181)だけなら 0.21 のはずなので**ふだんの 2 倍前後の速さ**。**反転は無い**(到達後の超過 OFI は ±0.05)。★**突破時の値は閾値にならない** — \|OFI\| は全体の 1.7 倍あるが、「その突破が続くか」の AUC は 0.496〜0.513 で 95% 区間が 0.5 を跨ぐ。差は最大 2.2bp で往復費用 2.83bp に届かない。確定待ちの厳密版でも同じ。**98 日 140,499 本**。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -468,6 +469,10 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 ![xyz:MU 夜の価格発見。A 30 分刻みごとの 1 秒の跳ね、B 直後 5 分÷直前 5 分、C 夜の値動きの説明力、D 時間内リードラグ](../../../charts/xyz_MU_nightdisc.png)
 
+**ボリンジャーバンドの三本線と板の特徴量** — 帯の位置と OFI、|OFI| の U 字、到達前後の道筋、1 分リターンを揃えた対照との超過、突破時の五分位、実例。解説: [ボリンジャーバンドの三本線と板の特徴量](mu_bollinger_report.md)
+
+![xyz:MU ボリンジャーバンドと板の特徴量。A 帯の位置と OFI、B |OFI| の U 字、C 到達前後、D 対照を引いた超過、E 突破時の五分位、F 実例](../../../charts/xyz_MU_bb.png)
+
 ### B. 板の状態と将来の値動き
 
 **MicroPrice の確率推移行列** — 差の帯 × ホライズンの上昇確率を立会日・閉場日で並べた行列。色は無条件との差。解説: [MicroPrice と midprice の差](mu_microprice_report.md)
@@ -739,6 +744,7 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 | [pricedisc_gap_xyz_MU.csv](../../../data/pricedisc_gap_xyz_MU.csv) / [pricedisc_open_xyz_MU.csv](../../../data/pricedisc_open_xyz_MU.csv) / [pricedisc_rv_xyz_MU.csv](../../../data/pricedisc_rv_xyz_MU.csv) | 寄り値との差への追随 / 寄り付き前後 1 秒刻み / 時刻別 RV | `build_pricedisc.py` |
 | cash_{005930_KS,000660_KS,2330_TW,285A_T,8035_T,ASML_AS,NKDF}_{1h,1d}.csv | アジア・欧州の同業と日経先物の時間足・日足 | `fetch_cash.py` |
 | [cash1m_MU.csv](../../../data/cash1m_MU.csv) | 原資産 MU の **1 分足**(時間外込み・19,624 本 / 21 営業日 / 2026-08-13 〜 09-11)。★Yahoo は 1 分足を直近 30 日しか保持しないので**作り直せない**。版管理下に置いてある | `fetch_cash_1m.py` |
+| [bb_profile_xyz_MU.csv](../../../data/bb_profile_xyz_MU.csv) / [bb_touch_xyz_MU.csv](../../../data/bb_touch_xyz_MU.csv) / [bb_cross_xyz_MU.csv](../../../data/bb_cross_xyz_MU.csv) | ボリンジャーバンド: 帯位置ごとの特徴量 / 到達前後の道筋 / 突破時の五分位 | `build_bb.py` |
 | [night_marks_xyz_MU.csv](../../../data/night_marks_xyz_MU.csv) | 1 日 48 個の 30 分刻みごとの跳ねと前後の非対称(48 行) | `build_nightdisc.py` |
 | [night_explain_xyz_MU.csv](../../../data/night_explain_xyz_MU.csv) / [night_lead_xyz_MU.csv](../../../data/night_lead_xyz_MU.csv) / [night_open_xyz_MU.csv](../../../data/night_open_xyz_MU.csv) | 夜の値動きの説明力 / 時間内リードラグ / 寄り値への増分寄与 | `build_nightdisc.py` |
 
@@ -904,6 +910,9 @@ uv run python scripts/build_pricedisc.py --coin xyz:MU
 uv run python scripts/plot_pricedisc.py --coin xyz:MU
 uv run python scripts/fetch_cash.py --symbols 005930.KS 000660.KS 2330.TW 285A.T 8035.T ASML.AS NKD=F
 uv run python scripts/fetch_cash_1m.py --symbols MU   # 直近 30 日だけ。期限切れ前に回す
+uv run python scripts/build_bb.py --coin xyz:MU
+uv run python scripts/build_bb.py --coin xyz:MU --confirm-lag 1 --suffix _lag1
+uv run python scripts/plot_bb.py --coin xyz:MU
 uv run python scripts/build_nightdisc.py --coin xyz:MU
 uv run python scripts/plot_nightdisc.py --coin xyz:MU
 ```
