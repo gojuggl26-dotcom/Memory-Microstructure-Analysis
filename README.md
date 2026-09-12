@@ -26,6 +26,7 @@
 | **[Hyperliquid](https://hyperliquid.xyz/)** | [Trade.xyz](https://trade.xyz/) が配備したメモリ半導体 perp 6 銘柄 + 対照 1 銘柄 | L4(注文 1 本ごと) | 進行中 | **[Hyperliquid の分析](reports/hyperliquid/README.md)** |
 | **[Pendle Boros](https://boros.pendle.finance/)** | 各取引所の perp ファンディングレートを implied APR 建てで取引する板・全 188 市場 | 注文イベント(Arbitrum オンチェーンログ) | 進行中 | **[Pendle Boros の分析](reports/pendle/README.md)** |
 | **[Lighter](https://lighter.xyz/)** | メモリ半導体 5 + 米国株 5 + 金属 2 + H100 の 13 銘柄。Binance 同名 12 銘柄とのリードラグ比較つき | L2(50ms バッチ差分)+ 約定 + BBO | 進行中 | **[Lighter の分析](reports/lighter/README.md)** |
+| **[Derive](https://derive.xyz/)**(旧 Lyra) | BTC/ETH/HYPE/SOL/ZEC のオプション約 2,566 銘柄 + ヘッジ用の perp | 板は L2(オプション約 1 秒)。約定・満期決済は 2024-01 まで遡及可・**実現損益つき** | 進行中 | **[Derive の分析](reports/derive/README.md)** |
 | その他の DEX | 未定 | — | 未着手 | — |
 
 新しい取引所を足すときは `reports/<取引所名>/README.md` を作り、この表に 1 行足します。
