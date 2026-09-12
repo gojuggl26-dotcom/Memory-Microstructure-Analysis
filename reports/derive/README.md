@@ -34,6 +34,17 @@
    市場全体では Spearman IC が帰無を超えず、**アルファは上位層に局在**している
 6. **手数料は名目基準**(メイカー 1bp / テイカー 3bp)。実測でメイカー約定の
    **87% が手数料ゼロ・50% がリベート受領**だが、ゼロ手数料は **10 ウォレットのみ**
+7. **★生存バイアスを除いても結論は保たれる。**「最初の 200 約定だけ」で
+   メイカー主体を判定し **201 約定目以降**だけで測っても +4.65 bp・上位 3 者で 98%。
+   ただし**初期の成績と後の成績の Spearman は −0.250**(n=40)で、
+   早期の勝ちは後の勝ちを予測しない
+8. **★参入した者の半分は 30 日で消え、1 年後に残るのは 12%。**
+   撤退した 9,802 者のうち**黒字で退場したのは 21%**、中央値 −$70。
+   200 約定以上こなした「本気の参加者」でも黒字は 20%、中央値 −$1,932
+9. **★RFQ は「幅が広いが毒も強い」ではなかった。**同一銘柄・サイズ キャリパーで
+   56,498 組をマッチすると、RFQ の execution edge は **+9.48 対 +5.47 bp**(p=4e-105)
+   と 1.7 倍なのに、markout の差は **+0.70 bp(p=0.085)で有意でない**。
+   2026 年はメイカー名目の **71%** が RFQ 経由で、板を通っていない
 
 ---
 
@@ -51,6 +62,7 @@
 |---|---|
 | [★実現損益による MM 採算の実測検証](derive_mm_pnl_report.md) | 取引所が確定させた実現損益(反対売買 + 満期決済 + perp)でオプション MM の採算を直接検証。33 か月・976 日・41 ウォレット。点推定 +5.09 bp だが 3 日を除くと反転すること、上位 3 者で 103% を占めること、推定が外れていた理由を含む。 |
 | [★実績を「技術」と「運」に分解する](derive_alpha_report.md) | wallet × day パネル 275,656 行で r = α_i + β'X + ε を推定。**階層的縮約**(empirical Bayes)で小標本の見かけの大勝ちを 0 へ引き戻し、形成 6 か月 → 評価 6 か月のウォークフォワード 22 窓で持続性を検定。Spearman rank IC・上位四分位の残存・P(α>0)。結論: 上位 3 者のうち技術の証拠があるのは 1 者だけ。 |
+| [★生存バイアスの除去・参入者の生存分析・RFQ と CLOB の分離](derive_cohort_rfq_report.md) | 上の 2 本にあった設計上の穴を塞ぐ。(1) 全期間を見てからコホートを選ぶのをやめ、**最初の 200 約定だけ**で判定して **201 約定目以降**で評価する。(2) 11,699 ウォレットの **Kaplan-Meier** 生存分析(撤退 = 30 日無取引)で「新規参入者から見た経済性」を出す。(3) **RFQ と CLOB を完全に分離**し、同一銘柄・DTE・moneyness・サイズ・時刻・mark IV をマッチングして execution edge と markout を比較する。 |
 
 ---
 
@@ -63,6 +75,12 @@
 **技術と運の分解** — 階層的縮約の効き方、縮約係数 B、P(α>0)、ウォークフォワードの IC と帰無、上位四分位の残存、上位 3 者の別期間での位置。解説: [技術と運の分解](derive_alpha_report.md)
 
 ![Derive 技術と運の分解](../../charts/derive_alpha.png)
+
+**生存バイアスの除去 / 生存分析 / RFQ 分離** — 分類期と評価期の散布、評価期の損益の集中、
+Kaplan-Meier 生存曲線、撤退者の生涯損益、マッチ後の RFQ 対 CLOB、RFQ 比率と edge の関係。
+解説: [生存バイアスの除去・生存分析・RFQ 分離](derive_cohort_rfq_report.md)
+
+![Derive 生存バイアス・生存分析・RFQ 分離](../../charts/derive_cohort_rfq.png)
 
 ---
 
@@ -82,6 +100,12 @@
 | `alpha/panel.parquet` | wallet × day パネル 275,656 行 | `derive_alpha.py` |
 | `alpha/alpha_*.parquet` | 目的変数 × 仕様ごとの縮約後アルファ | `derive_alpha.py` |
 | `alpha/walkforward.parquet` | 22 窓の IC・残存率・帰無・上位 3 者の順位 | `derive_alpha.py` |
+| `cohort/cohort_wallets.parquet` | 最初の 200 約定での分類と、201 約定目以降の損益 | `derive_cohort.py` |
+| `cohort/survival.parquet` | 11,699 ウォレットの生存日数・打ち切り・生涯損益 | `derive_cohort.py` |
+| `cohort/cohort_month.parquet` | 参入月別のコホート | `derive_cohort.py` |
+| `rfq/maker_edge.parquet` | メイカー約定 600,632 行の edge / markout / RFQ 旗 | `derive_rfq.py` |
+| `rfq/matched.parquet` | マッチ後 56,498 組の比較結果と釣り合い | `derive_rfq.py` |
+| `rfq/wallet_rfq.parquet` | ウォレット別の RFQ 比率と edge | `derive_rfq.py` |
 
 ## 再現手順
 
@@ -97,6 +121,9 @@ uv run --with polars python scripts/derive_mm_pnl.py
 uv run --with polars python scripts/derive_mm_plot.py
 uv run --with polars --with scipy python scripts/derive_alpha.py                 # 技術と運の分解
 uv run --with polars python scripts/derive_alpha_plot.py
+uv run --with polars --with scipy python scripts/derive_cohort.py                # 生存バイアス除去 + KM
+uv run --with polars --with scipy python scripts/derive_rfq.py                   # RFQ vs CLOB マッチング
+uv run --with polars --with scipy python scripts/derive_cohort_plot.py
 ```
 
 ## ★このデータを扱うときの罠(すべて実際に踏んだ)
@@ -121,3 +148,14 @@ uv run --with polars python scripts/derive_alpha_plot.py
    モーメント法の σ_α² が 0 に潰れ、全員が完全縮約される
 10. **perp 704 万行を辞書で持つと OOM する**(RAM 15.3GB の機で空き 0.2GB まで落ちた)。
    ファイル単位で集計する
+11. **★マッチングにキャリパーを入れないと裾で壊れる。**同一銘柄・時間窓だけで
+   最近傍を取ると、大口 RFQ に見合う CLOB 約定が無いときに桁違いの相手と組み、
+   **名目合計が $8.02B 対 $1.76B と 4.6 倍ずれた**。中央値は釣り合って見えたので、
+   標準化差だけでなく**名目の合計まで確認する**。|Δlog(size)| ≤ 0.5 を入れて 1.3% 差に収まった
+12. **打ち切りを無視して生存日数を平均しない。**まだ活動中の 1,897 者を「短命」に
+   数えることになる。参入月別で 2026-08 以降の撤退率が低く見えるのも
+   **打ち切りであって生存ではない**
+13. **polars の `.mean()` は NaN を伝播する。**markout は「次の約定まで」が
+   3 日を超えると NaN にしてあるので、`.drop_nans().mean()` にしないと全体が NaN になる
+14. **cp932 のコンソールに `α̂` を print すると落ちる**(U+0302 の結合文字)。
+   `PYTHONIOENCODING=utf-8` を付けるか、表示用の文字列を ASCII にする
