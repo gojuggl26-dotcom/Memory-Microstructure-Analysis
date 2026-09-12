@@ -24,7 +24,10 @@ A-1 費用を全部引いたか
     `realized_pnl` / `settle_pnl` は**手数料差引後**。手数料前の値も併記して、
     手数料が損益をどれだけ食っているかを出す。リベートは含有が不明なので別建て。
 A-2 分母は何か
-    bp 表示は**名目**(数量 × index)で割る。プレミアムではない。両方出す。
+    bp 表示は**名目**(数量 × index)で割る。プレミアムではない。
+    ★ウォレット単位ではそのウォレット自身の行だけが名目になる(片側)。
+      2 で割るのは「市場全体の出来高を出すとき」だけ。
+      最初に書いたときここを取り違えて **bp を 2 倍過大**に出した。
 A-3 その指標は問いに答えているか
     「MM が儲かるか」なので、**メイカーとして約定した分**の損益を主に見る。
     ただし建玉は maker/taker 双方の約定で作られるので、
@@ -183,7 +186,10 @@ def main() -> int:
                    ("下位", MK.sort("pnl_realized").head(5))):
         print(f"  --- {lab} ---")
         for r in d.iter_rows(named=True):
-            no = r["notional_both"] / 2          # maker+taker 行で 2 倍なので
+            # ★ウォレットに絞ると自分の側の行しか出ない(実測: 最大手は
+            #   maker 78,116 行 / taker 36 行)。2 で割ってはいけない。
+            #   2 倍になるのは「全ウォレットを合算したとき」だけ。
+            no = r["notional_both"]
             bp = r["pnl_realized"] / max(no, 1) * BP
             print(f"   {r['wallet'][:12]}.. 実現 ${r['pnl_realized']:>12,.0f} "
                   f"(売買 {r['pnl_trade']:>11,.0f} / 満期 {r['pnl_settle']:>11,.0f}"
@@ -215,7 +221,9 @@ def main() -> int:
 
     print("\n" + "=" * 72)
     print("メイカー主体ウォレットの日次損益(オプション売買 + 満期決済 + perp)")
-    no = float(daily["notional"].sum()) / 2
+    # ★メイカー主体 41 者の合算。相手方が同じ集合内にいる約定はごく一部なので
+    #   ここも 2 で割らない(片側集計)
+    no = float(daily["notional"].sum())
     tt = float(daily["total"].sum())
     print(f"  日数 {daily.height} / 総額 ${tt:,.0f} / 名目 ${no:,.0f} "
           f"= {tt/max(no,1)*BP:+.3f} bp")
