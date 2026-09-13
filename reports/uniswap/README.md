@@ -2,6 +2,10 @@
 
 [← ホーム](../../README.md)
 
+<p>
+  <a href="https://uniswap.org/"><img src="../../photo/uniswap-logo.png" alt="Uniswap" height="76"></a>
+</p>
+
 | 項目 | 内容 |
 |---|---|
 | プロトコル | [Uniswap v3](https://uniswap.org/)。集中流動性型 AMM |

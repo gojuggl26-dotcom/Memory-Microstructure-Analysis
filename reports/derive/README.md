@@ -2,6 +2,10 @@
 
 [← ホーム](../../README.md)
 
+<p>
+  <a href="https://derive.xyz/"><img src="../../photo/derive-logo.png" alt="Derive" height="76"></a>
+</p>
+
 | 項目 | 内容 |
 |---|---|
 | 取引所 | [Derive](https://derive.xyz/)(旧 Lyra)。オプション DEX。板は中央集権的なマッチングエンジン、決済は Derive Chain 上 |

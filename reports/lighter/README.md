@@ -2,6 +2,10 @@
 
 [← ホーム](../../README.md)
 
+<p>
+  <a href="https://lighter.xyz/"><img src="../../photo/lighter-logo.jpg" alt="Lighter" height="76"></a>
+</p>
+
 | 項目 | 内容 |
 |---|---|
 | 取引所 | [Lighter](https://lighter.xyz/)(zk ロールアップ上の PerpDEX。板は 50ms バッチの L2 差分で公開) |
