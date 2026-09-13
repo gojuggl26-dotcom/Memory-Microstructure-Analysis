@@ -3,7 +3,7 @@
 [← ホーム](../../README.md)
 
 <p>
-  <a href="https://lighter.xyz/"><img src="../../photo/lighter-logo.jpg" alt="Lighter" height="200"></a>
+  <a href="https://lighter.xyz/"><img src="../../photo/lighter-logo.jpg" alt="Lighter" height="400"></a>
 </p>
 
 | 項目 | 内容 |
