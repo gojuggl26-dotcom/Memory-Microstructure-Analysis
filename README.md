@@ -30,6 +30,7 @@
 | **[Uniswap v3](https://uniswap.org/)** | Arbitrum の WETH/USDC ほか 15 プール(+ 4 チェーンの PAXG / EURC / NVDA / QQQB) | オンチェーンログ(ブロック粒度)。板は tick 別流動性から**厳密に**再構成 | 進行中 | **[Uniswap の分析](reports/uniswap/README.md)** |
 | **[Aave](https://aave.com/)** | Ethereum / Arbitrum / Base の USDC・USDT・WETH の金利・利用率(+ ブリッジ版 3 本) | オンチェーンログ(**全トランザクション**)941 万イベント | 進行中 | **[Aave の分析](reports/aave/README.md)** |
 | **[Morpho](https://morpho.org/)** | 貸借市場(担保 × 借入 × オラクル × LLTV ごと)3 チェーン。金利 249 市場 + **建玉 78,523 件の清算ヒートマップ** | GraphQL + オンチェーン照合 | 進行中 | **[Morpho の分析](reports/morpho/README.md)** |
+| **DeFi Protocol Fundamentals** | Uniswap / Aave / Morpho ほかを横断(Revenue / Capital Efficiency / Revenue Quality / Concentration Risk / Treasury) | 各プロトコルの分析を集計 | 未着手 | **[Protocol Fundamentals の分析](reports/defi-protocol-fundamentals/README.md)** |
 | その他の DEX | 未定 | — | 未着手 | — |
 
 新しい取引所を足すときは `reports/<取引所名>/README.md` を作り、この表に 1 行足します。
