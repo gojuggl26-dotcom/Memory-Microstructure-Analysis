@@ -25,6 +25,7 @@
 | [MU の分析一式を SNDK で走らせる](sndk_report.md) | 17 分析 + 特徴量 199 本 × 7 ホライズン。OBI/OFI 帯の端(0.23)は 7 銘柄で最大、しかし δ の逆張り(−0.161)は最弱。 |
 | [7 銘柄の横並び](../cross_coin_report.md) | 板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。 |
 | [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 55.3%(プラセボ 0.0%)。MU との効き方の順位相関 **0.977** は 21 ペアで最高(中央スプレッドが 1.3 / 1.1bp と近い)。最良は `obi1 → mid_60s` の片側 0.77bp で、費用 2.89bp の 27%。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
+| [7 銘柄のメイカー検証](../mm_all_report.md)(7 銘柄共通) | 在庫つきメイカー(両側に指値・\|q\|≤1 で FIFO 相殺・BBO 追随)を `xyz:MU` と同じ設定で当て、1 組あたり損益を恒等式で分解する。入口の門・無作為の門(帰無対照)・発注遅延 130 ms・執行できる数量を順に入れる。半スプレッド 2.143bp に対し劣化 2.121bp(**99%**)でちょうど相殺し、約定時の edge は 0.022bp しか残らない。 ★7 銘柄のどれも、費用を引く前ですら**出す価値が無い**。 |
 
 ---
 
@@ -98,6 +99,8 @@
 
 | ファイル | 中身 |
 |---|---|
+| [mmgate_fit_xyz_SNDK.csv](../../../data/mmgate_fit_xyz_SNDK.csv) | 入口の門の学習・評価の別と通過率 |
+| [inv_days_xyz_SNDK_q1.csv](../../../data/inv_days_xyz_SNDK_q1.csv) | 在庫つきメイカーの日次(門なし・幽霊注文) |
 | [decile_null_xyz_SNDK_bbo.csv](../../../data/decile_null_xyz_SNDK_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
 | [decile_sum_xyz_SNDK_bbo.csv](../../../data/decile_sum_xyz_SNDK_bbo.csv) | 84 本 × 18 目的変数の十分位要約(`build_decile.py`) |
 | [profile_xyz_SNDK.csv](../../../data/profile_xyz_SNDK.csv) | 日次の出来高・件数・価格・参加者 |
@@ -120,4 +123,8 @@ uv run python scripts/plot_xfeat.py  --coin xyz:SNDK
 uv run python scripts/build_featbbo.py --coin xyz:SNDK                    # 84 本(bbo + fills のみ)
 uv run python scripts/build_fwd.py      --coin xyz:SNDK --src featbbo --suffix _bbo
 uv run python scripts/build_decile.py   --coin xyz:SNDK --src featbbo --suffix _bbo
+uv run python scripts/build_inventory.py --coin xyz:SNDK --qmax 1 --posts
+uv run python scripts/build_mmgate.py      --coin xyz:SNDK
+uv run python scripts/build_mmgate_null.py --coin xyz:SNDK
+uv run python scripts/build_inventory.py --coin xyz:SNDK --qmax 1 --gate data/entrygate_xyz_SNDK_mmg.parquet
 ```

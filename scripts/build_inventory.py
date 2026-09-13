@@ -206,6 +206,7 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
     pair_dt, pair_pnl = [], []
     # 建玉 1 本ずつの記録(項目 3 の特徴量突き合わせ用)
     lot_rec = {"t_in": [], "side": [], "p_in": [], "m_in": [],
+               "p_out": [], "m_out": [],
                "t_off": [], "pnl": [], "forced": []}
     # 発注 1 件ごとの記録(項目 5 の入口ゲート学習用)。
     # 約定したか、その約定が建てた玉の最終的な往復損益はいくらか。
@@ -234,6 +235,7 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
             pair_pnl.append(pnl)
             lot_rec["t_in"].append(t0); lot_rec["side"].append(-s)
             lot_rec["p_in"].append(p0); lot_rec["m_in"].append(m0)
+            lot_rec["p_out"].append(price); lot_rec["m_out"].append(m)
             lot_rec["t_off"].append((tau - t0) / 1e9)
             lot_rec["pnl"].append(pnl); lot_rec["forced"].append(0)
             q -= 1 if q > 0 else -1
@@ -262,6 +264,8 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
             to_cost += 0.5 * (pa[j] - pb[j]) / m0 * 1e4 + TAKER_FEE
             lot_rec["t_in"].append(t0); lot_rec["side"].append(sgn)
             lot_rec["p_in"].append(p0); lot_rec["m_in"].append(m0)
+            lot_rec["p_out"].append(float(xp))
+            lot_rec["m_out"].append(float(0.5 * (pb[j] + pa[j])))
             lot_rec["t_off"].append((T - t0) / 1e9)
             lot_rec["pnl"].append(g); lot_rec["forced"].append(2)
             q -= sgn
@@ -353,6 +357,8 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
             forced_cost += 0.5 * (pa[-1] - pb[-1]) / m0 * 1e4 + TAKER_FEE
             lot_rec["t_in"].append(t0); lot_rec["side"].append(sgn)
             lot_rec["p_in"].append(p0); lot_rec["m_in"].append(m0)
+            lot_rec["p_out"].append(float(xp))
+            lot_rec["m_out"].append(float(0.5 * (pb[-1] + pa[-1])))
             lot_rec["t_off"].append((ts[-1] - t0) / 1e9)
             lot_rec["pnl"].append(g); lot_rec["forced"].append(1)
     pd_ = np.array(pair_dt)
@@ -515,6 +521,8 @@ def main() -> None:
             "side": np.array(lr["side"], np.int8),
             "p_in": np.array(lr["p_in"], np.float64),
             "m_in": np.array(lr["m_in"], np.float64),
+            "p_out": np.array(lr["p_out"], np.float64),
+            "m_out": np.array(lr["m_out"], np.float64),
             "t_off": np.array(lr["t_off"], np.float32),
             "pnl": np.array(lr["pnl"], np.float32),
             "forced": np.array(lr["forced"], np.int8)}))

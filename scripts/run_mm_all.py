@@ -11,6 +11,7 @@
 |---|---|---|
 | base | `--qmax 1`、遅延 0 / 65 / 130 ms | 幽霊注文(数量 0)での 1 組あたり損益と、遅延への耐性 |
 | size | `--size` を **金額で**そろえて掃引 | 執行できる数量の上限。Signal × ExecutableSize |
+| gate | 入口の門 × 数量 × 遅延 | ★本命。3 つ同時に入れて残るか |
 
 数量の掃引は銘柄ごとに違う価格を吸収するため、**$100 / $1k / $10k / $100k を
 その銘柄の中央 mid で枚数に直して**与える。板の厚みは銘柄で 20 倍違うので、
@@ -62,7 +63,8 @@ def run(args: list[str]) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--stage", choices=["base", "size", "all"], default="all")
+    ap.add_argument("--stage", choices=["base", "size", "gate", "all"],
+                    default="all")
     ap.add_argument("--coins", nargs="*", default=COINS)
     a = ap.parse_args()
 
@@ -84,6 +86,19 @@ def main() -> None:
                 run(["--coin", f"xyz:{c}", "--qmax", "1", "--size", str(s)])
                 run(["--coin", f"xyz:{c}", "--qmax", "1", "--size", str(s),
                      "--lat", "0.130"])
+        if a.stage in ("gate", "all"):
+            # ★本命。入口の門 × 実際の数量 × 発注遅延をすべて同時に入れる。
+            #   門だけ・数量だけで黒字に見えても、3 つそろうと消えるかを見る。
+            g = str(DATA / f"entrygate_xyz_{c}_mmg.parquet")
+            run(["--coin", f"xyz:{c}", "--qmax", "1", "--gate", g,
+                 "--lat", "0.130"])
+            for u in (1_000, 10_000):
+                s = round(u / m, 6)
+                print(f"  -- 門 × 数量 ${u:,} = {s:g} 枚", flush=True)
+                run(["--coin", f"xyz:{c}", "--qmax", "1", "--gate", g,
+                     "--size", str(s)])
+                run(["--coin", f"xyz:{c}", "--qmax", "1", "--gate", g,
+                     "--size", str(s), "--lat", "0.130"])
 
 
 if __name__ == "__main__":
