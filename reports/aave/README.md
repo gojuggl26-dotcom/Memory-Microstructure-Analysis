@@ -114,7 +114,9 @@ USDC / USDT / Base でも残差は aToken 総量の 1e-7 程度に収まった�
 
 *色はその時点の slope1。IRM が動くので 1 本の折れ線には乗らず、傾きの違う束になる。*
 
-**IRM のパラメータは 1 年で Ethereum 62 回 / Arbitrum 24 回 / Base 18 回変わっていた。**
+**IRM のパラメータは 1 年で何度も変わっていた。** Ethereum 62 件 / Arbitrum 24 件は
+`RateDataUpdate` ログの件数(Ethereum のうち 3 件は同値の再送なので実変更は 59)。
+Base はログが引けないのでアーカイブ走査で数え、**実変更 17 回**。
 Uopt が 0.92↔0.94 で往復する資産もある。Arbitrum の USDC は slope1 が
 6.5% → 6.0% → 5.5% → 5.0% → 4.0% と 5 段階で下がった。
 
