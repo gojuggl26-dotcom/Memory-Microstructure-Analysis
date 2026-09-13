@@ -121,7 +121,7 @@ def day_arrays(dt, bpath, fpath):
 
 def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
              gate=None, exitk=0, lad=None, improve=0, front=False,
-             requote="always", keepmax_ns=0, keepdt=0):
+             requote="always", keepmax_ns=0, keepdt=0, own=0.0):
     (ts, pb, pa, qb, qa, mid, d0, btg, atg,
      ft, fpx, fsz, fbuy) = day_arrays(dt, bpath, fpath)
     nb = ts.size
@@ -172,6 +172,11 @@ def simulate(dt, bpath, fpath, lat_ns, qmax, hold_ns, tmax_ns=0,
                 #   16.7% が 0 になり、そこだけ約定率が 35.6% と跳ねた。
                 #   自分が先頭でも「自分の値段で 1 ロット約定する」ことは要る。
                 q0 = np.maximum(q0, SZ_LOT)
+            # ★ 自分のクオート数量。既定 0 = 幽霊注文(前の行列が
+            #   はけた瞬間に無限小だけ約定する)。own>0 なら
+            #   「前の行列 + 自分の数量」が流れて初めて全量約定とみなす
+            #   (all-or-nothing の保守側)。
+            q0 = q0 + own
             tau = fill_times(t0, np.round(pk / PX_UNIT), q0, sgn, grid,
                              ft, fpx, fsz, msk, d0)
             good = (tau >= 0) & (tau <= exp)
@@ -409,10 +414,14 @@ def main() -> None:
                     help="在庫を増やす発注に掛ける門(data/... の parquet)")
     ap.add_argument("--skip", type=int, default=0,
                     help="先頭 N 日を飛ばす(評価期間だけ回すとき 59)")
+    ap.add_argument("--size", type=float, default=0.0,
+                    help="自分のクオート数量(単位)。0 = 幽霊注文(従来)")
     ap.add_argument("--days", type=int, default=0)
     a = ap.parse_args()
     tag = a.coin.replace(":", "_")
     sfx = f"_q{a.qmax}"
+    if a.size:
+        sfx += f"_sz{a.size:g}"
     if a.lat:
         sfx += f"_lat{int(round(a.lat*1000))}"
     if a.mode == "fixed":
@@ -495,7 +504,8 @@ def main() -> None:
         r, pd_, pp_, qa_, lr, pr = simulate(dt, bpath, fpath, lat_ns, a.qmax,
                                             hold_ns, tmax_ns, gate, a.exitk,
                                             lad, a.improve, a.front,
-                                            a.requote, keepmax_ns, a.keepdt)
+                                            a.requote, keepmax_ns, a.keepdt,
+                                            a.size)
         if a.posts:
             posts.append(pl.DataFrame({"dt": [dt] * pr["t"].size, **pr}))
         rows.append(r)
