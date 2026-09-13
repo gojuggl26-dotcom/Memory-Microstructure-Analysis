@@ -105,6 +105,8 @@
 
 | ファイル | 中身 | 作るスクリプト |
 |---|---|---|
+| [decile_null_xyz_INTC_bbo.csv](../../../data/decile_null_xyz_INTC_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
+| [decile_sum_xyz_INTC_bbo.csv](../../../data/decile_sum_xyz_INTC_bbo.csv) | 84 本 × 18 目的変数の十分位要約(`build_decile.py`) |
 | [profile_xyz_INTC.csv](../../../data/profile_xyz_INTC.csv) | 日次の出来高・取引件数・価格・参加者数 | `coin_profile.py` |
 | [featlib_stats_xyz_INTC.csv](../../../data/featlib_stats_xyz_INTC.csv) | 特徴量ごとの分類・有限率・分位 | `analyze_featlib.py` |
 | [featlib_pred_xyz_INTC.csv](../../../data/featlib_pred_xyz_INTC.csv) | 特徴量ごとの前向き / 後ろ向き / 帰無対照の相関 | `analyze_featlib.py` |
@@ -137,6 +139,7 @@
 | レポート | 内容 |
 |---|---|
 | [特徴量 229 本 × 9 ホライズンの十分位分析](../decile_report.md)(2 銘柄共通) | 特徴量ライブラリ全 229 本を十分位に切り、**100ms / 300ms / 500ms / 1s / 3s / 5s / 10s / 30s / 60s** の 9 ホライズン × mid/micro の将来リターンと突き合わせる。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。★**Bonferroni を通るのは MU 27.9% / INTC 35.9%(プラセボ 0.0% / 0.1%)と豊富だが、その最大の \|D10 − D1\| は 2.785bp / 1.630bp で往復費用 2.83bp に届かない**。2.83bp を越えるセルは 36 / 180 本あるが、どれも有意でない(\|t\| の中央 1.63 / 1.03)。効く帯は **300ms〜5 秒の台地**。**どのホライズンでも mid 建てのほうが micro 建てより通過本数が多い**。白色雑音を同じ配管に通して機械を検算し、polars の `NaN > 数値` が真になる罠で一度偽の結論を出した経緯も記録。 |
+| [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 40.0%(プラセボ 0.0%)で 7 銘柄の最低。最良は `obi1 → mid_60s` の片側 0.65bp で、費用 3.63bp の 18%。**229 本版で使った費用 2.83bp はこの銘柄には 0.8bp 甘かった**。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 
 ---
 
@@ -182,4 +185,7 @@ uv run python scripts/fit_l4feat.py    --coin xyz:INTC --stage daily
 uv run python scripts/fit_l4feat.py    --coin xyz:INTC --stage corr
 uv run python scripts/fit_leadlag_l4.py --a xyz:INTC --b xyz:MU
 uv run python scripts/plot_l4feat.py   --coin xyz:INTC
+uv run python scripts/build_featbbo.py --coin xyz:INTC                    # 84 本(bbo + fills のみ)
+uv run python scripts/build_fwd.py      --coin xyz:INTC --src featbbo --suffix _bbo
+uv run python scripts/build_decile.py   --coin xyz:INTC --src featbbo --suffix _bbo
 ```

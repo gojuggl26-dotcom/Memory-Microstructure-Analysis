@@ -24,6 +24,7 @@
 |---|---|
 | [MU の分析一式を KIOXIA で走らせる](kioxia_report.md) | 17 分析 + 特徴量 199 本 × 7 ホライズン。**予測力の山が 10 秒(0.359)** — 歪んだ気配が何十秒も放置される板。Book Slope は唯一立たない(t=1.8)。 |
 | [7 銘柄の横並び](../cross_coin_report.md) | 板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。 |
+| [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 51.2%(プラセボ 0.0%)。板が 2026-06-25 からなので **46 日**しかない。効果は 7 銘柄で最大(`ofi_ewma → mid_60s` 片側 5.22bp)だが、**費用も最大の 15.49bp** でその 34%。100ms では 24% しか有意にならず、**30〜60 秒でようやく 61%** に達する。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 
 ---
 
@@ -95,6 +96,8 @@
 
 | ファイル | 中身 |
 |---|---|
+| [decile_null_xyz_KIOXIA_bbo.csv](../../../data/decile_null_xyz_KIOXIA_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
+| [decile_sum_xyz_KIOXIA_bbo.csv](../../../data/decile_sum_xyz_KIOXIA_bbo.csv) | 84 本 × 18 目的変数の十分位要約(`build_decile.py`) |
 | [profile_xyz_KIOXIA.csv](../../../data/profile_xyz_KIOXIA.csv) | 日次の出来高・件数・価格・参加者 |
 | [suite_headline_xyz_KIOXIA.json](../../../data/suite_headline_xyz_KIOXIA.json) | 見出しの数字 |
 | [xfeat_pred_xyz_KIOXIA.csv](../../../data/xfeat_pred_xyz_KIOXIA.csv) | 199 本 × 7 ホライズンの予測力 |
@@ -112,4 +115,7 @@ uv run python scripts/build_xfeat.py --coin xyz:KIOXIA
 uv run python scripts/fit_xfeat.py   --coin xyz:KIOXIA --stage pool
 uv run python scripts/fit_xfeat.py   --coin xyz:KIOXIA --stage daily
 uv run python scripts/plot_xfeat.py  --coin xyz:KIOXIA
+uv run python scripts/build_featbbo.py --coin xyz:KIOXIA                    # 84 本(bbo + fills のみ)
+uv run python scripts/build_fwd.py      --coin xyz:KIOXIA --src featbbo --suffix _bbo
+uv run python scripts/build_decile.py   --coin xyz:KIOXIA --src featbbo --suffix _bbo
 ```

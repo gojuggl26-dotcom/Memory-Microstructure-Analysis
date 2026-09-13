@@ -120,11 +120,14 @@ def run(X: dict, Y: np.ndarray, ynames: list, day: np.ndarray, nd: int,
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
+    ap.add_argument("--src", default="featlib")
+    ap.add_argument("--suffix", default="", help="入出力名に付ける")
     ap.add_argument("--no-null", action="store_true")
     a = ap.parse_args()
     tag = a.coin.replace(":", "_")
+    sfx = a.suffix
 
-    fw = pl.read_parquet(D / f"fwd_{tag}.parquet").sort("dt", "sec")
+    fw = pl.read_parquet(D / f"fwd_{tag}{sfx}.parquet").sort("dt", "sec")
     ynames = [c for c in fw.columns if c.startswith("fwd_")]
     ref = fw.select("dt", "sec")
     days = ref["dt"].unique(maintain_order=True).to_list()
@@ -143,7 +146,7 @@ def main() -> None:
         v = Yall[fin, i]
         print(f"  {yn:<16} {v.std():>9.3f} {np.mean(v == 0)*100:>15.1f}%")
 
-    cols = pl.read_parquet(D / f"featlib_{tag}" / f"dt={days[0]}.parquet").columns
+    cols = pl.read_parquet(D / f"{a.src}_{tag}" / f"dt={days[0]}.parquet").columns
     feats = [c for c in cols if c not in ("dt", "sec") and not c.startswith("fwd_")]
     print(f"[dec] 説明変数 {len(feats)} 本 × 目的変数 {len(ynames)} 本 = "
           f"{len(feats)*len(ynames):,} 通り", file=sys.stderr)
@@ -153,7 +156,7 @@ def main() -> None:
     allrows, allsum, nullsum = [], [], []
     for b in range(0, len(feats), BATCH):
         sel = feats[b:b + BATCH]
-        t = (pl.scan_parquet(str(D / f"featlib_{tag}" / "dt=*.parquet"))
+        t = (pl.scan_parquet(str(D / f"{a.src}_{tag}" / "dt=*.parquet"))
              .select(["dt", "sec"] + sel).collect().sort("dt", "sec"))
         assert t["sec"].to_numpy()[0] == ref["sec"].to_numpy()[0] and t.height == ref.height
         X = {c: t[c].to_numpy().astype(np.float64)[fin] for c in sel}
@@ -169,11 +172,11 @@ def main() -> None:
 
     R = pl.concat(allrows)
     S = pl.concat(allsum)
-    R.write_parquet(D / f"decile_{tag}.parquet", compression="zstd")
-    S.write_csv(D / f"decile_sum_{tag}.csv")
+    R.write_parquet(D / f"decile_{tag}{sfx}.parquet", compression="zstd")
+    S.write_csv(D / f"decile_sum_{tag}{sfx}.csv")
     if nullsum:
         N = pl.concat(nullsum)
-        N.write_csv(D / f"decile_null_{tag}.csv")
+        N.write_csv(D / f"decile_null_{tag}{sfx}.csv")
     print(f"\n[dec] 十分位の表 {R.height:,} 行 / 要約 {S.height:,} 行", file=sys.stderr)
 
 

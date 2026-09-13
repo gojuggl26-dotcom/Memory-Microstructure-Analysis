@@ -52,14 +52,17 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--coin", default="xyz:MU")
     ap.add_argument("--bbo-suffix", default="")
+    ap.add_argument("--src", default="featlib", help="日付の並びを取る特徴量ディレクトリ")
+    ap.add_argument("--suffix", default="", help="出力名 fwd_<coin><suffix>.parquet")
     ap.add_argument("--check", action="store_true", default=True)
     a = ap.parse_args()
     tag = a.coin.replace(":", "_")
 
     bb, ndrop = clean_bbo(pl.read_parquet(D / f"bbo_{tag}{a.bbo_suffix}.parquet"))
     print(f"[fwd] bbo {bb.height:,} 行(clean_bbo で {ndrop} 行を除外)", file=sys.stderr)
-    days = sorted(p.stem.split("=")[1] for p in Path(D / f"featlib_{tag}").glob("dt=*.parquet"))
-    print(f"[fwd] featlib の {len(days)} 日に合わせて作る", file=sys.stderr)
+    days = sorted(p.stem.split("=")[1]
+                  for p in Path(D / f"{a.src}_{tag}").glob("dt=*.parquet"))
+    print(f"[fwd] {a.src} の {len(days)} 日に合わせて作る", file=sys.stderr)
 
     sec = np.arange(0, 86400, KEEP_EVERY, dtype=np.int64)
     out = []
@@ -96,10 +99,11 @@ def main() -> None:
             print(f"  [{k+1}/{len(days)}] {dt}", flush=True, file=sys.stderr)
 
     t = pl.concat(out).sort("dt", "sec")
-    t.write_parquet(D / f"fwd_{tag}.parquet", compression="zstd")
-    print(f"[fwd] {t.height:,} 行 × {len(t.columns)} 列 -> fwd_{tag}.parquet", file=sys.stderr)
+    t.write_parquet(D / f"fwd_{tag}{a.suffix}.parquet", compression="zstd")
+    print(f"[fwd] {t.height:,} 行 × {len(t.columns)} 列 -> "
+          f"fwd_{tag}{a.suffix}.parquet", file=sys.stderr)
 
-    if a.check:
+    if a.check and (D / f"featlib_{tag}" / f"dt={days[0]}.parquet").exists():
         fl = (pl.scan_parquet(str(D / f"featlib_{tag}" / "dt=*.parquet"))
               .select("dt", "sec", "fwd_mid_1s", "fwd_mid_10s", "fwd_mid_60s",
                       "fwd_micro_1s", "fwd_micro_10s", "fwd_micro_60s")

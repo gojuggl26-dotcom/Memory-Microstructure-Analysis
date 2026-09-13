@@ -103,6 +103,7 @@
 | [板と注文イベントのエントロピー 13 種](mu_entropy_report.md) | 板の散らばり具合を 13 通り(価格水準別の数量・本数、注文数量、口座、滞留時間、最良の待ち行列、イベントの種別・側・向き、Δエントロピー、エントロピー率、条件付き、遷移)測り、6 地平 × 2 目的変数の 156 セルへ当てる。**Bonferroni を通った 49 セルは全部がボラティリティで、向きは 0 セル**。さらに前向き < 後ろ向き・活動量の統制で大半が消え、**4 段の検査を全部通ったのは156 セル中 1 つ**(Δエントロピーの 1 秒)。順位相関では見えなかった **U 字**を十分位表で見つけて結論を訂正した経緯も記録。**全 98 日**。 |
 | [ボリンジャーバンドの三本線と板の特徴量](mu_bollinger_report.md) | BB(20, 2, SMA, 終値, オフセット 0, 確定待ち)を perp の 1 分足に載せ、提示された 3 つの仮説を検定する。★**接近すると OFI は変わる — が大半は同語反復**(OFI とその分のリターンの相関は +0.52)。**同じ 1 分リターンの層で帯の内側の足を引いた「超過 OFI」は、到達の 10 分前から +0.12 → +0.43 と積み上がる**ので、帯に固有の成分は確かに残る(中間線では +0.16 で 2.7 分の 1)。★**減衰は明確** — 到達した分の OFI 1.14 が次の 1 分で 0.12 まで落ち、OFI 自身の持続(ラグ 1 自己相関 +0.181)だけなら 0.21 のはずなので**ふだんの 2 倍前後の速さ**。**反転は無い**(到達後の超過 OFI は ±0.05)。★**突破時の値は閾値にならない** — \|OFI\| は全体の 1.7 倍あるが、「その突破が続くか」の AUC は 0.496〜0.513 で 95% 区間が 0.5 を跨ぐ。差は最大 2.2bp で往復費用 2.83bp に届かない。確定待ちの厳密版でも同じ。**98 日 140,499 本**。 |
 | [特徴量 229 本 × 9 ホライズンの十分位分析](../decile_report.md)(2 銘柄共通) | 特徴量ライブラリ全 229 本を十分位に切り、**100ms / 300ms / 500ms / 1s / 3s / 5s / 10s / 30s / 60s** の 9 ホライズン × mid/micro の将来リターンと突き合わせる。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。★**Bonferroni を通るのは MU 27.9% / INTC 35.9%(プラセボ 0.0% / 0.1%)と豊富だが、その最大の \|D10 − D1\| は 2.785bp / 1.630bp で往復費用 2.83bp に届かない**。2.83bp を越えるセルは 36 / 180 本あるが、どれも有意でない(\|t\| の中央 1.63 / 1.03)。効く帯は **300ms〜5 秒の台地**。**どのホライズンでも mid 建てのほうが micro 建てより通過本数が多い**。白色雑音を同じ配管に通して機械を検算し、polars の `NaN > 数値` が真になる罠で一度偽の結論を出した経緯も記録。 |
+| [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 61.9%(プラセボ 0.0%)。**100ms で既に 70%** と 7 銘柄で最速。最良は `ofi_ewma → mid_60s` の片側 0.89bp だが、費用 2.66bp の 33% どまり。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -561,6 +562,8 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 | ファイル | 内容 | 生成スクリプト |
 |---|---|---|
+| [decile_null_xyz_MU_bbo.csv](../../../data/decile_null_xyz_MU_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
+| [decile_sum_xyz_MU_bbo.csv](../../../data/decile_sum_xyz_MU_bbo.csv) | 84 本 × 18 目的変数の十分位要約(`build_decile.py`) |
 | [daily_oi_volume_xyz_MU.csv](../../../data/daily_oi_volume_xyz_MU.csv) | 日次の建玉・出来高・取引数・参加者数(99 行) | `build_oi_volume.py` |
 | [daily_ohlc_xyz_MU.csv](../../../data/daily_ohlc_xyz_MU.csv) | 日次 4 本値(99 行) | `plot_price.py` |
 | [daily_turnover_xyz_MU.csv](../../../data/daily_turnover_xyz_MU.csv) | 日次回転率(99 行) | `regress_oi_volume.py` |
@@ -916,6 +919,9 @@ uv run python scripts/build_bb.py --coin xyz:MU --confirm-lag 1 --suffix _lag1
 uv run python scripts/plot_bb.py --coin xyz:MU
 uv run python scripts/build_nightdisc.py --coin xyz:MU
 uv run python scripts/plot_nightdisc.py --coin xyz:MU
+uv run python scripts/build_featbbo.py --coin xyz:MU                    # 84 本(bbo + fills のみ)
+uv run python scripts/build_fwd.py      --coin xyz:MU --src featbbo --suffix _bbo
+uv run python scripts/build_decile.py   --coin xyz:MU --src featbbo --suffix _bbo
 ```
 
 ---

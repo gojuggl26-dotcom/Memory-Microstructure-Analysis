@@ -23,6 +23,7 @@
 |---|---|
 | [MU の分析一式を SMSN で走らせる](smsn_report.md) | 17 分析 + 特徴量 199 本 × 7 ホライズン。1 秒の最大 \|r\| 0.231。corr(スプレッド, 約定量) −0.364 は 7 銘柄で最強。 |
 | [7 銘柄の横並び](../cross_coin_report.md) | 板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。 |
+| [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 47.9%(プラセボ 0.0%)。最良は `qb1 → mid_60s` の片側 1.94bp で、費用 5.29bp の 37%。100ms 33% → 5〜10 秒 66% と山が遅い。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 
 ---
 
@@ -94,6 +95,8 @@
 
 | ファイル | 中身 |
 |---|---|
+| [decile_null_xyz_SMSN_bbo.csv](../../../data/decile_null_xyz_SMSN_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
+| [decile_sum_xyz_SMSN_bbo.csv](../../../data/decile_sum_xyz_SMSN_bbo.csv) | 84 本 × 18 目的変数の十分位要約(`build_decile.py`) |
 | [profile_xyz_SMSN.csv](../../../data/profile_xyz_SMSN.csv) | 日次の出来高・件数・価格・参加者 |
 | [suite_headline_xyz_SMSN.json](../../../data/suite_headline_xyz_SMSN.json) | 見出しの数字 |
 | [xfeat_pred_xyz_SMSN.csv](../../../data/xfeat_pred_xyz_SMSN.csv) | 199 本 × 7 ホライズンの予測力 |
@@ -111,4 +114,7 @@ uv run python scripts/build_xfeat.py --coin xyz:SMSN
 uv run python scripts/fit_xfeat.py   --coin xyz:SMSN --stage pool
 uv run python scripts/fit_xfeat.py   --coin xyz:SMSN --stage daily
 uv run python scripts/plot_xfeat.py  --coin xyz:SMSN
+uv run python scripts/build_featbbo.py --coin xyz:SMSN                    # 84 本(bbo + fills のみ)
+uv run python scripts/build_fwd.py      --coin xyz:SMSN --src featbbo --suffix _bbo
+uv run python scripts/build_decile.py   --coin xyz:SMSN --src featbbo --suffix _bbo
 ```
