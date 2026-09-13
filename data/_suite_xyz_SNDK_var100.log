@@ -1,0 +1,27 @@
+[日] 99 日 = 立会日 68 / 閉場日 31
+[再開] 未処理 99 日 / 済み 0 日
+C:\Users\ii562\Downloads\Memory\scripts\build_var100.py:129: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  return np.nanvar(x, axis=1, ddof=1)
+C:\Users\ii562\Downloads\Memory\scripts\build_var100.py:132: RuntimeWarning: Mean of empty slice
+  return np.nanmean(g[c].reshape(NW, K), axis=1)
+  2026-05-10  (7/99 日)
+  2026-05-17  (14/99 日)
+  2026-05-24  (21/99 日)
+  2026-05-31  (28/99 日)
+  2026-06-07  (35/99 日)
+  2026-06-14  (42/99 日)
+  2026-06-21  (49/99 日)
+  2026-06-28  (56/99 日)
+  2026-07-05  (63/99 日)
+  2026-07-12  (70/99 日)
+  2026-07-19  (77/99 日)
+  2026-07-26  (84/99 日)
+  2026-08-02  (91/99 日)
+  2026-08-09  (98/99 日)
+  2026-08-10  (99/99 日)
+[窓] イベントのある窓の割合 中央 29.9% / 最小 3.0% / 最大 78.3%
+[除去] クロス・数量 0 の行 22,568
+[OLS] 2,304 行
+
+-> data/var100_ols_xyz_SNDK.parquet / .csv
+-> C:\Users\ii562\Downloads\Memory\data\var100_xyz_SNDK/dt=*.parquet

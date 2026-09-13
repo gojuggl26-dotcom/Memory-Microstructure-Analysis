@@ -1,0 +1,18 @@
+=== xyz:INTC ===
+  [80/99] 2026-07-22  特徴量 84 本
+[featbbo] 99 日 × 84 本 -> featbbo_xyz_INTC
+=== xyz:AMD ===
+  [80/99] 2026-07-22  特徴量 84 本
+[featbbo] 99 日 × 84 本 -> featbbo_xyz_AMD
+=== xyz:KIOXIA ===
+  [40/47] 2026-08-03  特徴量 84 本
+[featbbo] 47 日 × 84 本 -> featbbo_xyz_KIOXIA
+=== xyz:SKHX ===
+memory allocation of 498057840 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+=== xyz:SMSN ===
+  [80/99] 2026-07-22  特徴量 84 本
+[featbbo] 99 日 × 84 本 -> featbbo_xyz_SMSN
+=== xyz:SNDK ===
+memory allocation of 269050408 bytes failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

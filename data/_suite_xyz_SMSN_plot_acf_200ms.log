@@ -1,0 +1,27 @@
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_acf_200ms.py", line 195, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_acf_200ms.py", line 95, in main
+    L = pl.read_csv(ROOT / "data" / f"acf_200ms_daily_lag1_{tag}.csv").sort("dt")
+        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  [Previous line repeated 1 more time]
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\io\csv\functions.py", line 592, in read_csv
+    df = _read_csv_impl(
+        data,
+    ...<27 lines>...
+        glob=glob,
+    )
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\io\csv\functions.py", line 743, in _read_csv_impl
+    pydf = PyDataFrame.read_csv(
+        source,
+    ...<28 lines>...
+        schema=schema,
+    )
+FileNotFoundError: 指定されたファイルが見つかりません。 (os error 2): C:\Users\ii562\Downloads\Memory\data\acf_200ms_daily_lag1_xyz_SMSN.csv

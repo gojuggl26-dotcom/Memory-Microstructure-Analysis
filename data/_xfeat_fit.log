@@ -1,0 +1,50 @@
+=== fit xyz:AMD 23:41:55 ===
+  標本 B: 142,362 行(目的変数の欠損 198 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_AMD_xfeat.png
+=== fit xyz:KIOXIA 23:52:08 ===
+  標本 B: 67,572 行(目的変数の欠損 108 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_KIOXIA_xfeat.png
+=== fit xyz:SKHX 23:55:45 ===
+  標本 B: 142,335 行(目的変数の欠損 225 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_SKHX_xfeat.png
+=== fit xyz:SMSN 00:10:43 ===
+  標本 B: 140,895 行(目的変数の欠損 1,665 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_xfeat.png
+=== fit xyz:SNDK 00:19:53 ===
+  標本 B: 142,362 行(目的変数の欠損 198 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_SNDK_xfeat.png
+=== fit xyz:MU 00:25:36 ===
+  標本 B: 140,924 行(目的変数の欠損 196 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_MU_xfeat.png
+=== fit xyz:INTC 00:32:51 ===
+  標本 B: 142,362 行(目的変数の欠損 198 行を除外)
+  80/183
+  160/183
+  183/183
+日次を書き出した
+保存: C:\Users\ii562\Downloads\Memory\charts\xyz_INTC_xfeat.png
+=== FIT DONE 00:39:40 ===

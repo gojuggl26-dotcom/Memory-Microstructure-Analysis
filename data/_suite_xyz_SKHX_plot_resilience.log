@@ -1,0 +1,26 @@
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_resilience.py", line 387, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_resilience.py", line 378, in main
+    D = pl.read_csv(ROOT / "data" / f"resil_daily_{tag}.csv")
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  [Previous line repeated 1 more time]
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\io\csv\functions.py", line 592, in read_csv
+    df = _read_csv_impl(
+        data,
+    ...<27 lines>...
+        glob=glob,
+    )
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\io\csv\functions.py", line 743, in _read_csv_impl
+    pydf = PyDataFrame.read_csv(
+        source,
+    ...<28 lines>...
+        schema=schema,
+    )
+FileNotFoundError: 指定されたファイルが見つかりません。 (os error 2): C:\Users\ii562\Downloads\Memory\data\resil_daily_xyz_SKHX.csv

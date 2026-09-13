@@ -601,6 +601,25 @@ Artemis が公開する保管庫から生データを読み出し、段階的に
 | [7 銘柄 × 84 本の十分位分析](decile_all_report.md) | 板と約定がそろっている所有 7 銘柄すべてに、最良気配と約定だけで作れる特徴量 84 本を当てたもの。8,712 通りのうち Bonferroni を通るのは 40.0〜61.9%(プラセボは 7 銘柄すべて 0.0%)。効くのは OFI で、効くホライズンは板が薄いほど遅くへずれる。**費用は銘柄ごとに 2.66〜15.49bp と違い、片側で比べると費用を越えるセルはゼロ**(最良の `xyz:SKHX` でも費用の 45%)。 |
 | [7 銘柄の横並び](cross_coin_report.md) | MU の分析一式と特徴量パネルを全所有銘柄に同じ設定で当てた比較。板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。予測力の山のホライズンは流動性が薄いほど遅くへずれる。 |
 
+### 執筆待ちの図(本文なし)
+
+下記は生成済みだが、**まだ本文を書いていない**図である。このリポジトリは
+図だけを単体で置かない方針なので、宙に浮いた生成物として明示しておく。
+`xyz:MU` については同じ分析の本文が既にある(括弧内)。
+
+| 図の系列 | 銘柄 | 作成 | MU の対応レポート |
+|---|---|---|---|
+| `resilience_matrix` / `resilience_ols` | AMD / INTC / KIOXIA / SKHX / SMSN / SNDK | `scripts/plot_resilience.py` | [板の回復](MU/mu_resilience_report.md) |
+| `resilience_curve` | INTC | 同上 | 同上 |
+| `vol_measures` / `vol_series` | AMD / INTC / KIOXIA / SKHX / SMSN / SNDK | `scripts/plot_vol.py` | — |
+| `vol_signature` | INTC | 同上 | — |
+| `variance_1h_over_1d` / `variance_5d_over_99d` | KIOXIA / SKHX | 同上 | — |
+| `acf_200ms` | INTC | `scripts/acf_charts.py` | [符号の自己相関](MU/mu_acf_200ms_report.md) |
+| `markout` | INTC | `scripts/plot_markout.py` | [markout](MU/mu_markout_report.md) |
+
+**図の数字をここで引用しない。**本文を書くときに、その場で計算し直して
+検証してから載せること。
+
 ## 5. 再現手順
 
 依存は `pyproject.toml` に宣言してあります。初回だけ `uv sync` を実行してください。

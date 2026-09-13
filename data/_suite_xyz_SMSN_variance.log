@@ -1,0 +1,16 @@
+[分足] 142,559 本 / 約定のあった分 113,825 本(持ち越した分 20.2%)
+
+=== 5 日窓の日次分散((%)^2)===
+  中央値 38.14 / 最小 10.88 / 最大 133.51  → 日次ボラ 中央値 6.18%
+  同窓の回転率: 中央値 2.00 回/日
+=== 1 日窓の日次分散((%)^2)===
+  中央値 37.92 / 最小 0.94 / 最大 354.07(2026-05-25)
+=== 1 時間窓の分散((%)^2)===
+  中央値 0.788 / 最大 321.23
+
+[同時点の相関] 日次: log 分散 と log 回転率 +0.537(n=99)
+[同時点の相関] 1 時間: +0.624(n=2335)
+  ※ どちらも同時点の関係であって予測力ではない。
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_variance_5d_over_99d.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_variance_1d_over_1w.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_variance_1h_over_1d.png

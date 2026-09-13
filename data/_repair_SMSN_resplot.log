@@ -1,0 +1,12 @@
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_resilience_curve.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_SMSN_resilience_ols.png
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_resilience.py", line 387, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_resilience.py", line 383, in main
+    fig_matrix(tag, a.coin, T)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_resilience.py", line 314, in fig_matrix
+    j = hor.index(r["hor"])
+ValueError: '10ms' is not in list

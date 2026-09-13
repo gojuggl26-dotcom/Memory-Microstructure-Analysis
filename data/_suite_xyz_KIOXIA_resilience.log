@@ -1,0 +1,12 @@
+[日] 47 日 = 立会日 32 / 閉場日 15
+[再開] 未処理 47 日
+  2026-07-01  (7/47 日)
+  2026-07-08  (14/47 日)
+  2026-07-15  (21/47 日)
+  2026-07-22  (28/47 日)
+  2026-07-29  (35/47 日)
+  2026-08-05  (42/47 日)
+  2026-08-10  (47/47 日)
+-> C:\Users\ii562\Downloads\Memory\data\resil_path_xyz_KIOXIA.parquet
+[除去] クロス・数量 0 の行 1,635
+-> C:\Users\ii562\Downloads\Memory\data\resil_xyz_KIOXIA/dt=*.parquet

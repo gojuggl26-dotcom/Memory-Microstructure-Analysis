@@ -1,0 +1,28 @@
+[分足] 142,559 本 / 約定のあった分 132,810 本(持ち越した分 6.8%)
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_variance.py", line 271, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_variance.py", line 185, in main
+    .join(mean_oi(tag, "1d"), on="k", how="left")
+          ~~~~~~~^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_variance.py", line 91, in mean_oi
+    oi = pl.read_parquet(ROOT / "data" / f"oi_series_{tag}.parquet").select("ts", "oi").sort("ts")
+         ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\_utils\deprecation.py", line 132, in wrapper
+    return function(*args, **kwargs)
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\io\parquet\functions.py", line 303, in read_parquet
+    ret = lf._collect_eager()
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\lazyframe\frame.py", line 2240, in _collect_eager
+    return _eager_engine().collect(
+           ~~~~~~~~~~~~~~~~~~~~~~~^
+        self, optimizations=optimizations, background=False
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ii562\Downloads\Memory\.venv\Lib\site-packages\polars\lazyframe\engine.py", line 435, in collect
+    return wrap_df(ldf.collect(self.name, callback))
+                   ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: 指定されたファイルが見つかりません。 (os error 2): C:/Users/ii562/Downloads/Memory/data/oi_series_xyz_SKHX.parquet

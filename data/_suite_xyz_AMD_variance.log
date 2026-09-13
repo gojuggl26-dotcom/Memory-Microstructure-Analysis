@@ -1,0 +1,16 @@
+[分足] 142,559 本 / 約定のあった分 118,480 本(持ち越した分 16.9%)
+
+=== 5 日窓の日次分散((%)^2)===
+  中央値 16.81 / 最小 7.37 / 最大 43.32  → 日次ボラ 中央値 4.10%
+  同窓の回転率: 中央値 2.40 回/日
+=== 1 日窓の日次分散((%)^2)===
+  中央値 17.39 / 最小 0.73 / 最大 129.78(2026-08-04)
+=== 1 時間窓の分散((%)^2)===
+  中央値 0.251 / 最大 101.31
+
+[同時点の相関] 日次: log 分散 と log 回転率 +0.843(n=99)
+[同時点の相関] 1 時間: +0.759(n=2370)
+  ※ どちらも同時点の関係であって予測力ではない。
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_AMD_variance_5d_over_99d.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_AMD_variance_1d_over_1w.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_AMD_variance_1h_over_1d.png

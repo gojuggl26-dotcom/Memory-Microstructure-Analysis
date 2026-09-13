@@ -1,0 +1,9 @@
+[分足] 67,666 本 / 約定のあった分 46,834 本(持ち越した分 30.8%)
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_variance.py", line 271, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_variance.py", line 195, in main
+    assert day.height == 99, day.height
+           ^^^^^^^^^^^^^^^^
+AssertionError: 47

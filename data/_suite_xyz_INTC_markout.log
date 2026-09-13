@@ -1,0 +1,14 @@
+bbo 22,311,817 行 (異常 6,996 行を除外)
+  [1/99] 2026-05-04
+  [20/99] 2026-05-23
+  [40/99] 2026-06-12
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_markout.py", line 240, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_markout.py", line 99, in main
+    TAU = day_fill_times(D, fd)
+  File "C:\Users\ii562\Downloads\Memory\scripts\build_maker.py", line 341, in day_fill_times
+    cs -= np.repeat(cs[np.cumsum(cnt) - cnt] - w[np.cumsum(cnt) - cnt],
+                    ~~^^^^^^^^^^^^^^^^^^^^^^
+IndexError: index 198207 is out of bounds for axis 0 with size 198207

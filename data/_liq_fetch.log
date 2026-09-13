@@ -1,0 +1,4 @@
+[fetch] 99 日分
+[fetch] 清算行 29,808 / 全 22,349,510 行 (0.1334%)
+[fetch] 列が欠けた日: liquidation=0 / liquidatedUser=0
+[fetch] true と liquidatedUser の不一致: 0 日

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_acf_200ms.py", line 195, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ii562\Downloads\Memory\scripts\plot_acf_200ms.py", line 165, in main
+    ax.set_xticklabels([days[i][5:] for i in (0, 20, 40, 60, 80, 97)], fontsize=8.5,
+                        ~~~~^^^
+IndexError: list index out of range

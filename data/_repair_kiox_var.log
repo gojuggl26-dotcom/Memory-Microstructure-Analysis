@@ -1,0 +1,16 @@
+[分足] 67,666 本 / 約定のあった分 46,834 本(持ち越した分 30.8%)
+
+=== 5 日窓の日次分散((%)^2)===
+  中央値 68.69 / 最小 28.71 / 最大 193.75  → 日次ボラ 中央値 8.29%
+  同窓の回転率: 中央値 1.31 回/日
+=== 1 日窓の日次分散((%)^2)===
+  中央値 62.18 / 最小 3.98 / 最大 277.99(2026-07-30)
+=== 1 時間窓の分散((%)^2)===
+  中央値 1.331 / 最大 81.33
+
+[同時点の相関] 日次: log 分散 と log 回転率 +0.885(n=99)
+[同時点の相関] 1 時間: +0.773(n=1126)
+  ※ どちらも同時点の関係であって予測力ではない。
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_KIOXIA_variance_5d_over_99d.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_KIOXIA_variance_1d_over_1w.png
+[chart] C:\Users\ii562\Downloads\Memory\charts\xyz_KIOXIA_variance_1h_over_1d.png
