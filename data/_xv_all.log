@@ -1,0 +1,13 @@
+q1 delay=0 done
+q1 delay=65 done
+q1 delay=130 done
+q1 delay=250 done
+q1 delay=1000 done
+q1 delay=2500 done
+q1 placebo done
+imp1 delay=0 done
+imp1 delay=65 done
+imp1 delay=130 done
+imp1 delay=250 done
+imp1 delay=1000 done
+### XV_ALL_DONE
