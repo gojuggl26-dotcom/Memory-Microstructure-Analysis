@@ -105,6 +105,7 @@
 
 | ファイル | 中身 | 作るスクリプト |
 |---|---|---|
+| mrev_bars_xyz_INTC.parquet | 1 分足(mid / micro / 約定 / スプレッド / OBI)(版管理外) |
 | [mmgate_fit_xyz_INTC.csv](../../../data/mmgate_fit_xyz_INTC.csv) | 入口の門の学習・評価の別と通過率 |
 | [inv_days_xyz_INTC_q1.csv](../../../data/inv_days_xyz_INTC_q1.csv) | 在庫つきメイカーの日次(門なし・幽霊注文) |
 | [decile_null_xyz_INTC_bbo.csv](../../../data/decile_null_xyz_INTC_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
@@ -143,6 +144,7 @@
 | [特徴量 229 本 × 9 ホライズンの十分位分析](../decile_report.md)(2 銘柄共通) | 特徴量ライブラリ全 229 本を十分位に切り、**100ms / 300ms / 500ms / 1s / 3s / 5s / 10s / 30s / 60s** の 9 ホライズン × mid/micro の将来リターンと突き合わせる。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。★**Bonferroni を通るのは MU 27.9% / INTC 35.9%(プラセボ 0.0% / 0.1%)と豊富だが、その最大の \|D10 − D1\| は 2.785bp / 1.630bp で往復費用 2.83bp に届かない**。2.83bp を越えるセルは 36 / 180 本あるが、どれも有意でない(\|t\| の中央 1.63 / 1.03)。効く帯は **300ms〜5 秒の台地**。**どのホライズンでも mid 建てのほうが micro 建てより通過本数が多い**。白色雑音を同じ配管に通して機械を検算し、polars の `NaN > 数値` が真になる罠で一度偽の結論を出した経緯も記録。 |
 | [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 40.0%(プラセボ 0.0%)で 7 銘柄の最低。最良は `obi1 → mid_60s` の片側 0.65bp で、費用 3.63bp の 18%。**229 本版で使った費用 2.83bp はこの銘柄には 0.8bp 甘かった**。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 | [7 銘柄のメイカー検証](../mm_all_report.md)(7 銘柄共通) | 在庫つきメイカー(両側に指値・\|q\|≤1 で FIFO 相殺・BBO 追随)を `xyz:MU` と同じ設定で当て、1 組あたり損益を恒等式で分解する。入口の門・無作為の門(帰無対照)・発注遅延 130 ms・執行できる数量を順に入れる。半スプレッドの劣化は **21% と 7 銘柄で最小**だが、保有中の drift が −3.717bp と最大で −1.628 bp。**門の中身の価値がゼロ**の唯一の銘柄(無作為の門との差 +0.057、t=0.08)。 ★7 銘柄のどれも、費用を引く前ですら**出す価値が無い**。 |
+| [1 分足の平均回帰(20 分 SMA 基準)](../mrev_report.md)(8 銘柄共通) | $`D_t=\mathrm{mid}_t-F_t`$ の $`F_t`$ を 4 通り(microprice / EWMA / **SMA20** / モデル fair)置き、自己相関 $`\rho(k)`$・AR(1) の半減期・分散比 $`\mathrm{VR}(k)`$ で平均回帰を測る。**同じ欠測・ボラ・ティック幅のランダムウォークを帰無対照に置く**。8 銘柄で唯一 VR がほぼ全ホライズンで 1 を上回る(0.977〜1.013)。φ も z=−1.44 で対照と差が無い。**平均回帰も momentum も検出できない**。 |
 
 ---
 
@@ -195,4 +197,5 @@ uv run python scripts/build_inventory.py --coin xyz:INTC --qmax 1 --posts
 uv run python scripts/build_mmgate.py      --coin xyz:INTC
 uv run python scripts/build_mmgate_null.py --coin xyz:INTC
 uv run python scripts/build_inventory.py --coin xyz:INTC --qmax 1 --gate data/entrygate_xyz_INTC_mmg.parquet
+uv run python scripts/build_mrev.py --coin xyz:INTC
 ```

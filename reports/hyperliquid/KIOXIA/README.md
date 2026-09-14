@@ -26,6 +26,7 @@
 | [7 銘柄の横並び](../cross_coin_report.md) | 板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。 |
 | [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 51.2%(プラセボ 0.0%)。板が 2026-06-25 からなので **46 日**しかない。効果は 7 銘柄で最大(`ofi_ewma → mid_60s` 片側 5.22bp)だが、**費用も最大の 15.49bp** でその 34%。100ms では 24% しか有意にならず、**30〜60 秒でようやく 61%** に達する。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 | [7 銘柄のメイカー検証](../mm_all_report.md)(7 銘柄共通) | 在庫つきメイカー(両側に指値・\|q\|≤1 で FIFO 相殺・BBO 追随)を `xyz:MU` と同じ設定で当て、1 組あたり損益を恒等式で分解する。入口の門・無作為の門(帰無対照)・発注遅延 130 ms・執行できる数量を順に入れる。**唯一の黒字**(+1.976 bp/組、t=3.35)。半スプレッドが 16.182bp と桁違いで、劣化 45% と drift −6.792 を引いても残る。門ありは +7.128 bp・**19 日すべて黒字**で、130 ms の遅延にも耐える。★ただし BBO に中央 **\$66** しか並んでおらず、\$100 のクオートで −1.13 bp へ反転する。 ★7 銘柄のどれも、費用を引く前ですら**出す価値が無い**。 |
+| [1 分足の平均回帰(20 分 SMA 基準)](../mrev_report.md)(8 銘柄共通) | $`D_t=\mathrm{mid}_t-F_t`$ の $`F_t`$ を 4 通り(microprice / EWMA / **SMA20** / モデル fair)置き、自己相関 $`\rho(k)`$・AR(1) の半減期・分散比 $`\mathrm{VR}(k)`$ で平均回帰を測る。**同じ欠測・ボラ・ティック幅のランダムウォークを帰無対照に置く**。φ=0.9225 が**ランダムウォークの 0.9224 と小数第 4 位まで一致**する(z=+0.03)。8 銘柄で唯一 **立会時間の VR(20)=1.151 と momentum 側**。約定値で測ると ρ(1)=−0.098 と強い負が出るが、これは 13.9bp のスプレッドが作る bid–ask bounce で、mid だと +0.029 になる。 |
 
 ---
 
@@ -97,6 +98,7 @@
 
 | ファイル | 中身 |
 |---|---|
+| mrev_bars_xyz_KIOXIA.parquet | 1 分足(mid / micro / 約定 / スプレッド / OBI)(版管理外) |
 | [mmgate_fit_xyz_KIOXIA.csv](../../../data/mmgate_fit_xyz_KIOXIA.csv) | 入口の門の学習・評価の別と通過率 |
 | [inv_days_xyz_KIOXIA_q1.csv](../../../data/inv_days_xyz_KIOXIA_q1.csv) | 在庫つきメイカーの日次(門なし・幽霊注文) |
 | [decile_null_xyz_KIOXIA_bbo.csv](../../../data/decile_null_xyz_KIOXIA_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
@@ -125,4 +127,5 @@ uv run python scripts/build_inventory.py --coin xyz:KIOXIA --qmax 1 --posts
 uv run python scripts/build_mmgate.py      --coin xyz:KIOXIA
 uv run python scripts/build_mmgate_null.py --coin xyz:KIOXIA
 uv run python scripts/build_inventory.py --coin xyz:KIOXIA --qmax 1 --gate data/entrygate_xyz_KIOXIA_mmg.parquet
+uv run python scripts/build_mrev.py --coin xyz:KIOXIA
 ```

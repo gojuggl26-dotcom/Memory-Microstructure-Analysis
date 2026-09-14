@@ -106,6 +106,7 @@
 | [特徴量 229 本 × 9 ホライズンの十分位分析](../decile_report.md)(2 銘柄共通) | 特徴量ライブラリ全 229 本を十分位に切り、**100ms / 300ms / 500ms / 1s / 3s / 5s / 10s / 30s / 60s** の 9 ホライズン × mid/micro の将来リターンと突き合わせる。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。★**Bonferroni を通るのは MU 27.9% / INTC 35.9%(プラセボ 0.0% / 0.1%)と豊富だが、その最大の \|D10 − D1\| は 2.785bp / 1.630bp で往復費用 2.83bp に届かない**。2.83bp を越えるセルは 36 / 180 本あるが、どれも有意でない(\|t\| の中央 1.63 / 1.03)。効く帯は **300ms〜5 秒の台地**。**どのホライズンでも mid 建てのほうが micro 建てより通過本数が多い**。白色雑音を同じ配管に通して機械を検算し、polars の `NaN > 数値` が真になる罠で一度偽の結論を出した経緯も記録。 |
 | [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 61.9%(プラセボ 0.0%)。**100ms で既に 70%** と 7 銘柄で最速。最良は `ofi_ewma → mid_60s` の片側 0.89bp だが、費用 2.66bp の 33% どまり。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 | [7 銘柄のメイカー検証](../mm_all_report.md)(7 銘柄共通) | 在庫つきメイカー(両側に指値・\|q\|≤1 で FIFO 相殺・BBO 追随)を `xyz:MU` と同じ設定で当て、1 組あたり損益を恒等式で分解する。入口の門・無作為の門(帰無対照)・発注遅延 130 ms・執行できる数量を順に入れる。既報の −1.847 bp/組 を再現。半スプレッド 1.534bp に対し約定までに mid が **1.734bp(113%)** 動くので、約定した瞬間にもう負けている。門を入れても 評価期間で −0.761 bp。 ★7 銘柄のどれも、費用を引く前ですら**出す価値が無い**。 |
+| [1 分足の平均回帰(20 分 SMA 基準)](../mrev_report.md)(8 銘柄共通) | $`D_t=\mathrm{mid}_t-F_t`$ の $`F_t`$ を 4 通り(microprice / EWMA / **SMA20** / モデル fair)置き、自己相関 $`\rho(k)`$・AR(1) の半減期・分散比 $`\mathrm{VR}(k)`$ で平均回帰を測る。**同じ欠測・ボラ・ティック幅のランダムウォークを帰無対照に置く**。φ=0.9195 に対しランダムウォークが 0.9232(z=−2.12)。VR も k=60 で 0.915 対 対照 0.989 だが有意ではない。**1 分足ではランダムウォークと区別が付かない**。 |
 
 ### C. 注文フローはどれだけ自分自身を引きずるか
 
@@ -564,6 +565,7 @@ B が「x から y を当てる」話なのに対し、ここは「x が x 自�
 
 | ファイル | 内容 | 生成スクリプト |
 |---|---|---|
+| mrev_bars_xyz_MU.parquet | 1 分足(mid / micro / 約定 / スプレッド / OBI)(版管理外) |
 | [mmgate_fit_xyz_MU.csv](../../../data/mmgate_fit_xyz_MU.csv) | 入口の門の学習・評価の別と通過率 |
 | [inv_days_xyz_MU_q1.csv](../../../data/inv_days_xyz_MU_q1.csv) | 在庫つきメイカーの日次(門なし・幽霊注文) |
 | [decile_null_xyz_MU_bbo.csv](../../../data/decile_null_xyz_MU_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
@@ -930,6 +932,7 @@ uv run python scripts/build_inventory.py --coin xyz:MU --qmax 1 --posts
 uv run python scripts/build_mmgate.py      --coin xyz:MU
 uv run python scripts/build_mmgate_null.py --coin xyz:MU
 uv run python scripts/build_inventory.py --coin xyz:MU --qmax 1 --gate data/entrygate_xyz_MU_mmg.parquet
+uv run python scripts/build_mrev.py --coin xyz:MU
 ```
 
 ---

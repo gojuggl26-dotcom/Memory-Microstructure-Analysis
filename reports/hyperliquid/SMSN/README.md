@@ -25,6 +25,7 @@
 | [7 銘柄の横並び](../cross_coin_report.md) | 板の姿は 20 倍違っても「効き方」の相関は +0.95〜1.00。 |
 | [7 銘柄 × 84 本の十分位分析](../decile_all_report.md)(7 銘柄共通) | 最良気配と約定だけで作れる 84 本 × 9 ホライズン(100ms〜60 秒) × mid/micro。十分位の境目は**前日の分布**、標準誤差は日でクラスタ、帰無対照は 1 営業日ずらし。有意 47.9%(プラセボ 0.0%)。最良は `qb1 → mid_60s` の片側 1.94bp で、費用 5.29bp の 37%。100ms 33% → 5〜10 秒 66% と山が遅い。 ★費用は銘柄ごとに違い、判定は \|D10 − D1\| ではなく**片側 max(\|D1\|,\|D10\|)** で行う。**7 銘柄 4,530 本の有意なセルのうち費用を越えたものはゼロ**。 |
 | [7 銘柄のメイカー検証](../mm_all_report.md)(7 銘柄共通) | 在庫つきメイカー(両側に指値・\|q\|≤1 で FIFO 相殺・BBO 追随)を `xyz:MU` と同じ設定で当て、1 組あたり損益を恒等式で分解する。入口の門・無作為の門(帰無対照)・発注遅延 130 ms・執行できる数量を順に入れる。半スプレッド 4.119bp の **73%** が約定までに消える。日次の最悪は −27,217 bp。 ★7 銘柄のどれも、費用を引く前ですら**出す価値が無い**。 |
+| [1 分足の平均回帰(20 分 SMA 基準)](../mrev_report.md)(8 銘柄共通) | $`D_t=\mathrm{mid}_t-F_t`$ の $`F_t`$ を 4 通り(microprice / EWMA / **SMA20** / モデル fair)置き、自己相関 $`\rho(k)`$・AR(1) の半減期・分散比 $`\mathrm{VR}(k)`$ で平均回帰を測る。**同じ欠測・ボラ・ティック幅のランダムウォークを帰無対照に置く**。★**平均回帰が有意な 2 銘柄のうちの 1 つ**。φ=0.9007 対 RW 0.9226(z=−3.95)、VR(10)=0.881(対照 0.996、z=−4.0)。立会時間だと VR(20)=0.747 まで下がる(時間外 0.875、z=−3.57)。それでも粗利 2.17bp 対費用 5.27bp で届かない。 |
 
 ---
 
@@ -96,6 +97,7 @@
 
 | ファイル | 中身 |
 |---|---|
+| mrev_bars_xyz_SMSN.parquet | 1 分足(mid / micro / 約定 / スプレッド / OBI)(版管理外) |
 | [mmgate_fit_xyz_SMSN.csv](../../../data/mmgate_fit_xyz_SMSN.csv) | 入口の門の学習・評価の別と通過率 |
 | [inv_days_xyz_SMSN_q1.csv](../../../data/inv_days_xyz_SMSN_q1.csv) | 在庫つきメイカーの日次(門なし・幽霊注文) |
 | [decile_null_xyz_SMSN_bbo.csv](../../../data/decile_null_xyz_SMSN_bbo.csv) | 同じ表のプラセボ(1 営業日ずらし) |
@@ -124,4 +126,5 @@ uv run python scripts/build_inventory.py --coin xyz:SMSN --qmax 1 --posts
 uv run python scripts/build_mmgate.py      --coin xyz:SMSN
 uv run python scripts/build_mmgate_null.py --coin xyz:SMSN
 uv run python scripts/build_inventory.py --coin xyz:SMSN --qmax 1 --gate data/entrygate_xyz_SMSN_mmg.parquet
+uv run python scripts/build_mrev.py --coin xyz:SMSN
 ```

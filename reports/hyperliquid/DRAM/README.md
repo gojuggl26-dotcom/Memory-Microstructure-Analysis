@@ -17,6 +17,9 @@ Artemis URL  https://about.artemis.ai/
 
 まず読むもの → [METHODOLOGY.md](METHODOLOGY.md)(「予測力」の定義と限界。全レポート共通)
 
+銘柄をまたぐ分析にも `xyz:DRAM` が入っている。
+→ [1 分足の平均回帰(20 分 SMA 基準・8 銘柄)](../mrev_report.md)(`xyz:DRAM` は **k=2 分で VR=1.014 と momentum 側**。対照のランダムウォークは 0.990 で z=+3.8。AR(1) の φ は z=−1.19 と対照に一致し、**SMA20 基準の平均回帰は検出できない**)
+
 ---
 
 ## 1. 何を算出したか
