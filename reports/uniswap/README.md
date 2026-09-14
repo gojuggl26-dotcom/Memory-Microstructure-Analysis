@@ -11,7 +11,7 @@
 | プロトコル | [Uniswap v3](https://uniswap.org/)。集中流動性型 AMM |
 | チェーン | Arbitrum One(主)。Ethereum / Base / Avalanche / BSC の生ログも取得 |
 | データの出所 | **オンチェーンのログのみ。費用 $0**(公開 RPC、API キー不要)。作業場所は `E:\Uniswap-arb` |
-| 状態 | **レポート移設済み。マルチチェーン取得を完遂中** |
+| 状態 | **マルチチェーン取得を完遂(全 5 チェーン 100%)。#11 / #2 / #6 のレポート公開済み** |
 
 ---
 
@@ -66,7 +66,7 @@
 | arbitrum | 63 | **100%** | |
 | base | 7,813 | **100%** | |
 | avalanche | 27,969 | **100%** | |
-| bsc | 取得中 | — | ★下記の制約あり |
+| bsc | 4,167 | **100%** | ★窓が約 110 日と短い(下記)。生ログ 255,752 件 |
 
 **★BSC だけ窓が短い。**公開 RPC はほぼ全て `eth_getLogs` を弾く
 (publicnode = 403 / dataseed 系 = limit exceeded / drpc・zan・blockpi = 実質レート制限)。
