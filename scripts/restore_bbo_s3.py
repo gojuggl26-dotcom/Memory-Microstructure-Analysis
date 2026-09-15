@@ -1,6 +1,6 @@
 """WORK_BUCKET の l2/bbo(DEEP_ARCHIVE)を復元要求する。
 
-    uv run python scripts/restore_bbo_s3.py --coins GOLD GOOGL AAPL [--go]
+    uv run python scripts/restore_bbo_s3.py --coins xyz:GOLD AAVE [--go]
 
 `--go` を付けるまで**何も要求せず**、対象の件数と容量と概算費用だけ出す。
 
@@ -35,6 +35,7 @@ import os
 from pathlib import Path
 
 import boto3
+from urllib.parse import quote
 from botocore.exceptions import ClientError
 
 RETRIEVE_USD_GB = 0.02      # Standard
@@ -58,20 +59,27 @@ def env(name: str) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--coins", nargs="+", default=["GOLD", "GOOGL", "AAPL"])
+    ap.add_argument("--coins", nargs="+",
+                    default=["xyz:GOLD", "xyz:GOOGL", "xyz:AAPL"],
+                    help="完全な銘柄名。HIP-3 は xyz:GOLD、通常の perp は AAVE")
     ap.add_argument("--table", default="bbo")
     ap.add_argument("--tier", default="Standard",
                     choices=["Standard", "Bulk", "Expedited"])
     ap.add_argument("--keep-days", type=int, default=7)
     ap.add_argument("--go", action="store_true", help="実際に復元要求を出す")
+    ap.add_argument("--download", default="",
+                    help="復元済みのものを指定ディレクトリへ落とす"
+                         "(例 E:/hlpipe/l2)。aws s3 sync は保管クラスだけを見て"
+                         "復元済みでも skip するので boto3 で直接落とす")
     a = ap.parse_args()
 
     bucket = env("WORK_BUCKET")
     s3 = boto3.Session(profile_name="hl-artemis-ro",
                        region_name="us-east-1").client("s3")
     todo, nbytes, ready, pending = [], 0, 0, 0
+    ready_keys = []
     for c in a.coins:
-        pref = f"l2/coin=xyz%3A{c}/{a.table}/"
+        pref = "l2/coin=" + quote(c, safe="") + f"/{a.table}/"
         tok, n = None, 0
         while True:
             kw = {"Bucket": bucket, "Prefix": pref, "MaxKeys": 1000}
@@ -85,19 +93,43 @@ def main() -> None:
                 n += 1
                 if o.get("StorageClass") not in ("DEEP_ARCHIVE", "GLACIER"):
                     ready += 1
+                    ready_keys.append(k)
                     continue
                 todo.append(k)
                 nbytes += o["Size"]
             if not r.get("IsTruncated"):
                 break
             tok = r["NextContinuationToken"]
-        print(f"xyz:{c:<6} {a.table}: {n} 件")
+        print(f"{c:<12} {a.table}: {n} 件")
     gb = nbytes / 1e9
     cost = gb * (RETRIEVE_USD_GB + EGRESS_USD_GB) + len(todo) / 1000 * REQ_USD_1K
     print(f"\n復元が要るもの {len(todo)} 件 / {gb:.3f} GB / 既に読めるもの {ready} 件")
     print(f"概算費用 取り出し ${gb*RETRIEVE_USD_GB:.3f} + 要求 "
           f"${len(todo)/1000*REQ_USD_1K:.3f} + 転送 ${gb*EGRESS_USD_GB:.3f} "
           f"= **${cost:.2f}**({a.tier})")
+    if a.download:
+        root = Path(a.download)
+        got = skip = 0
+        keys = todo + ready_keys
+        for i, k in enumerate(keys, 1):
+            dst = root / k.split("l2/", 1)[1]
+            if dst.exists() and dst.stat().st_size > 0:
+                skip += 1
+                continue
+            h = s3.head_object(Bucket=bucket, Key=k)
+            rs = h.get("Restore", "")
+            if h.get("StorageClass") in ("DEEP_ARCHIVE", "GLACIER") \
+                    and 'ongoing-request="false"' not in rs:
+                continue                      # まだ復元できていない
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            s3.download_file(bucket, k, str(dst))
+            got += 1
+            if got % 50 == 0:
+                print(f"  {i}/{len(keys)} 取得 {got}", flush=True)
+        print(f"\n取得 {got} 件 / 既にあった {skip} 件 / "
+              f"まだ復元できていない {len(keys) - got - skip} 件")
+        return
+
     if not a.go:
         print("\n--go を付けると実際に復元要求を出す(いまは何もしていない)")
         return
